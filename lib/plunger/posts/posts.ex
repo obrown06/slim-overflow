@@ -6,7 +6,27 @@ defmodule Plunger.Posts do
   import Ecto.Query, warn: false
   alias Plunger.Repo
   alias Plunger.Accounts.User
+  alias Plunger.Posts
   alias Plunger.Posts.Question
+  alias Plunger.Posts.Category
+
+  def alphabetical(query) do
+    from c in query, order_by: c.name
+  end
+
+  def names_and_ids(query) do
+    from c in query, select: {c.name, c.id}
+  end
+
+
+  def load_categories(conn, _) do
+    query =
+      Category
+      |> Posts.alphabetical
+      |> Posts.names_and_ids
+    categories = Repo.all query
+    Plug.Conn.assign(conn, :categories, categories)
+  end
 
   @doc """
   Returns a query containing all the questions scoped to the given user.
@@ -74,11 +94,31 @@ defmodule Plunger.Posts do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_question(user, attrs \\ %{}) do
+  def create_question(user, attrs) do
     user
-      |> Ecto.build_assoc(:questions)
-      |> Question.changeset(attrs)
-      |> Repo.insert()
+    |> Ecto.build_assoc(:questions)
+    |> Question.changeset(attrs)
+    |> Ecto.Changeset.put_assoc(:categories, parse_categories(attrs))
+    |> Repo.insert()
+  end
+
+  defp parse_categories(attrs) do
+    (attrs["categories"] || "")
+    |> String.split(",")
+    |> Enum.map(&String.trim/1)
+    |> Enum.reject(& &1 == "")
+    |> Enum.map(&get_or_insert_category/1)
+  end
+
+  defp get_or_insert_category(name) do
+    %Category{}
+    |> Ecto.Changeset.change(name: name)
+    |> Ecto.Changeset.unique_constraint(:name)
+    |> Repo.insert
+    |> case do
+      {:ok, category} -> category
+      {:error, _} -> Repo.get_by!(Category, name: name)
+    end
   end
 
   @doc """

@@ -1,6 +1,7 @@
 defmodule PlungerWeb.QuestionController do
   use PlungerWeb, :controller
   plug :authenticate_user when action in [:new, :create, :edit, :update, :delete]
+  plug :load_categories when action in [:new, :create, :edit, :update]
   alias Plunger.Posts
   alias Plunger.Posts.Category
 
@@ -19,8 +20,9 @@ defmodule PlungerWeb.QuestionController do
     render(conn, "new.html", changeset: changeset)
   end
 
-  def create(conn, %{"question" => question_params}, user) do
-    case Posts.create_question(user, question_params) do
+  def create(conn, %{"question" => attrs}, user) do
+    categories = conn.assigns[:categories]
+    case Posts.create_question(user, attrs) do
       {:ok, question} ->
         conn
         |> put_flash(:info, "Question created successfully.")

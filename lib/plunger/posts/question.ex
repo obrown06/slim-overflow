@@ -15,7 +15,7 @@ defmodule Plunger.Posts.Question do
   end
 
   @doc false
-  def changeset(%Question{} = question, attrs) do
+  def changeset(%Question{} = question, attrs \\ %{}) do
     question
     |> cast(attrs, [:title, :body])
     |> validate_required([:title, :body])

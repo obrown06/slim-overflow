@@ -24,6 +24,7 @@ defmodule PlungerWeb do
       import PlungerWeb.Router.Helpers
       import PlungerWeb.Gettext
       import PlungerWeb.Auth, only: [authenticate_user: 2]
+      import Plunger.Posts, only: [load_categories: 2]
     end
   end
 
