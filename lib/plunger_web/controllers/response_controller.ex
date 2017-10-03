@@ -1,6 +1,6 @@
 defmodule PlungerWeb.ResponseController do
   use PlungerWeb, :controller
-
+  plug :authenticate_user when action in [:new, :create, :edit, :update, :delete]
   alias Plunger.Posts
   alias Plunger.Posts.Response
 
@@ -19,7 +19,7 @@ defmodule PlungerWeb.ResponseController do
       {:ok, response} ->
         conn
         |> put_flash(:info, "Response created successfully.")
-        |> redirect(to: response_path(conn, :show, response))
+        |> redirect(to: response_path(conn, :show, response_params))
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end

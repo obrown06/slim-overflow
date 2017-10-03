@@ -3,7 +3,7 @@ defmodule Plunger.Repo.Migrations.CreateResponses do
 
   def change do
     create table(:responses) do
-      add :description, :text
+      add :description, :string
       add :user_id, references(:users, on_delete: :nothing)
       add :question_id, references(:questions, on_delete: :nothing)
 

@@ -6,7 +6,7 @@ defmodule Plunger.Posts.Response do
 
   schema "responses" do
     field :description, :string
-    belongs_to :user, Plunger.Accounts.User, foreign_key: :user_id
+    belongs_to :user, Plunger.Accounts.User
     belongs_to :question, Plunger.Posts.Question
 
     timestamps()

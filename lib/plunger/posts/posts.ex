@@ -5,8 +5,15 @@ defmodule Plunger.Posts do
 
   import Ecto.Query, warn: false
   alias Plunger.Repo
-
+  alias Plunger.Accounts.User
   alias Plunger.Posts.Question
+
+  @doc """
+  Returns a query containing all the questions scoped to the given user.
+  """
+  defp user_questions(user) do
+    Ecto.assoc(user, :questions)
+  end
 
   @doc """
   Returns the list of questions.
@@ -38,6 +45,24 @@ defmodule Plunger.Posts do
   def get_question!(id), do: Repo.get!(Question, id)
 
   @doc """
+  Gets a single question.
+
+  Returns 'nil' if the Question does not exist.
+
+  ## Examples
+
+      iex> get_question!(123)
+      %Question{}
+
+      iex> get_question!(456)
+      nil
+
+  """
+  def get_question(id, user) do
+    Repo.get(user_questions(user), id)
+  end
+
+  @doc """
   Creates a question.
 
   ## Examples
@@ -49,10 +74,11 @@ defmodule Plunger.Posts do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_question(attrs \\ %{}) do
-    %Question{}
-    |> Question.changeset(attrs)
-    |> Repo.insert()
+  def create_question(user, attrs \\ %{}) do
+    user
+      |> Ecto.build_assoc(:questions)
+      |> Question.changeset(attrs)
+      |> Repo.insert()
   end
 
   @doc """
@@ -100,7 +126,18 @@ defmodule Plunger.Posts do
   """
   def change_question(%Question{} = question) do
     question
-    |> Question.changeset(%{})
+      |> Question.changeset(%{})
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking question changes
+  with the user_id field assigned to 'user'.
+
+  """
+  def change_question(%User{} = user) do
+    user
+      |> Ecto.build_assoc(:questions)
+      |> Question.changeset(%{})
   end
 
   alias Plunger.Posts.Category
@@ -243,8 +280,8 @@ defmodule Plunger.Posts do
 
   """
   def create_response(attrs \\ %{}) do
-    %Response{}
-    |> Response.changeset(attrs)
+    %Category{}
+    |> Category.changeset(attrs)
     |> Repo.insert()
   end
 
