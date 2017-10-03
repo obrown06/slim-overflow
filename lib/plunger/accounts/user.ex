@@ -10,6 +10,8 @@ defmodule Plunger.Accounts.User do
     field :username, :string
     field :password, :string, virtual: true
     field :password_hash, :string
+    has_many :questions, Plunger.Posts.Question
+    has_many :responses, Plunger.Posts.Response
 
     timestamps()
   end

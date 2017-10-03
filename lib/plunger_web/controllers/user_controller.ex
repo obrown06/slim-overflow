@@ -1,6 +1,6 @@
 defmodule PlungerWeb.UserController do
   use PlungerWeb, :controller
-  plug :authenticate when action in [:index, :show, :delete, :update, :edit]
+  plug :authenticate_user when action in [:index, :show, :delete, :update, :edit]
 
   alias Plunger.Accounts
   alias Plunger.Accounts.User
@@ -58,16 +58,5 @@ defmodule PlungerWeb.UserController do
     conn
     |> put_flash(:info, "User deleted successfully.")
     |> redirect(to: user_path(conn, :index))
-  end
-
-  defp authenticate(conn, _opts) do
-    if conn.assigns.current_user do
-      conn
-    else
-      conn
-      |> put_flash(:error, "You must be logged in to access that page")
-      |> redirect(to: page_path(conn, :index))
-      |> halt()
-    end
   end
 end

@@ -23,6 +23,7 @@ defmodule PlungerWeb do
       import Plug.Conn
       import PlungerWeb.Router.Helpers
       import PlungerWeb.Gettext
+      import PlungerWeb.Auth, only: [authenticate_user: 2]
     end
   end
 
@@ -48,6 +49,8 @@ defmodule PlungerWeb do
       use Phoenix.Router
       import Plug.Conn
       import Phoenix.Controller
+
+      import PlungerWeb.Auth, only: [authenticate_user: 2]
     end
   end
 
