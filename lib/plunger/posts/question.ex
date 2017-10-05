@@ -9,8 +9,7 @@ defmodule Plunger.Posts.Question do
     field :title, :string
     belongs_to :user, Plunger.Accounts.User, foreign_key: :user_id
     has_many :responses, Plunger.Posts.Response
-    many_to_many :categories, Plunger.Posts.Category, join_through: "questions_categories"
-
+    many_to_many :categories, Plunger.Posts.Category, join_through: "questions_categories", on_delete: :delete_all, on_replace: :delete
     timestamps()
   end
 

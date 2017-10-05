@@ -12,6 +12,10 @@
     <%= @question.body %>
   </li>
 
+  <li>
+    <strong>Categories:</strong>
+    <%= get_categories(@question) %></td>
+
 </ul>
 
 <span><%= link "Edit", to: question_path(@conn, :edit, @question) %></span>

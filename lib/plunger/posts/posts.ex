@@ -18,7 +18,6 @@ defmodule Plunger.Posts do
     from c in query, select: {c.name, c.id}
   end
 
-
   def load_categories(conn, _) do
     query =
       Category
@@ -96,8 +95,7 @@ defmodule Plunger.Posts do
   """
   def create_question(user, attrs) do
 
-    categories = Repo.all(from c in Category, where: c.id in [^attrs["category_id"]])
-
+    categories = parse_categories(attrs)
     changeset =
       user
       |> Ecto.build_assoc(:questions)
@@ -105,16 +103,17 @@ defmodule Plunger.Posts do
 
     if length(categories) > 0 do
       changeset
-      |> Ecto.Changeset.put_assoc(:categories, categories)
+      |> Ecto.Changeset.put_assoc(:categories, categories, :required)
       |> Repo.insert()
     else
       changeset
       |> Ecto.Changeset.add_error(:category_id, "you must select a category")
+      {:error, changeset}
     end
   end
 
   defp parse_categories(attrs) do
-    (attrs["categories"] || "")
+    (attrs["category_id"] || "")
     |> String.split(",")
     |> Enum.map(&String.trim/1)
     |> Enum.reject(& &1 == "")
@@ -145,9 +144,22 @@ defmodule Plunger.Posts do
 
   """
   def update_question(%Question{} = question, attrs) do
-    question
-    |> Question.changeset(attrs)
-    |> Repo.update()
+    categories = parse_categories(attrs)
+
+    changeset =
+      question
+      |> Repo.preload(:categories)
+      |> Question.changeset(attrs)
+
+    if length(categories) > 0 do
+      changeset
+      |> Ecto.Changeset.put_assoc(:categories, categories, :required)
+      |> Repo.update()
+    else
+      changeset
+      |> Ecto.Changeset.add_error(:category_id, "you must select a category")
+      {:error, changeset}
+    end
   end
 
   @doc """
@@ -177,6 +189,7 @@ defmodule Plunger.Posts do
   """
   def change_question(%Question{} = question) do
     question
+      |> Repo.preload(:categories)
       |> Question.changeset(%{})
   end
 

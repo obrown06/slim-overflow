@@ -42,7 +42,8 @@ defmodule Plunger.Mixfile do
       {:gettext, "~> 0.11"},
       {:cowboy, "~> 1.0"},
       {:comeonin, "~> 4.0"},
-      {:bcrypt_elixir, "~> 1.0"}
+      {:bcrypt_elixir, "~> 1.0"},
+      {:phoenix_mtm, "~> 0.5.1"}
     ]
   end
 

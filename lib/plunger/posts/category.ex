@@ -6,7 +6,7 @@ defmodule Plunger.Posts.Category do
 
   schema "categories" do
     field :name, :string
-    many_to_many :questions, Plunger.Posts.Question, join_through: "questions_categories"
+    many_to_many :questions, Plunger.Posts.Question, join_through: "questions_categories", on_delete: :delete_all, on_replace: :delete
 
     timestamps()
   end
