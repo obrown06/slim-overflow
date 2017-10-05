@@ -95,11 +95,22 @@ defmodule Plunger.Posts do
 
   """
   def create_question(user, attrs) do
-    user
-    |> Ecto.build_assoc(:questions)
-    |> Question.changeset(attrs)
-    |> Ecto.Changeset.put_assoc(:categories, parse_categories(attrs))
-    |> Repo.insert()
+
+    categories = Repo.all(from c in Category, where: c.id in [^attrs["category_id"]])
+
+    changeset =
+      user
+      |> Ecto.build_assoc(:questions)
+      |> Question.changeset(attrs)
+
+    if length(categories) > 0 do
+      changeset
+      |> Ecto.Changeset.put_assoc(:categories, categories)
+      |> Repo.insert()
+    else
+      changeset
+      |> Ecto.Changeset.add_error(:category_id, "you must select a category")
+    end
   end
 
   defp parse_categories(attrs) do

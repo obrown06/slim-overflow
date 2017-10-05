@@ -7,6 +7,7 @@ defmodule PlungerWeb.QuestionView do
       question
       |> Ecto.assoc(:categories)
       |> Repo.all
-      |> Enum.reduce("", fn(category, acc) -> acc ++ ", " ++ category.name end)
+      |> Enum.map(fn(category) -> category.name end)
+      |> Enum.join(", ")
   end
 end

@@ -21,7 +21,6 @@ defmodule PlungerWeb.QuestionController do
   end
 
   def create(conn, %{"question" => attrs}, user) do
-    categories = conn.assigns[:categories]
     case Posts.create_question(user, attrs) do
       {:ok, question} ->
         conn
