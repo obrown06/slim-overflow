@@ -28,3 +28,4 @@
 </table>
 
 <span><%= link "New Question", to: question_path(@conn, :new) %></span>
+<span> <%= link "Categories", to: category_path(@conn, :index), class: "btn btn-default btn-xs" %></span>

@@ -14,16 +14,10 @@ defmodule Plunger.Posts do
     from c in query, order_by: c.name
   end
 
-
-  #def names_and_ids(query) do
-  #  from c in query, select: {c.name, c.id}
-  #end
-
   def load_categories(conn, _) do
     query =
       Category
       |> Posts.alphabetical
-      #|> Posts.names_and_ids
     categories = Repo.all query
     Plug.Conn.assign(conn, :categories, categories)
   end
@@ -95,22 +89,21 @@ defmodule Plunger.Posts do
 
   """
   def create_question(user, attrs) do
-
-    categories = parse_categories(attrs)
     changeset =
       user
       |> Ecto.build_assoc(:questions)
+      |> Repo.preload(:categories)
       |> Question.changeset(attrs)
 
+    categories = parse_categories(attrs)
+
     if length(categories) > 0 do
-      changeset
-      |> Ecto.Changeset.put_assoc(:categories, categories, :required)
-      |> Repo.insert()
+      changeset = Ecto.Changeset.put_assoc(changeset, :categories, categories, :required)
     else
-      changeset
-      |> Ecto.Changeset.add_error(:category_id, "you must select a category")
-      {:error, changeset}
+      changeset = Ecto.Changeset.add_error(changeset, :categories, "you must select a category")
     end
+
+    Repo.insert(changeset)
   end
 
   defp parse_categories(attrs) do
@@ -134,22 +127,20 @@ defmodule Plunger.Posts do
 
   """
   def update_question(%Question{} = question, attrs) do
-    categories = parse_categories(attrs)
-
     changeset =
       question
       |> Repo.preload(:categories)
       |> Question.changeset(attrs)
 
+    categories = parse_categories(attrs)
+
     if length(categories) > 0 do
-      changeset
-      |> Ecto.Changeset.put_assoc(:categories, categories, :required)
-      |> Repo.update()
+      changeset = Ecto.Changeset.put_assoc(changeset, :categories, categories, :required)
     else
-      changeset
-      |> Ecto.Changeset.add_error(:category_id, "you must select a category")
-      {:error, changeset}
+      changeset = Ecto.Changeset.add_error(changeset, :categories, "you must select a category")
     end
+
+    Repo.update(changeset)
   end
 
   @doc """

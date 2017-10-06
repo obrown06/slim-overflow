@@ -24,6 +24,7 @@
         selected: Enum.map(f.data.categories, &(&1.id)),
         label_opts: [class: "form-input"], input_opts: [class: "form-control"],
         wrapper: &Phoenix.HTML.Tag.content_tag(:p, &1) %>
+    <%= error_tag f, :categories %>
 
   </div>
 
