@@ -14,15 +14,16 @@ defmodule Plunger.Posts do
     from c in query, order_by: c.name
   end
 
-  def names_and_ids(query) do
-    from c in query, select: {c.name, c.id}
-  end
+
+  #def names_and_ids(query) do
+  #  from c in query, select: {c.name, c.id}
+  #end
 
   def load_categories(conn, _) do
     query =
       Category
       |> Posts.alphabetical
-      |> Posts.names_and_ids
+      #|> Posts.names_and_ids
     categories = Repo.all query
     Plug.Conn.assign(conn, :categories, categories)
   end
@@ -113,22 +114,11 @@ defmodule Plunger.Posts do
   end
 
   defp parse_categories(attrs) do
-    (attrs["category_id"] || "")
-    |> String.split(",")
-    |> Enum.map(&String.trim/1)
-    |> Enum.reject(& &1 == "")
-    |> Enum.map(&get_or_insert_category/1)
-  end
-
-  defp get_or_insert_category(name) do
-    %Category{}
-    |> Ecto.Changeset.change(name: name)
-    |> Ecto.Changeset.unique_constraint(:name)
-    |> Repo.insert
-    |> case do
-      {:ok, category} -> category
-      {:error, _} -> Repo.get_by!(Category, name: name)
-    end
+    categories = Map.get(attrs, "categories")
+    |> Enum.filter(&(&1 != ""))
+    |> Enum.map(fn(category_id) ->
+        get_category!(String.to_integer(category_id))
+       end)
   end
 
   @doc """
@@ -201,7 +191,7 @@ defmodule Plunger.Posts do
   def change_question(%User{} = user) do
     user
       |> Ecto.build_assoc(:questions)
-      |> Question.changeset(%{})
+      |> change_question()
   end
 
   alias Plunger.Posts.Category
