@@ -65,7 +65,8 @@ defmodule Plunger.Posts do
 
   """
   def get_question!(id) do
-     Repo.get!(Question, id) |> Repo.preload(:responses)
+     Repo.get!(Question, id)
+     |> Repo.preload(:responses)
    end
 
   @doc """
@@ -335,13 +336,13 @@ defmodule Plunger.Posts do
 
   """
   def create_response(question_id, %User{} = user, attrs \\ %{}) do
-    question = get_question!(question_id) |> Repo.preload([:user, :responses])
+    question = get_question!(question_id) #|> Repo.preload([:user, :responses])
     changeset =
       question
       |> Ecto.build_assoc(:responses, description: attrs["description"])
       #|> Repo.preload(:users)
       |> Response.changeset(attrs)
-      #|> Ecto.Changeset.put_assoc(:questions, question, :required)
+      |> Ecto.Changeset.put_assoc(:users, user, :required)
       |> Repo.insert()
   end
 

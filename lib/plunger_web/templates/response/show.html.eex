@@ -4,5 +4,9 @@
     <strong>Comment:</strong>
     <%= @response.description %>
   </li>
+  <li>
+    <strong>Posted at: </strong>
+    <%= get_date_time(@response) %>
+  </li>
 
 </ul>

@@ -14,7 +14,16 @@
 
   <li>
     <strong>Categories:</strong>
-    <%= get_categories(@question) %></td>
+    <%= list_categories(@question) %>
+  </li>
+  <li>
+    <strong>Posted at:</strong>
+    <%= get_date_time(@question) %>
+  </li>
+  <li>
+    <strong>Posted by:</strong>
+    <%= get_username(@question) %>
+  </li>
 
 </ul>
 

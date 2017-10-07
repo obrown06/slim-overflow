@@ -6,6 +6,8 @@
       <th>Title</th>
       <th>Body</th>
       <th>Categories</th>
+      <th>User</th>
+      <th>DateTime Posted</th>
 
       <th></th>
     </tr>
@@ -15,7 +17,9 @@
     <tr>
       <td><%= question.title %></td>
       <td><%= question.body %></td>
-      <td><%= get_categories(question) %></td>
+      <td><%= list_categories(question) %></td>
+      <td><%= get_username(question) %></td>
+      <td><%= get_date_time(question) %></td>
 
       <td class="text-right">
         <span><%= link "Show", to: question_path(@conn, :show, question), class: "btn btn-default btn-xs" %></span>
