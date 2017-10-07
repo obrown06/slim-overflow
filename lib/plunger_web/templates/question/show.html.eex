@@ -32,7 +32,7 @@
 
 <div class="responses">
  <h2>Responses</h2>
- <%= for response <- @question.responses do %>
+ <%= for response <- get_responses(@question) do %>
    <%= render PlungerWeb.ResponseView, "show.html", response: response %>
  <% end %>
 </div>

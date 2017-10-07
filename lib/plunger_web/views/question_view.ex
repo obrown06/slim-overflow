@@ -3,6 +3,8 @@ defmodule PlungerWeb.QuestionView do
   alias Plunger.Repo
   alias Plunger.Posts.Question
   alias Plunger.Accounts
+  alias Plunger.Posts.Response
+  import Ecto.Query, only: [from: 2]
 
   def get_categories(%Question{} = question) do
       question
@@ -23,5 +25,19 @@ defmodule PlungerWeb.QuestionView do
   def get_username(%Question{} = question) do
     user = Accounts.get_user!(question.user_id)
     user.username
+  end
+
+  def get_responses(%Question{} = question) do
+    query = (from r in Response,
+              where: r.question_id == ^question.id,
+              select: r)
+      |> order_by_time_posted
+      |> Repo.all
+
+  end
+
+  def order_by_time_posted(query) do
+    from t in query,
+      order_by: t.inserted_at
   end
 end
