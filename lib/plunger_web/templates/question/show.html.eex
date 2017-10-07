@@ -30,6 +30,20 @@
 <span><%= link "Edit", to: question_path(@conn, :edit, @question) %></span>
 <span><%= link "Question List", to: question_path(@conn, :index) %></span>
 
+
+<div class="comments">
+ <h2>Comments</h2>
+ <%= for comment <- get_comments(@question) do %>
+   <%= render PlungerWeb.CommentView, "show.html", comment: comment %>
+ <% end %>
+</div>
+
+<%= render PlungerWeb.CommentView, "form.html", conn: @conn, question: @question,
+  comment_changeset: @comment_changeset, action: question_comment_path(@conn, :create, @question)
+%>
+
+
+
 <div class="responses">
  <h2>Responses</h2>
  <%= for response <- get_responses(@question) do %>
@@ -38,5 +52,5 @@
 </div>
 
 <%= render PlungerWeb.ResponseView, "form.html", conn: @conn, question: @question,
-  response_changeset: @response_changeset
+  response_changeset: @response_changeset, action: question_response_path(@conn, :create, @question)
 %>

@@ -1,7 +1,7 @@
 <ul>
 
   <li>
-    <strong>Comment:</strong>
+    <strong>Response:</strong>
     <%= @response.description %>
   </li>
   <li>

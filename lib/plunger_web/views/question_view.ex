@@ -4,6 +4,7 @@ defmodule PlungerWeb.QuestionView do
   alias Plunger.Posts.Question
   alias Plunger.Accounts
   alias Plunger.Posts.Response
+  alias Plunger.Posts.Comment
   import Ecto.Query, only: [from: 2]
 
   def get_categories(%Question{} = question) do
@@ -31,6 +32,15 @@ defmodule PlungerWeb.QuestionView do
     query = (from r in Response,
               where: r.question_id == ^question.id,
               select: r)
+      |> order_by_time_posted
+      |> Repo.all
+
+  end
+
+  def get_comments(%Question{} = question) do
+    query = (from c in Comment,
+              where: c.question_id == ^question.id,
+              select: c)
       |> order_by_time_posted
       |> Repo.all
 

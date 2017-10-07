@@ -33,11 +33,17 @@ defmodule PlungerWeb.QuestionController do
 
   def show(conn, %{"id" => id}, user) do
     question = Posts.get_question!(id)
+
     response_changeset = question
       |> Ecto.build_assoc(:responses)
       |> Plunger.Posts.Response.changeset()
+
+    comment_changeset = question
+      |> Ecto.build_assoc(:comments)
+      |> Plunger.Posts.Comment.changeset()
+
     render(conn, "show.html", question: question, response_changeset:
-    response_changeset)
+    response_changeset, comment_changeset: comment_changeset)
   end
 
   def edit(conn, %{"id" => id}, user) do

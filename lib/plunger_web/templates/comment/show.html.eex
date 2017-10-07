@@ -1,0 +1,16 @@
+<ul>
+
+  <li>
+    <strong>Comment:</strong>
+    <%= @comment.description %>
+  </li>
+  <li>
+    <strong>Posted at: </strong>
+    <%= get_date_time(@comment) %>
+  </li>
+  <li>
+    <strong>Posted by: </strong>
+    <%= get_username(@comment) %>
+  </li>
+
+</ul>

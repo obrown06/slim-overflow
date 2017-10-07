@@ -23,9 +23,12 @@ defmodule PlungerWeb.ResponseController do
         conn
         |> put_flash(:info, "Response created successfully.")
         |> redirect(to: question_path(conn, :show, question))
-      {:error, %Ecto.Changeset{} = changeset} ->
+      {:error, %Ecto.Changeset{} = response_changeset} ->
+        comment_changeset = question
+          |> Ecto.build_assoc(:comments)
+          |> Plunger.Posts.Comment.changeset()
         render(conn, PlungerWeb.QuestionView, "show.html", question: question,
-        response_changeset: changeset)
+        response_changeset: response_changeset, comment_changeset: comment_changeset)
     end
   end
 

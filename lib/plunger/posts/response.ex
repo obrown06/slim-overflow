@@ -8,6 +8,7 @@ defmodule Plunger.Posts.Response do
     field :description, :string
     belongs_to :user, Plunger.Accounts.User, foreign_key: :user_id
     belongs_to :question, Plunger.Posts.Question
+    has_many :comments, Plunger.Posts.Comment, on_delete: :delete_all
 
     timestamps()
   end
