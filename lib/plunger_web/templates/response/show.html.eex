@@ -8,5 +8,9 @@
     <strong>Posted at: </strong>
     <%= get_date_time(@response) %>
   </li>
+  <li>
+    <strong>Posted by: </strong>
+    <%= get_username(@response) %>
+  </li>
 
 </ul>

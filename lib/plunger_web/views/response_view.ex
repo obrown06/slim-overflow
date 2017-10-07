@@ -12,4 +12,5 @@ defmodule PlungerWeb.ResponseView do
   def get_date_time(%Response{} = response) do
     response.inserted_at
   end
+
 end

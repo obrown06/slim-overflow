@@ -342,7 +342,7 @@ defmodule Plunger.Posts do
       |> Ecto.build_assoc(:responses, description: attrs["description"])
       #|> Repo.preload(:users)
       |> Response.changeset(attrs)
-      |> Ecto.Changeset.put_assoc(:users, user, :required)
+      |> Ecto.Changeset.put_assoc(:user, user, :required)
       |> Repo.insert()
   end
 
