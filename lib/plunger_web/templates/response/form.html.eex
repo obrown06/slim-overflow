@@ -1,5 +1,5 @@
-<%= form_for @changeset, @action, fn f -> %>
-  <%= if @changeset.action do %>
+<%= form_for @response_changeset, question_response_path(@conn, :create, @question), fn f -> %>
+  <%= if @response_changeset.action do %>
     <div class="alert alert-danger">
       <p>Oops, something went wrong! Please check the errors below.</p>
     </div>
@@ -7,7 +7,7 @@
 
   <div class="form-group">
     <%= label f, :description, class: "control-label" %>
-    <%= textarea f, :description, class: "form-control" %>
+    <%= text_input f, :description, class: "form-control" %>
     <%= error_tag f, :description %>
   </div>
 

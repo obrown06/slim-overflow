@@ -27,7 +27,8 @@ defmodule PlungerWeb.CategoryController do
 
   def show(conn, %{"id" => id}) do
     category = Posts.get_category!(id)
-    render(conn, "show.html", category: category)
+    questions = Posts.list_questions(category)
+    render(conn, "show.html", category: category, questions: questions)
   end
 
   def edit(conn, %{"id" => id}) do

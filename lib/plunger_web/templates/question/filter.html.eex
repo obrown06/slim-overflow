@@ -1,0 +1,6 @@
+<h2>Filter by Category</h2>
+
+<%= render "form_filter.html", changeset: @changeset, categories: @categories,
+                        action: question_path(@conn, :index) %>
+
+<span><%= link "Back", to: question_path(@conn, :index) %></span>

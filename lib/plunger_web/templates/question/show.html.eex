@@ -19,4 +19,15 @@
 </ul>
 
 <span><%= link "Edit", to: question_path(@conn, :edit, @question) %></span>
-<span><%= link "Back", to: question_path(@conn, :index) %></span>
+<span><%= link "Question List", to: question_path(@conn, :index) %></span>
+
+<div class="responses">
+ <h2>Responses</h2>
+ <%= for response <- @question.responses do %>
+   <%= render PlungerWeb.ResponseView, "show.html", response: response %>
+ <% end %>
+</div>
+
+<%= render PlungerWeb.ResponseView, "form.html", conn: @conn, question: @question,
+  response_changeset: @response_changeset
+%>

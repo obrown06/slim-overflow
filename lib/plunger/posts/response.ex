@@ -13,7 +13,7 @@ defmodule Plunger.Posts.Response do
   end
 
   @doc false
-  def changeset(%Response{} = response, attrs) do
+  def changeset(%Response{} = response, attrs \\ %{}) do
     response
     |> cast(attrs, [:description])
     |> validate_required([:description])

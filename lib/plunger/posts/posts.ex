@@ -42,6 +42,14 @@ defmodule Plunger.Posts do
     Repo.all(Question)
   end
 
+  def list_questions(%Category{} = category) do
+    category =
+      category
+      |> Repo.preload(:questions)
+
+    category.questions
+  end
+
   @doc """
   Gets a single question.
 
@@ -56,7 +64,9 @@ defmodule Plunger.Posts do
       ** (Ecto.NoResultsError)
 
   """
-  def get_question!(id), do: Repo.get!(Question, id)
+  def get_question!(id) do
+     Repo.get!(Question, id) |> Repo.preload(:responses)
+   end
 
   @doc """
   Gets a single question.
@@ -324,10 +334,15 @@ defmodule Plunger.Posts do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_response(attrs \\ %{}) do
-    %Category{}
-    |> Category.changeset(attrs)
-    |> Repo.insert()
+  def create_response(question_id, %User{} = user, attrs \\ %{}) do
+    question = get_question!(question_id) |> Repo.preload([:user, :responses])
+    changeset =
+      question
+      |> Ecto.build_assoc(:responses, description: attrs["description"])
+      #|> Repo.preload(:users)
+      |> Response.changeset(attrs)
+      #|> Ecto.Changeset.put_assoc(:questions, question, :required)
+      |> Repo.insert()
   end
 
   @doc """
@@ -373,7 +388,10 @@ defmodule Plunger.Posts do
       %Ecto.Changeset{source: %Response{}}
 
   """
-  def change_response(%Response{} = response) do
-    Response.changeset(response, %{})
+  def change_response(%User{} = user) do
+    user
+      |> Ecto.build_assoc(:responses)
+      |> Response.changeset(%{})
   end
+
 end

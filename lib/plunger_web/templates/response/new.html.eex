@@ -1,5 +1,9 @@
+<!--
+
 <h2>New Response</h2>
 
-<%= render "form.html", Map.put(assigns, :action, response_path(@conn, :create)) %>
+<%= render "form.html", changeset: @changeset, question: @question,
+                        action: question_path(@conn, :create) %>
 
-<span><%= link "Back", to: response_path(@conn, :index) %></span>
+<span><%= link "Back", to: question_path(@conn, :show) %></span>
+-->

@@ -10,8 +10,8 @@ defmodule Plunger.Accounts.User do
     field :username, :string
     field :password, :string, virtual: true
     field :password_hash, :string
-    has_many :questions, Plunger.Posts.Question
-    has_many :responses, Plunger.Posts.Response
+    has_many :questions, Plunger.Posts.Question, on_delete: :delete_all
+    has_many :responses, Plunger.Posts.Response, on_delete: :delete_all
 
     timestamps()
   end

@@ -1,0 +1,17 @@
+<%= form_for @changeset, @action, fn f -> %>
+
+  <h3>Filter by Category</h2>
+
+  <div class="form-group">
+    <%= PhoenixMTM.Helpers.collection_checkboxes f, :categories,
+      Enum.map(@categories, fn(category) -> {category.name, category.id} end),
+      selected: Enum.map(f.data.categories, &(&1.id)),
+      label_opts: [class: "form-input"], input_opts: [class: "form-control"],
+      wrapper: &Phoenix.HTML.Tag.content_tag(:p, &1) %>
+    <%= error_tag f, :categories %>
+  </div>
+
+  <div class="form-group">
+    <%= submit "Filter", class: "btn btn-primary" %>
+  </div>
+<% end %>
