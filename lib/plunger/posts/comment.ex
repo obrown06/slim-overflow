@@ -10,9 +10,10 @@ defmodule Plunger.Posts.Comment do
   schema "comments" do
     field :description, :string
     belongs_to :user, Plunger.Accounts.User, foreign_key: :user_id
-    belongs_to :question, Plunger.Posts.Question
+    belongs_to :question, Plunger.Posts.Question, foreign_key: :question_id
+    belongs_to :response, Plunger.Posts.Response, foreign_key: :response_id
     #belongs_to :parent, Plunger.Posts.Comment, foreign_key: :parent_id
-    #has_many :children, Plunger.Posts.Comment, foreign_key: :parent_id
+    #has_many :children, Plunger.Posts.Comment, on_delete: :delete_all
 
     timestamps()
   end

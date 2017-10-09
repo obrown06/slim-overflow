@@ -439,17 +439,29 @@ defmodule Plunger.Posts do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_comment(question_id, %User{} = user, attrs \\ %{}) do
+
+  def create_comment(%User{} = user, %{"comment" => comment_params, "question_id" => question_id}) do
     question = get_question!(question_id) #|> Repo.preload([:user, :responses])
-    changeset =
-      question
-      |> Ecto.build_assoc(:comments, description: attrs["description"])
-      #|> Repo.preload(:users)
-      |> Comment.changeset(attrs)
-      |> Ecto.Changeset.put_assoc(:user, user, :required)
-      |> Repo.insert()
+    build_and_insert_comment(question, user, comment_params)
   end
 
+  def create_comment(%User{} = user, %{"comment" => comment_params, "response_id" => response_id}) do
+    response = get_response!(response_id) #|> Repo.preload([:user, :responses])
+    build_and_insert_comment(response, user, comment_params)
+  end
+
+  #def create_comment(%User{} = user, %{"comment" => comment_params, "comment_id" => comment_id}) do
+  #  comment = get_comment!(comment_id)
+  #  build_and_insert_comment(comment, user, comment_params)
+  #end
+
+  def build_and_insert_comment(struct, user, attrs) do
+    struct
+    |> Ecto.build_assoc(:comments, description: attrs["description"])
+    |> Comment.changeset(attrs)
+    |> Ecto.Changeset.put_assoc(:user, user, :required)
+    |> Repo.insert()
+  end
   @doc """
   Updates a comment.
 

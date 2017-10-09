@@ -22,8 +22,11 @@ defmodule PlungerWeb.Router do
     resources "/sessions", SessionController, only: [:new, :create, :delete]
     resources "/categories", CategoryController
     resources "/questions", QuestionController do
-      resources "/comments", CommentController
       resources "/responses", ResponseController
+      resources "/comments", CommentController
+    end
+    resources "/responses", ResponseController do
+      resources "/comments", CommentController
     end
   end
 

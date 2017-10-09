@@ -27,27 +27,4 @@ defmodule PlungerWeb.QuestionView do
     user = Accounts.get_user!(question.user_id)
     user.username
   end
-
-  def get_responses(%Question{} = question) do
-    query = (from r in Response,
-              where: r.question_id == ^question.id,
-              select: r)
-      |> order_by_time_posted
-      |> Repo.all
-
-  end
-
-  def get_comments(%Question{} = question) do
-    query = (from c in Comment,
-              where: c.question_id == ^question.id,
-              select: c)
-      |> order_by_time_posted
-      |> Repo.all
-
-  end
-
-  def order_by_time_posted(query) do
-    from t in query,
-      order_by: t.inserted_at
-  end
 end

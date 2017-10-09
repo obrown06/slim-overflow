@@ -1,6 +1,6 @@
 defmodule PlungerWeb.CommentController do
   use PlungerWeb, :controller
-
+  plug :authenticate_user when action in [:create]
   alias Plunger.Posts
   alias Plunger.Posts.Comment
 
@@ -25,10 +25,21 @@ defmodule PlungerWeb.CommentController do
   #  end
   #end
 
-  def create(conn, %{"comment" => comment_params, "question_id" => question_id}) do
-    question = Posts.get_question!(question_id) |> Plunger.Repo.preload([:user, :comments])
+  def create(conn, attrs) do
     user = conn.assigns.current_user
-    case Posts.create_comment(question_id, user, comment_params) do
+
+    question =
+      case Map.get(attrs, "question_id") do
+        nil ->
+          response_id = Map.get(attrs, "response_id")
+          response = Posts.get_response!(response_id)
+          Posts.get_question!(response.question_id)
+        id -> Posts.get_question!(id)
+      end
+
+    question = Plunger.Repo.preload(question, [:user, :responses, :comments])
+
+    case Posts.create_comment(user, attrs) do
       {:ok, comment} ->
         conn
         |> put_flash(:info, "Comment created successfully.")
