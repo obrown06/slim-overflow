@@ -1,0 +1,11 @@
+defmodule Plunger.Repo.Migrations.AddCommentsToComments do
+  use Ecto.Migration
+
+  def change do
+    alter table(:comments) do
+      add :parent_id, references(:comments, on_delete: :nothing)
+    end
+
+    create index(:comments, [:parent_id])
+  end
+end

@@ -9,11 +9,12 @@ defmodule Plunger.Posts.Comment do
 
   schema "comments" do
     field :description, :string
+    field :votes, :integer, default: 0
     belongs_to :user, Plunger.Accounts.User, foreign_key: :user_id
     belongs_to :question, Plunger.Posts.Question, foreign_key: :question_id
     belongs_to :response, Plunger.Posts.Response, foreign_key: :response_id
-    #belongs_to :parent, Plunger.Posts.Comment, foreign_key: :parent_id
-    #has_many :children, Plunger.Posts.Comment, on_delete: :delete_all
+    belongs_to :parent, Plunger.Posts.Comment, foreign_key: :parent_id
+    has_many :children, Plunger.Posts.Comment, foreign_key: :parent_id
 
     timestamps()
   end
@@ -29,6 +30,7 @@ defmodule Plunger.Posts.Comment do
     Recursively loads parents into struct until it hits nil
 
     TAKE THIS OUT
+    """
   def load_parents(parent) do
     load_parents(parent, @recursion_limit)
   end
@@ -44,9 +46,10 @@ defmodule Plunger.Posts.Comment do
 
   def load_parents(nil, _), do: nil
 
-  """
+
   @doc """
   Recursively loads children into struct until it hits nil
+  """
 
   def load_children(comment), do: load_children(comment, @recursion_limit)
 
@@ -58,6 +61,5 @@ defmodule Plunger.Posts.Comment do
     Enum.map(list, &Comment.load_children(&1, limit - 1))
     end)
   end
-  """
 
 end

@@ -12,6 +12,7 @@ defmodule Plunger.Accounts.User do
     field :password_hash, :string
     has_many :questions, Plunger.Posts.Question, on_delete: :delete_all
     has_many :responses, Plunger.Posts.Response, on_delete: :delete_all
+    has_many :comments, Plunger.Posts.Comment, on_delete: :delete_all
 
     timestamps()
   end

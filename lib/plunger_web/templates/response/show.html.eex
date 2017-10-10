@@ -12,5 +12,9 @@
     <strong>Posted by: </strong>
     <%= get_username(@response) %>
   </li>
+  <li>
+    <strong>Votes: </strong>
+    <%= @response.votes %>
+  </li>
 
 </ul>

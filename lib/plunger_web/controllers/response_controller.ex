@@ -32,6 +32,28 @@ defmodule PlungerWeb.ResponseController do
     end
   end
 
+  def upvote(conn, %{"response_id" => response_id}) do
+    Posts.upvote_response!(response_id)
+    response = Plunger.Posts.get_response!(response_id)
+    question = Posts.get_parent_question!(response)
+    conn |> redirect(to: question_path(conn, :show, question))
+  end
+
+  def downvote(conn, %{"response_id" => response_id}) do
+    Plunger.Posts.downvote_response!(response_id)
+    response = Plunger.Posts.get_response!(response_id)
+    question = Posts.get_parent_question!(response)
+    conn |> redirect(to: question_path(conn, :show, question))
+  end
+
+  #def upvote(conn, %{"id" => id}, user) do
+  #  Plunger.Posts.upvote_response!(id)
+  #end
+
+  #def downvote(conn, %{"id" => id}, user) do
+  #  Plunger.Posts.downvote_response!(id)
+  #end
+
   #def show(conn, %{"id" => id}) do
   #  response = Posts.get_response!(id)
   #  render(conn, "show.html", response: response)

@@ -27,7 +27,8 @@ defmodule PlungerWeb.CommentView do
   end
 
   def get_comments(%Question{} = question) do
-    query = (from c in Comment,
+    question = question |> Question.load_comments()
+    comments = (from c in Comment,
               where: c.question_id == ^question.id,
               select: c)
       |> order_by_time_posted

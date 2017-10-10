@@ -29,13 +29,16 @@ defmodule PlungerWeb.CommentController do
     user = conn.assigns.current_user
 
     question =
-      case Map.get(attrs, "question_id") do
-        nil ->
-          response_id = Map.get(attrs, "response_id")
+      cond do
+        (question_id = Map.get(attrs, "question_id")) != nil ->
+          Posts.get_question!(question_id)
+        (response_id = Map.get(attrs, "response_id")) != nil ->
           response = Posts.get_response!(response_id)
           Posts.get_question!(response.question_id)
-        id -> Posts.get_question!(id)
-      end
+        (comment_id = Map.get(attrs, "comment_id")) != nil ->
+          comment = Posts.get_comment!(comment_id)
+          Posts.get_parent_question!(comment)
+        end
 
     question = Plunger.Repo.preload(question, [:user, :responses, :comments])
 
@@ -52,6 +55,14 @@ defmodule PlungerWeb.CommentController do
         comment_changeset: comment_changeset, response_changeset: response_changeset)
     end
   end
+
+  #def upvote(conn, %{"id" => id}, user) do
+  #  Plunger.Posts.upvote_comment!(id)
+  #end
+
+  #def downvote(conn, %{"id" => id}, user) do
+  #  Plunger.Posts.downvote_comment!(id)
+  #end
 
   #def show(conn, %{"id" => id}) do
   #  comment = Posts.get_comment!(id)

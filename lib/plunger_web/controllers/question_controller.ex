@@ -1,6 +1,6 @@
 defmodule PlungerWeb.QuestionController do
   use PlungerWeb, :controller
-  plug :authenticate_user when action in [:new, :create, :edit, :update, :delete]
+  plug :authenticate_user when action in [:new, :create, :edit, :update, :delete, :upvote, :downvote]
   plug :load_categories when action in [:new, :create, :edit, :update]
   alias Plunger.Posts
   alias Plunger.Posts.Category
@@ -29,6 +29,18 @@ defmodule PlungerWeb.QuestionController do
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "new.html", changeset: changeset)
     end
+  end
+
+  def upvote(conn, %{"question_id" => id}, user) do
+    Plunger.Posts.upvote_question!(id)
+    question = Posts.get_question!(id)
+    conn |> redirect(to: question_path(conn, :show, question))
+  end
+
+  def downvote(conn, %{"question_id" => id}, user) do
+    Plunger.Posts.downvote_question!(id)
+    question = Posts.get_question!(id)
+    conn |> redirect(to: question_path(conn, :show, question))
   end
 
   def show(conn, %{"id" => id}, user) do
