@@ -15,6 +15,18 @@ defmodule PlungerWeb.Auth do
     end
   end
 
+  def verify_user(conn, _opts) do
+    id = Map.get(conn.params, "id") |> String.to_integer()
+    if conn.assigns.current_user.id == id do
+      conn
+    else
+      conn
+      |> put_flash(:error, "You cannot perform this action on this user")
+      |> redirect(to: Helpers.page_path(conn, :index))
+      |> halt()
+    end
+  end
+
   def init(opts) do
     Keyword.fetch!(opts, :repo)
   end

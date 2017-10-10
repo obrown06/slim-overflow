@@ -35,6 +35,15 @@ defmodule PlungerWeb.CommentView do
       |> Repo.all
   end
 
+  def get_comments(%Comment{} = comment) do
+    comment = comment |> Comment.load_children()
+    comments = (from c in Comment,
+              where: c.parent_id == ^comment.id,
+              select: c)
+      |> order_by_time_posted
+      |> Repo.all
+  end
+
   def order_by_time_posted(query) do
     from t in query,
       order_by: t.inserted_at

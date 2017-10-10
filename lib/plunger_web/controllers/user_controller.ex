@@ -1,7 +1,7 @@
 defmodule PlungerWeb.UserController do
   use PlungerWeb, :controller
   plug :authenticate_user when action in [:index, :show, :delete, :update, :edit]
-
+  plug :verify_user when action in [:edit, :update, :delete]
   alias Plunger.Accounts
   alias Plunger.Accounts.User
 
@@ -29,7 +29,11 @@ defmodule PlungerWeb.UserController do
 
   def show(conn, %{"id" => id}) do
     user = Accounts.get_user!(id)
-    render(conn, "show.html", user: user)
+    if user == conn.assigns.current_user do
+      render(conn, "my_account.html", user: user)
+    else
+      render(conn, "show.html", user: user)
+    end
   end
 
   def edit(conn, %{"id" => id}) do
