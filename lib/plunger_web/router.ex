@@ -20,7 +20,7 @@ defmodule PlungerWeb.Router do
     get "/", PageController, :index
     resources "/users", UserController
     resources "/sessions", SessionController, only: [:new, :create, :delete]
-    resources "/categories", CategoryController
+    resources "/categories", CategoryController, only: [:index, :new, :create, :show]
 
     resources "/questions", QuestionController do
       get "/upvote", QuestionController, :upvote
