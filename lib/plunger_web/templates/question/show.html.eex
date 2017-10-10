@@ -46,6 +46,9 @@
  <%= for comment <- PlungerWeb.CommentView.get_comments(@question) do %>
    <%= render PlungerWeb.CommentView, "show.html", comment: comment %>
 
+   <%= link "Upvote Comment", to: comment_comment_path(@conn, :upvote, comment)%></span>
+   <%= link "Downvote Comment", to: comment_comment_path(@conn, :downvote, comment)%></span>
+
    <%= render PlungerWeb.CommentView, "form.html", conn: @conn, question: @question,
      comment_changeset: @comment_changeset, action: comment_comment_path(@conn, :create, comment)
    %>
@@ -61,11 +64,14 @@
  <%= for response <- PlungerWeb.ResponseView.get_responses(@question) do %>
    <%= render PlungerWeb.ResponseView, "show.html", response: response %>
 
-   <%= link "Upvote Response", to: response_response_path(@conn, :upvote, @question)%></span>
-   <%= link "Downvote Response", to: response_response_path(@conn, :downvote, @question)%></span>
+   <%= link "Upvote Response", to: response_response_path(@conn, :upvote, response)%></span>
+   <%= link "Downvote Response", to: response_response_path(@conn, :downvote, response)%></span>
 
    <%= for comment <- PlungerWeb.CommentView.get_comments(response) do %>
       <%= render PlungerWeb.CommentView, "show.html", comment: comment %>
+
+      <%= link "Upvote Comment", to: comment_comment_path(@conn, :upvote, comment)%></span>
+      <%= link "Downvote Comment", to: comment_comment_path(@conn, :downvote, comment)%></span>
 
       <%= render PlungerWeb.CommentView, "form.html", conn: @conn, question: @question,
         comment_changeset: @comment_changeset, action: comment_comment_path(@conn, :create, comment)

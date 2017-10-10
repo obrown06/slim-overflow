@@ -1,6 +1,6 @@
 defmodule PlungerWeb.CommentController do
   use PlungerWeb, :controller
-  plug :authenticate_user when action in [:create]
+  plug :authenticate_user when action in [:create, :upvote, :downvote]
   alias Plunger.Posts
   alias Plunger.Posts.Comment
 
@@ -54,6 +54,20 @@ defmodule PlungerWeb.CommentController do
         render(conn, PlungerWeb.QuestionView, "show.html", question: question,
         comment_changeset: comment_changeset, response_changeset: response_changeset)
     end
+  end
+
+  def upvote(conn, %{"comment_id" => comment_id}) do
+    Posts.upvote_comment!(comment_id)
+    comment = Posts.get_comment!(comment_id)
+    question = Posts.get_parent_question!(comment)
+    conn |> redirect(to: question_path(conn, :show, question))
+  end
+
+  def downvote(conn, %{"comment_id" => comment_id}) do
+    Posts.downvote_comment!(comment_id)
+    comment = Posts.get_comment!(comment_id)
+    question = Posts.get_parent_question!(comment)
+    conn |> redirect(to: question_path(conn, :show, question))
   end
 
   #def upvote(conn, %{"id" => id}, user) do

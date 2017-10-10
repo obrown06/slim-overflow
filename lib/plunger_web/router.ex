@@ -36,6 +36,8 @@ defmodule PlungerWeb.Router do
     end
 
     resources "/comments", CommentController do
+      get "/upvote", CommentController, :upvote
+      get "/downvote", CommentController, :downvote
       resources "/comments", CommentController
     end
 

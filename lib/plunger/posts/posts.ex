@@ -98,7 +98,8 @@ defmodule Plunger.Posts do
       comment.question_id != nil ->
         get_question!(comment.question_id)
       comment.response_id != nil ->
-        get_parent_question!(comment.response_id)
+        response = get_response!(comment.response_id)
+        get_parent_question!(response)
       true ->
         get_parent_question!(comment.parent_id)
       end
@@ -559,5 +560,19 @@ defmodule Plunger.Posts do
   """
   def change_comment(%Comment{} = comment) do
     Comment.changeset(comment, %{})
+  end
+
+  def upvote_comment!(id) do
+    comment = get_comment!(id)
+    comment
+      |> Ecto.Changeset.change(votes: comment.votes + 1)
+      |> Repo.update!()
+  end
+
+  def downvote_comment!(id) do
+    comment = get_comment!(id)
+    comment
+      |> Ecto.Changeset.change(votes: comment.votes - 1)
+      |> Repo.update!()
   end
 end

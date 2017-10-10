@@ -3,7 +3,7 @@ defmodule Plunger.Repo.Migrations.AddCommentsToResponses do
 
   def change do
     alter table(:comments) do
-      add :response_id, references(:responses, on_delete: :nothing)
+      add :response_id, references(:responses, on_delete: :delete_all)
     end
 
     create index(:comments, [:response_id])

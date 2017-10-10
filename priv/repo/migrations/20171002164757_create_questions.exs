@@ -5,7 +5,7 @@ defmodule Plunger.Repo.Migrations.CreateQuestions do
     create table(:questions) do
       add :title, :string
       add :body, :string
-      add :user_id, references(:users, on_delete: :nothing)
+      add :user_id, references(:users, on_delete: :delete_all)
 
       timestamps()
     end
