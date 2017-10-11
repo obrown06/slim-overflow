@@ -55,6 +55,8 @@ defmodule Plunger.Posts.Comment do
 
   def load_children(_, limit) when limit < 0, do: raise "Recursion limit reached"
 
+  #def load_children(%Comment{children: []} = comment, limit), do: comment
+
   def load_children(%Comment{children: %Ecto.Association.NotLoaded{}} = comment, limit) do
     comment = comment |> Repo.preload(:children)
     Map.update!(comment, :children, fn(list) ->

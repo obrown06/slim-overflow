@@ -36,6 +36,9 @@ defmodule PlungerWeb.UserView do
     posts
       |> List.flatten
       |> Enum.reduce(0, fn(post, acc) ->
+                        if post == %Comment{} do
+                          post = post |> Comment.load_children() |> Comment.load_parents()
+                        end
                         num_posts = post |> CommentView.get_comments |> length()
                         acc + num_posts end)
   end

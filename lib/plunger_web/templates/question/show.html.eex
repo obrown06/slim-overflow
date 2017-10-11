@@ -43,7 +43,7 @@
 
 <div class="comments">
  <h2>Comments</h2>
- <%= for comment <- PlungerWeb.CommentView.get_comments(@question) do %>
+ <%= for comment <- PlungerWeb.CommentView.get_nested_comments(@question) do %>
    <%= render PlungerWeb.CommentView, "show.html", comment: comment %>
 
    <%= link "Upvote Comment", to: comment_comment_path(@conn, :upvote, comment)%></span>
@@ -67,7 +67,7 @@
    <%= link "Upvote Response", to: response_response_path(@conn, :upvote, response)%></span>
    <%= link "Downvote Response", to: response_response_path(@conn, :downvote, response)%></span>
 
-   <%= for comment <- PlungerWeb.CommentView.get_comments(response) do %>
+   <%= for comment <- PlungerWeb.CommentView.get_nested_comments(response) do %>
       <%= render PlungerWeb.CommentView, "show.html", comment: comment %>
 
       <%= link "Upvote Comment", to: comment_comment_path(@conn, :upvote, comment)%></span>
