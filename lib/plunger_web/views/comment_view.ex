@@ -19,29 +19,22 @@ defmodule PlungerWeb.CommentView do
   end
 
   def get_comments(%Response{} = response) do
-    query = (from c in Comment,
-              where: c.response_id == ^response.id,
-              select: c)
-      |> order_by_time_posted
-      |> Repo.all
+    response
+      |> Response.load_comments()
+      |> Map.get(:comments)
+      |> Enum.reduce([], fn(comment, acc) -> [comment] ++ get_comments(comment) ++ acc end)
   end
 
   def get_comments(%Question{} = question) do
-    question = question |> Question.load_comments()
-    comments = (from c in Comment,
-              where: c.question_id == ^question.id,
-              select: c)
-      |> order_by_time_posted
-      |> Repo.all
+    question
+      |> Question.load_comments()
+      |> Map.get(:comments)
+      |> Enum.reduce([], fn(comment, acc) -> [comment] ++ get_comments(comment) ++ acc end)
   end
 
   def get_comments(%Comment{} = comment) do
-    comment = comment |> Comment.load_children()
-    comments = (from c in Comment,
-              where: c.parent_id == ^comment.id,
-              select: c)
-      |> order_by_time_posted
-      |> Repo.all
+    comment_list = comment |> Map.get(:children)
+    |> Enum.reduce([], fn(comment, acc) -> [comment] ++ get_comments(comment) ++ acc end)
   end
 
   def order_by_time_posted(query) do

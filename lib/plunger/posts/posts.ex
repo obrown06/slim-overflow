@@ -106,7 +106,9 @@ defmodule Plunger.Posts do
         response = get_response!(comment.response_id)
         get_parent_question!(response)
       true ->
-        get_parent_question!(comment.parent_id)
+        comment.parent_id
+        |> get_comment!()
+        |> get_parent_question!()
       end
   end
 

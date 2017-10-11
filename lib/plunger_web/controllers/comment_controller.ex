@@ -34,10 +34,11 @@ defmodule PlungerWeb.CommentController do
           Posts.get_question!(question_id)
         (response_id = Map.get(attrs, "response_id")) != nil ->
           response = Posts.get_response!(response_id)
-          Posts.get_question!(response.question_id)
+          Posts.get_parent_question!(response)
         (comment_id = Map.get(attrs, "comment_id")) != nil ->
-          comment = Posts.get_comment!(comment_id)
-          Posts.get_parent_question!(comment)
+          comment_id
+            |> Posts.get_comment!()
+            |> Posts.get_parent_question!()
         end
 
     question = Plunger.Repo.preload(question, [:user, :responses, :comments])
