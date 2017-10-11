@@ -25,13 +25,6 @@ defmodule Plunger.Posts do
   end
 
   @doc """
-  Returns a query containing all the questions scoped to the given user.
-  """
-  defp user_questions(user) do
-    Ecto.assoc(user, :questions)
-  end
-
-  @doc """
   Returns the list of questions.
 
   ## Examples
@@ -50,6 +43,18 @@ defmodule Plunger.Posts do
       |> Repo.preload(:questions)
 
     category.questions
+  end
+
+  #def list_questions(category_list) do
+  #  category_list
+  #  |> Enum.reduce([], fn(category, acc) -> acc ++ list_questions(category) end)
+  #end
+
+  @doc """
+  Returns a query containing all the questions scoped to the given user.
+  """
+  def list_questions(%User{} = user) do
+    Ecto.assoc(user, :questions)
   end
 
   @doc """
@@ -86,7 +91,7 @@ defmodule Plunger.Posts do
 
   """
   def get_question(id, user) do
-    Repo.get(user_questions(user), id)
+    Repo.get(list_questions(user), id)
   end
 
   def get_parent_question!(%Response{} = response) do

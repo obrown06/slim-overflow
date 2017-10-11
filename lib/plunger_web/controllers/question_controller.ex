@@ -10,9 +10,19 @@ defmodule PlungerWeb.QuestionController do
       [conn, conn.params, conn.assigns.current_user])
   end
 
-  def index(conn, _params, _user) do
-    questions = Posts.list_questions()
-    render(conn, "index.html", questions: questions)
+  def index(conn, params, _user) do
+    case Map.fetch(params, "filter") do
+      {:ok, filters} -> question_list =
+        filters
+        |> Map.get("categories")
+        |> Enum.filter(fn(elem) -> elem != "" end)
+        |> Enum.reduce([], fn(category_id, acc) ->
+          questions =
+            category_id |> Posts.get_category!() |> Posts.list_questions()
+          acc ++ questions end)
+      :error -> question_list = Posts.list_questions()
+    end
+    render(conn, "index.html", questions: question_list)
   end
 
   def new(conn, _params, user) do

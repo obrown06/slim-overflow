@@ -1,5 +1,7 @@
 <h2>Listing Questions</h2>
 
+<%= render "form_filter.html", conn: @conn, categories: Plunger.Posts.list_categories() %>
+
 <table class="table">
   <thead>
     <tr>
