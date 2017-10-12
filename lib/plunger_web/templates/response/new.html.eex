@@ -1,9 +1,0 @@
-<!--
-
-<h2>New Response</h2>
-
-<%= render "form.html", changeset: @changeset, question: @question,
-                        action: question_path(@conn, :create) %>
-
-<span><%= link "Back", to: question_path(@conn, :show) %></span>
--->

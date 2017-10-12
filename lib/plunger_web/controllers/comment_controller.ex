@@ -25,24 +25,13 @@ defmodule PlungerWeb.CommentController do
   #  end
   #end
 
-  def create(conn, attrs) do
-    user = conn.assigns.current_user
+  def action(conn, _) do
+    question = Posts.get_question!(conn.params["question_id"])
+    apply(__MODULE__, action_name(conn),
+      [conn, conn.params, conn.assigns.current_user, question])
+  end
 
-    question =
-      cond do
-        (question_id = Map.get(attrs, "question_id")) != nil ->
-          Posts.get_question!(question_id)
-        (response_id = Map.get(attrs, "response_id")) != nil ->
-          response = Posts.get_response!(response_id)
-          Posts.get_parent_question!(response)
-        (comment_id = Map.get(attrs, "comment_id")) != nil ->
-          comment_id
-            |> Posts.get_comment!()
-            |> Posts.get_parent_question!()
-        end
-
-    question = Plunger.Repo.preload(question, [:user, :responses, :comments])
-
+  def create(conn, attrs, user, question) do
     case Posts.create_comment(user, attrs) do
       {:ok, comment} ->
         conn
@@ -57,17 +46,13 @@ defmodule PlungerWeb.CommentController do
     end
   end
 
-  def upvote(conn, %{"comment_id" => comment_id}) do
-    Posts.upvote_comment!(comment_id)
-    comment = Posts.get_comment!(comment_id)
-    question = Posts.get_parent_question!(comment)
+  def upvote(conn, %{"id" => id}, user, question) do
+    Posts.upvote_comment!(id)
     conn |> redirect(to: question_path(conn, :show, question))
   end
 
-  def downvote(conn, %{"comment_id" => comment_id}) do
-    Posts.downvote_comment!(comment_id)
-    comment = Posts.get_comment!(comment_id)
-    question = Posts.get_parent_question!(comment)
+  def downvote(conn, %{"id" => id}, user, question) do
+    Posts.downvote_comment!(id)
     conn |> redirect(to: question_path(conn, :show, question))
   end
 

@@ -374,8 +374,7 @@ defmodule Plunger.Posts do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_response(question_id, %User{} = user, attrs \\ %{}) do
-    question = get_question!(question_id) #|> Repo.preload([:user, :responses])
+  def create_response(%User{} = user, %Question{} = question, attrs \\ %{}) do
     changeset =
       question
       |> Ecto.build_assoc(:responses, description: attrs["description"])
@@ -482,7 +481,11 @@ defmodule Plunger.Posts do
   def get_comment!(id), do: Repo.get!(Comment, id)
 
   @doc """
-  Creates a comment.
+  Creates a comment and associates it with a question, response, or comment.
+
+  IMPORTANT: do not flip the order; 'attrs' contains "question_id" and so moving up
+  the corresponding 'create_comment' function will cause every comment to be associated
+  with its ancestor question and NOT its parent response/comment. 
 
   ## Examples
 
@@ -494,14 +497,23 @@ defmodule Plunger.Posts do
 
   """
 
-  def create_comment(%User{} = user, %{"comment" => comment_params, "question_id" => question_id}) do
-    question = get_question!(question_id) #|> Repo.preload([:user, :responses])
-    build_and_insert_comment(question, user, comment_params)
+  def create_comment(%User{} = user, %{"comment" => comment_params, "comment_id" => comment_id}) do
+    comment = get_comment!(comment_id)
+    |> Ecto.build_assoc(:children, description: comment_params["description"])
+    |> Map.put(:parent_id, String.to_integer(comment_id))
+    |> Comment.changeset(comment_params)
+    |> Ecto.Changeset.put_assoc(:user, user, :required)
+    |> Repo.insert()
   end
 
   def create_comment(%User{} = user, %{"comment" => comment_params, "response_id" => response_id}) do
-    response = get_response!(response_id) #|> Repo.preload([:user, :responses])
+    response = get_response!(response_id)
     build_and_insert_comment(response, user, comment_params)
+  end
+
+  def create_comment(%User{} = user, %{"comment" => comment_params, "question_id" => question_id}) do
+    question = get_question!(question_id)
+    build_and_insert_comment(question, user, comment_params)
   end
 
   def build_and_insert_comment(struct, user, attrs) do
@@ -512,15 +524,6 @@ defmodule Plunger.Posts do
     |> Repo.insert()
   end
 
-
-  def create_comment(%User{} = user, %{"comment" => comment_params, "comment_id" => comment_id}) do
-    comment = get_comment!(comment_id)
-    |> Ecto.build_assoc(:children, description: comment_params["description"])
-    |> Map.put(:parent_id, String.to_integer(comment_id))
-    |> Comment.changeset(comment_params)
-    |> Ecto.Changeset.put_assoc(:user, user, :required)
-    |> Repo.insert()
-  end
 
   @doc """
   Updates a comment.

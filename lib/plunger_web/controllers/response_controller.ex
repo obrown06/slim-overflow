@@ -4,10 +4,10 @@ defmodule PlungerWeb.ResponseController do
   alias Plunger.Posts
   alias Plunger.Posts.Response
 
-  def index(conn, _params) do
-    responses = Posts.list_responses()
-    render(conn, "index.html", responses: responses)
-  end
+  #def index(conn, _params) do
+  #  responses = Posts.list_responses()
+  #  render(conn, "index.html", responses: responses)
+  #end
 
   #def new(conn, %{"id" => question_id}) do
   #  user = conn.assigns.current_user
@@ -15,10 +15,14 @@ defmodule PlungerWeb.ResponseController do
   #  render(conn, "new.html", changeset: changeset, question_id: question_id)
   #end
 
-  def create(conn, %{"response" => response_params, "question_id" => question_id}) do
-    question = Posts.get_question!(question_id) |> Plunger.Repo.preload([:user, :responses])
-    user = conn.assigns.current_user
-    case Posts.create_response(question_id, user, response_params) do
+  def action(conn, _) do
+    question = Posts.get_question!(conn.params["question_id"])
+    apply(__MODULE__, action_name(conn),
+      [conn, conn.params, conn.assigns.current_user, question])
+  end
+
+  def create(conn, %{"response" => response_params}, user, question) do
+    case Posts.create_response(user, question, response_params) do
       {:ok, response} ->
         conn
         |> put_flash(:info, "Response created successfully.")
@@ -32,17 +36,13 @@ defmodule PlungerWeb.ResponseController do
     end
   end
 
-  def upvote(conn, %{"response_id" => response_id}) do
-    Posts.upvote_response!(response_id)
-    response = Plunger.Posts.get_response!(response_id)
-    question = Posts.get_parent_question!(response)
+  def upvote(conn, %{"id" => id}, user, question) do
+    Posts.upvote_response!(id)
     conn |> redirect(to: question_path(conn, :show, question))
   end
 
-  def downvote(conn, %{"response_id" => response_id}) do
-    Plunger.Posts.downvote_response!(response_id)
-    response = Plunger.Posts.get_response!(response_id)
-    question = Posts.get_parent_question!(response)
+  def downvote(conn, %{"id" => id}, user, question) do
+    Plunger.Posts.downvote_response!(id)
     conn |> redirect(to: question_path(conn, :show, question))
   end
 

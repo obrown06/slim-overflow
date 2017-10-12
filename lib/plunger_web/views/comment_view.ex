@@ -22,6 +22,7 @@ defmodule PlungerWeb.CommentView do
     response
       |> Response.load_comments()
       |> Map.get(:comments)
+      |> Enum.sort_by(&get_date_time(&1))
       |> Enum.reduce([], fn(comment, acc) -> [comment] ++ get_nested_comments(comment) ++ acc end)
   end
 
@@ -29,11 +30,13 @@ defmodule PlungerWeb.CommentView do
     question
       |> Question.load_comments()
       |> Map.get(:comments)
+      |> Enum.sort_by(&get_date_time(&1))
       |> Enum.reduce([], fn(comment, acc) -> [comment] ++ get_nested_comments(comment) ++ acc end)
   end
 
   def get_nested_comments(%Comment{} = comment) do
     comment_list = comment |> Map.get(:children)
+    |> Enum.sort_by(&get_date_time(&1))
     |> Enum.reduce([], fn(comment, acc) -> [comment] ++ get_nested_comments(comment) ++ acc end)
   end
 

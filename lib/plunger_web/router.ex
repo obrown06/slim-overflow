@@ -22,26 +22,25 @@ defmodule PlungerWeb.Router do
     resources "/sessions", SessionController, only: [:new, :create, :delete]
     resources "/categories", CategoryController, only: [:index, :new, :create, :show]
 
-    resources "/questions", QuestionController
+    get "/questions/:id/upvote", QuestionController, :upvote
+    get "/questions/:id/downvote", QuestionController, :downvote
+
     resources "/questions", QuestionController do
-      get "/upvote", QuestionController, :upvote
-      get "/downvote", QuestionController, :downvote
-      resources "/responses", ResponseController
-      resources "/comments", CommentController
-    end
 
-    resources "/responses", ResponseController do
-      get "/upvote", ResponseController, :upvote
-      get "/downvote", ResponseController, :downvote
-      resources "/comments", CommentController
-    end
+      get "/responses/:id/upvote", ResponseController, :upvote
+      get "/responses/:id/downvote", ResponseController, :downvote
+      get "/comments/:id/upvote", CommentController, :upvote
+      get "/comments/:id/downvote", CommentController, :downvote
 
-    resources "/comments", CommentController do
-      get "/upvote", CommentController, :upvote
-      get "/downvote", CommentController, :downvote
-      resources "/comments", CommentController
-    end
+      resources "/responses", ResponseController do
+        resources "/comments", CommentController, only: [:create]
+      end
 
+      resources "/comments", CommentController do
+        resources "/comments", CommentController
+      end
+
+    end
   end
 
   # Other scopes may use custom stacks.
