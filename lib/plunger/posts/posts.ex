@@ -485,7 +485,7 @@ defmodule Plunger.Posts do
 
   IMPORTANT: do not flip the order; 'attrs' contains "question_id" and so moving up
   the corresponding 'create_comment' function will cause every comment to be associated
-  with its ancestor question and NOT its parent response/comment. 
+  with its ancestor question and NOT its parent response/comment.
 
   ## Examples
 

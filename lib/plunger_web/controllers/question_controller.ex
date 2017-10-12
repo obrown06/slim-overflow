@@ -2,6 +2,7 @@ defmodule PlungerWeb.QuestionController do
   use PlungerWeb, :controller
   plug :authenticate_user when action in [:new, :create, :edit, :update, :delete, :upvote, :downvote]
   plug :load_categories when action in [:new, :create, :edit, :update]
+  #plug :verify_owner when action in [:edit, :update, :delete]
   alias Plunger.Posts
   alias Plunger.Posts.Category
 
@@ -68,51 +69,69 @@ defmodule PlungerWeb.QuestionController do
   end
 
   def edit(conn, %{"id" => id}, user) do
-    question = Posts.get_question(id, user)
+    question = Posts.get_question!(id)
+    verify_owner(conn, question)
+    changeset = Posts.change_question(question)
+    render(conn, "edit.html", question: question, changeset: changeset)
 
-    case question do
-      nil ->
-        conn
-          |> put_flash(:info, "You can't edit this Question")
-          |> redirect(to: question_path(conn, :index))
-      _ ->
-        changeset = Posts.change_question(question)
-        render(conn, "edit.html", question: question, changeset: changeset)
-    end
+    #case question do
+    #  nil ->
+    #    conn
+    #      |> put_flash(:info, "You can't edit this Question")
+    #      |> redirect(to: question_path(conn, :index))
+    #  _ ->
+    #    changeset = Posts.change_question(question)
+    #    render(conn, "edit.html", question: question, changeset: changeset)
+    #end
   end
 
   def update(conn, %{"id" => id, "question" => question_params}, user) do
-    question = Posts.get_question(id, user)
-
-    if question == nil do
-      conn
-        |> put_flash(:info, "You can't update this Question")
-        |> redirect(to: question_path(conn, :index))
-    else
-      case Posts.update_question(question, question_params) do
-        {:ok, question} ->
-          conn
-          |> put_flash(:info, "Question updated successfully.")
-          |> redirect(to: question_path(conn, :show, question))
-          {:error, %Ecto.Changeset{} = changeset} ->
-            render(conn, "edit.html", question: question, changeset: changeset)
-      end
+    question = Posts.get_question!(id)
+    verify_owner(conn, question)
+    case Posts.update_question(question, question_params) do
+      {:ok, question} ->
+        conn
+        |> put_flash(:info, "Question updated successfully.")
+        |> redirect(to: question_path(conn, :show, question))
+        {:error, %Ecto.Changeset{} = changeset} ->
+          render(conn, "edit.html", question: question, changeset: changeset)
     end
   end
 
   def delete(conn, %{"id" => id}, user) do
-    question = Posts.get_question(id, user)
-
-    case question do
-      nil ->
+    question = Posts.get_question!(id)
+    verify_owner(conn, question)
+    case Posts.update_question(question) do
+      {:ok, _question} ->
         conn
-        |> put_flash(:info, "You can't delete this Question")
+        |> put_flash(:info, "Question updated successfully.")
         |> redirect(to: question_path(conn, :index))
-      _ ->
-        {:ok, _question} = Posts.delete_question(question)
-        conn
-          |> put_flash(:info, "Question deleted successfully.")
-          |> redirect(to: question_path(conn, :index))
+      {:error, %Ecto.Changeset{} = changeset} ->
+        raise "Delete Question Failed"
+    end
+
+    #case question do
+    #  nil ->
+    #    conn
+    #    |> put_flash(:info, "You can't delete this Question")
+    #    |> redirect(to: question_path(conn, :index))
+    #  _ ->
+    #    {:ok, _question} = Posts.delete_question(question)
+    #    conn
+    #      |> put_flash(:info, "Question deleted successfully.")
+    #      |> redirect(to: question_path(conn, :index))
+    #end
+  end
+
+  defp verify_owner(conn, question) do
+    if conn.assigns.current_user.id == question.user_id do
+      conn
+    else
+      conn
+        |> put_flash(:info, "You aren't this question's owner")
+        |> redirect(to: question_path(conn, :index))
+        |> halt()
     end
   end
+
 end
