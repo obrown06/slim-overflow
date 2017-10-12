@@ -32,12 +32,12 @@ defmodule PlungerWeb.Router do
       get "/comments/:id/upvote", CommentController, :upvote
       get "/comments/:id/downvote", CommentController, :downvote
 
-      resources "/responses", ResponseController do
+      resources "/responses", ResponseController, only: [:create] do
         resources "/comments", CommentController, only: [:create]
       end
 
-      resources "/comments", CommentController do
-        resources "/comments", CommentController
+      resources "/comments", CommentController, only: [:create] do
+        resources "/comments", CommentController, only: [:create]
       end
 
     end
