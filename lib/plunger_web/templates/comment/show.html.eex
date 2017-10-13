@@ -14,7 +14,7 @@
   </li>
   <li>
     <strong>Votes: </strong>
-    <%= @comment.votes %>
+    <%= get_num_votes(@comment) %>
   </li>
 
 </ul>

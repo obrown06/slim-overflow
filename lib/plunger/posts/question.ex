@@ -1,20 +1,25 @@
 defmodule Plunger.Posts.Question do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Plunger.Posts.Question
-  alias Plunger.Repo
+  alias Plunger.Accounts.User
   alias Plunger.Posts.Comment
+  alias Plunger.Posts.Response
+  alias Plunger.Posts.Question
+  alias Plunger.Posts.QuestionVote
+  alias Plunger.Posts.Category
+  alias Plunger.Repo
 
   @recursion_limit 1000000
 
   schema "questions" do
     field :body, :string
     field :title, :string
-    field :votes, :integer, default: 0
-    belongs_to :user, Plunger.Accounts.User, foreign_key: :user_id
-    has_many :responses, Plunger.Posts.Response, on_delete: :delete_all
-    has_many :comments, Plunger.Posts.Comment, on_delete: :delete_all
-    many_to_many :categories, Plunger.Posts.Category, join_through: "questions_categories", on_delete: :delete_all, on_replace: :delete
+    belongs_to :user, User, foreign_key: :user_id
+    has_many :responses, Response, on_delete: :delete_all
+    has_many :comments, Comment, on_delete: :delete_all
+    many_to_many :categories, Category, join_through: "questions_categories", on_delete: :delete_all, on_replace: :delete
+    has_many :question_votes, QuestionVote, on_delete: :delete_all
+
     timestamps()
   end
 

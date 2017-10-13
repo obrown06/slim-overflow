@@ -2,6 +2,10 @@ defmodule Plunger.Posts.Comment do
   use Ecto.Schema
   import Ecto.Changeset
   alias Plunger.Posts.Comment
+  alias Plunger.Accounts.User
+  alias Plunger.Posts.Question
+  alias Plunger.Posts.Response
+  alias Plunger.Posts.CommentVote
   alias Plunger.Repo
 
   @recursion_limit 1000000
@@ -9,12 +13,12 @@ defmodule Plunger.Posts.Comment do
 
   schema "comments" do
     field :description, :string
-    field :votes, :integer, default: 0
-    belongs_to :user, Plunger.Accounts.User, foreign_key: :user_id
-    belongs_to :question, Plunger.Posts.Question, foreign_key: :question_id
-    belongs_to :response, Plunger.Posts.Response, foreign_key: :response_id
-    belongs_to :parent, Plunger.Posts.Comment, foreign_key: :parent_id
-    has_many :children, Plunger.Posts.Comment, foreign_key: :parent_id, on_delete: :delete_all
+    belongs_to :user, User, foreign_key: :user_id
+    belongs_to :question, Question, foreign_key: :question_id
+    belongs_to :response, Response, foreign_key: :response_id
+    belongs_to :parent, Comment, foreign_key: :parent_id
+    has_many :children, Comment, foreign_key: :parent_id, on_delete: :delete_all
+    has_many :comment_votes, CommentVote, on_delete: :delete_all
 
     timestamps()
   end

@@ -4,6 +4,7 @@ defmodule PlungerWeb.CommentView do
   alias Plunger.Posts.Question
   alias Plunger.Posts.Response
   alias PlungerWeb.QuestionView
+  alias Plunger.Posts.CommentVote
   alias Plunger.Accounts
   alias Plunger.Repo
   import Ecto.Query, only: [from: 2]
@@ -67,6 +68,10 @@ defmodule PlungerWeb.CommentView do
   def order_by_time_posted(query) do
     from t in query,
       order_by: t.inserted_at
+  end
+
+  def get_num_votes(%Comment{} = comment) do
+    Repo.aggregate((from cv in CommentVote, where: cv.comment_id == ^comment.id), :sum, :votes)
   end
 
 end

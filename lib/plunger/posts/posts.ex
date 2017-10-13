@@ -221,20 +221,6 @@ defmodule Plunger.Posts do
       |> change_question()
   end
 
-  def upvote_question!(id) do
-    question = get_question!(id)
-    question
-      |> Ecto.Changeset.change(votes: question.votes + 1)
-      |> Repo.update!()
-  end
-
-  def downvote_question!(id) do
-    question = get_question!(id)
-    question
-      |> Ecto.Changeset.change(votes: question.votes - 1)
-      |> Repo.update!()
-  end
-
   alias Plunger.Posts.Category
 
   @doc """
@@ -434,21 +420,6 @@ defmodule Plunger.Posts do
   end
 
 
-  def upvote_response!(id) do
-    response = get_response!(id)
-    response
-      |> Ecto.Changeset.change(votes: response.votes + 1)
-      |> Repo.update!()
-  end
-
-  def downvote_response!(id) do
-    response = get_response!(id)
-    response
-      |> Ecto.Changeset.change(votes: response.votes - 1)
-      |> Repo.update!()
-  end
-
-
   alias Plunger.Posts.Comment
 
   @doc """
@@ -572,17 +543,134 @@ defmodule Plunger.Posts do
     Comment.changeset(comment, %{})
   end
 
-  def upvote_comment!(id) do
-    comment = get_comment!(id)
-    comment
-      |> Ecto.Changeset.change(votes: comment.votes + 1)
-      |> Repo.update!()
+
+  alias Plunger.Posts.QuestionVote
+
+  def get_question_vote(question_id, user_id) do
+    Repo.one(from qv in QuestionVote, where: qv.question_id == ^question_id and qv.user_id == ^user_id)
   end
 
-  def downvote_comment!(id) do
-    comment = get_comment!(id)
-    comment
-      |> Ecto.Changeset.change(votes: comment.votes - 1)
-      |> Repo.update!()
+  def upvote_question!(question_id, user_id) do
+    question_vote = get_question_vote(question_id, user_id)
+
+    cond do
+      question_vote == nil -> create_question_vote!(question_id, user_id)
+      question_vote.votes < 1 ->
+        question_vote
+        |> Ecto.Changeset.change(votes: question_vote.votes + 1)
+        |> Repo.update!()
+      true -> question_vote
+    end
+  end
+
+  def downvote_question!(question_id, user_id) do
+    question_vote = get_question_vote(question_id, user_id)
+    cond do
+      question_vote == nil -> create_question_vote!(question_id, user_id)
+      question_vote.votes > -1 ->
+        question_vote
+        |> Ecto.Changeset.change(votes: question_vote.votes - 1)
+        |> Repo.update!()
+      true -> question_vote
+    end
+  end
+
+  def create_question_vote!(question_id, user_id) do
+    user = Plunger.Accounts.get_user!(user_id)
+    question = get_question!(question_id)
+
+    changeset =
+      user
+      |> Ecto.build_assoc(:question_votes)
+      |> QuestionVote.changeset()
+      |> Ecto.Changeset.put_assoc(:question, question, :required)
+      |> Repo.insert!()
+  end
+
+  alias Plunger.Posts.ResponseVote
+
+  def get_response_vote(response_id, user_id) do
+    Repo.one(from rv in ResponseVote, where: rv.response_id == ^response_id and rv.user_id == ^user_id)
+  end
+
+  def upvote_response!(response_id, user_id) do
+    response_vote = get_response_vote(response_id, user_id)
+
+    cond do
+      response_vote == nil -> create_response_vote!(response_id, user_id)
+      response_vote.votes < 1 ->
+        response_vote
+        |> Ecto.Changeset.change(votes: response_vote.votes + 1)
+        |> Repo.update!()
+      true -> response_vote
+    end
+  end
+
+  def downvote_response!(response_id, user_id) do
+    response_vote = get_response_vote(response_id, user_id)
+    cond do
+      response_vote == nil -> create_response_vote!(response_id, user_id)
+      response_vote.votes > -1 ->
+        response_vote
+        |> Ecto.Changeset.change(votes: response_vote.votes - 1)
+        |> Repo.update!()
+      true -> response_vote
+    end
+  end
+
+  def create_response_vote!(response_id, user_id) do
+    user = Plunger.Accounts.get_user!(user_id)
+    response = get_response!(response_id)
+
+    changeset =
+      user
+      |> Ecto.build_assoc(:response_votes)
+      |> ResponseVote.changeset()
+      |> Ecto.Changeset.put_assoc(:response, response, :required)
+      |> Repo.insert!()
+  end
+
+
+  alias Plunger.Posts.CommentVote
+
+  def get_comment_vote(comment_id, user_id) do
+    Repo.one(from cv in CommentVote, where: cv.comment_id == ^comment_id and cv.user_id == ^user_id)
+  end
+
+  def upvote_comment!(comment_id, user_id) do
+    comment_vote = get_comment_vote(comment_id, user_id)
+
+    cond do
+      comment_vote == nil -> create_comment_vote!(comment_id, user_id)
+      comment_vote.votes < 1 ->
+        comment_vote
+        |> Ecto.Changeset.change(votes: comment_vote.votes + 1)
+        |> Repo.update!()
+      true -> comment_vote
+    end
+  end
+
+  def downvote_comment!(comment_id, user_id) do
+    comment_vote = get_comment_vote(comment_id, user_id)
+    cond do
+      comment_vote == nil -> create_comment_vote!(comment_id, user_id)
+      comment_vote.votes > -1 ->
+        comment_vote
+        |> Ecto.Changeset.change(votes: comment_vote.votes - 1)
+        |> Repo.update!()
+      true -> comment_vote
+    end
+  end
+
+  def create_comment_vote!(comment_id, user_id) do
+    user = Plunger.Accounts.get_user!(user_id)
+    comment = get_comment!(comment_id)
+
+    changeset =
+      user
+      |> Ecto.build_assoc(:comment_votes)
+      |> CommentVote.changeset()
+      |> Ecto.Changeset.put_assoc(:comment, comment, :required)
+      |> Repo.insert!()
   end
 end

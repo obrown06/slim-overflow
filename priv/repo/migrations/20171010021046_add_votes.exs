@@ -2,14 +2,28 @@ defmodule Plunger.Repo.Migrations.AddVotes do
   use Ecto.Migration
 
   def change do
-    alter table(:questions) do
+
+    create table(:question_votes) do
+      add :question_id, references(:questions, on_delete: :delete_all)
+      add :user_id, references(:users, on_delete: :delete_all)
       add :votes, :integer, default: 0
     end
-    alter table(:responses) do
-        add :votes, :integer, default: 0
+
+    create table(:response_votes) do
+      add :response_id, references(:responses, on_delete: :delete_all)
+      add :user_id, references(:users, on_delete: :delete_all)
+      add :votes, :integer, default: 0
     end
-    alter table(:comments) do
-        add :votes, :integer, default: 0
+
+    create table(:comment_votes) do
+      add :comment_id, references(:comments, on_delete: :delete_all)
+      add :user_id, references(:users, on_delete: :delete_all)
+      add :votes, :integer, default: 0
     end
+
+    create index(:question_votes, [:question_id, :user_id])
+    create index(:response_votes, [:response_id, :user_id])
+    create index(:comment_votes, [:comment_id, :user_id])
+
   end
 end

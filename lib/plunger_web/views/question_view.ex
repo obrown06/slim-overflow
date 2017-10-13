@@ -5,6 +5,7 @@ defmodule PlungerWeb.QuestionView do
   alias Plunger.Accounts
   alias Plunger.Posts.Response
   alias Plunger.Posts.Comment
+  alias Plunger.Posts.QuestionVote
   import Ecto.Query, only: [from: 2]
 
   def get_categories(%Question{} = question) do
@@ -26,5 +27,9 @@ defmodule PlungerWeb.QuestionView do
   def get_username(%Question{} = question) do
     user = Accounts.get_user!(question.user_id)
     user.username
+  end
+
+  def get_num_votes(%Question{} = question) do
+    Repo.aggregate((from qv in QuestionVote, where: qv.question_id == ^question.id), :sum, :votes)
   end
 end

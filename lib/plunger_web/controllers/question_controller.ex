@@ -12,17 +12,18 @@ defmodule PlungerWeb.QuestionController do
   end
 
   def index(conn, params, _user) do
-    case Map.fetch(params, "filter") do
-      {:ok, filters} -> question_list =
-        filters
-        |> Map.get("categories")
-        |> Enum.filter(fn(elem) -> elem != "" end)
-        |> Enum.reduce([], fn(category_id, acc) ->
-          questions =
-            category_id |> Posts.get_category!() |> Posts.list_questions()
-          acc ++ questions end)
-      :error -> question_list = Posts.list_questions()
-    end
+    question_list =
+      case Map.fetch(params, "filter") do
+        {:ok, filters} ->
+          filters
+          |> Map.get("categories")
+          |> Enum.filter(fn(elem) -> elem != "" end)
+          |> Enum.reduce([], fn(category_id, acc) ->
+            questions =
+              category_id |> Posts.get_category!() |> Posts.list_questions()
+            acc ++ questions end)
+        :error -> Posts.list_questions()
+      end
     render(conn, "index.html", questions: question_list)
   end
 
@@ -43,13 +44,13 @@ defmodule PlungerWeb.QuestionController do
   end
 
   def upvote(conn, %{"id" => id}, user) do
-    Plunger.Posts.upvote_question!(id)
+    Plunger.Posts.upvote_question!(id, user.id)
     question = Posts.get_question!(id)
     conn |> redirect(to: question_path(conn, :show, question))
   end
 
   def downvote(conn, %{"id" => id}, user) do
-    Plunger.Posts.downvote_question!(id)
+    Plunger.Posts.downvote_question!(id, user.id)
     question = Posts.get_question!(id)
     conn |> redirect(to: question_path(conn, :show, question))
   end
@@ -101,7 +102,7 @@ defmodule PlungerWeb.QuestionController do
   def delete(conn, %{"id" => id}, user) do
     question = Posts.get_question!(id)
     verify_owner(conn, question)
-    case Posts.update_question(question) do
+    case Posts.delete_question(question) do
       {:ok, _question} ->
         conn
         |> put_flash(:info, "Question updated successfully.")

@@ -47,12 +47,12 @@ defmodule PlungerWeb.CommentController do
   end
 
   def upvote(conn, %{"id" => id}, user, question) do
-    Posts.upvote_comment!(id)
+    Posts.upvote_comment!(id, user.id)
     conn |> redirect(to: question_path(conn, :show, question))
   end
 
   def downvote(conn, %{"id" => id}, user, question) do
-    Posts.downvote_comment!(id)
+    Posts.downvote_comment!(id, user.id)
     conn |> redirect(to: question_path(conn, :show, question))
   end
 

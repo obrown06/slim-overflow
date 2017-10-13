@@ -14,7 +14,7 @@
   </li>
   <li>
     <strong>Votes: </strong>
-    <%= @response.votes %>
+    <%= get_num_votes(@response) %>
   </li>
 
 </ul>
