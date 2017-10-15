@@ -1,8 +1,10 @@
 defmodule PlungerWeb.CommentController do
   use PlungerWeb, :controller
   plug :authenticate_user when action in [:create, :upvote, :downvote]
-  alias Plunger.Posts
-  alias Plunger.Posts.Comment
+  alias Plunger.Comments
+  alias Plunger.Questions
+  alias Plunger.Responses
+  alias Plunger.Comments.Comment
 
   #def index(conn, _params) do
   #  comments = Posts.list_comments()
@@ -26,43 +28,33 @@ defmodule PlungerWeb.CommentController do
   #end
 
   def action(conn, _) do
-    question = Posts.get_question!(conn.params["question_id"])
+    question = Questions.get_question!(conn.params["question_id"])
     apply(__MODULE__, action_name(conn),
       [conn, conn.params, conn.assigns.current_user, question])
   end
 
   def create(conn, attrs, user, question) do
-    case Posts.create_comment(user, attrs) do
+    case Comments.create_comment(user, attrs) do
       {:ok, comment} ->
         conn
         |> put_flash(:info, "Comment created successfully.")
         |> redirect(to: question_path(conn, :show, question))
       {:error, %Ecto.Changeset{} = comment_changeset} ->
-        response_changeset = question
-          |> Ecto.build_assoc(:responses)
-          |> Plunger.Posts.Response.changeset()
+        response_changeset = question |> Responses.change_response()
         render(conn, PlungerWeb.QuestionView, "show.html", question: question,
         comment_changeset: comment_changeset, response_changeset: response_changeset)
     end
   end
 
   def upvote(conn, %{"id" => id}, user, question) do
-    Posts.upvote_comment!(id, user.id)
+    Comments.upvote_comment!(id, user.id)
     conn |> redirect(to: question_path(conn, :show, question))
   end
 
   def downvote(conn, %{"id" => id}, user, question) do
-    Posts.downvote_comment!(id, user.id)
+    Comments.downvote_comment!(id, user.id)
     conn |> redirect(to: question_path(conn, :show, question))
   end
-
-  #def upvote(conn, %{"id" => id}, user) do
-  #  Plunger.Posts.upvote_comment!(id)
-  #end
-
-  #def downvote(conn, %{"id" => id}, user) do
-  #  Plunger.Posts.downvote_comment!(id)
-  #end
 
   #def show(conn, %{"id" => id}) do
   #  comment = Posts.get_comment!(id)

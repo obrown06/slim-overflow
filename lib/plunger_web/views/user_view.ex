@@ -1,9 +1,9 @@
 defmodule PlungerWeb.UserView do
   use PlungerWeb, :view
   alias Plunger.Repo
-  alias Plunger.Posts.Question
-  alias Plunger.Posts.Response
-  alias Plunger.Posts.Comment
+  alias Plunger.Questions.Question
+  alias Plunger.Responses.Response
+  alias Plunger.Comments.Comment
   alias Plunger.Accounts.User
   alias PlungerWeb.CommentView
   import Ecto.Query, only: [from: 2]

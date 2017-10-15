@@ -3,8 +3,11 @@ defmodule PlungerWeb.QuestionController do
   plug :authenticate_user when action in [:new, :create, :edit, :update, :delete, :upvote, :downvote]
   plug :load_categories when action in [:new, :create, :edit, :update]
   #plug :verify_owner when action in [:edit, :update, :delete]
-  alias Plunger.Posts
-  alias Plunger.Posts.Category
+  alias Plunger.Questions
+  alias Plunger.Categories.Category
+  alias Plunger.Categories
+  alias Plunger.Comments
+  alias Plunger.Responses
 
   def action(conn, _) do
     apply(__MODULE__, action_name(conn),
@@ -20,20 +23,20 @@ defmodule PlungerWeb.QuestionController do
           |> Enum.filter(fn(elem) -> elem != "" end)
           |> Enum.reduce([], fn(category_id, acc) ->
             questions =
-              category_id |> Posts.get_category!() |> Posts.list_questions()
+              category_id |> Categories.get_category!() |> Questions.list_questions()
             acc ++ questions end)
-        :error -> Posts.list_questions()
+        :error -> Questions.list_questions()
       end
     render(conn, "index.html", questions: question_list)
   end
 
   def new(conn, _params, user) do
-    changeset = Posts.change_question(user)
+    changeset = Questions.change_question(user)
     render(conn, "new.html", changeset: changeset)
   end
 
   def create(conn, %{"question" => attrs}, user) do
-    case Posts.create_question(user, attrs) do
+    case Questions.create_question(user, attrs) do
       {:ok, question} ->
         conn
         |> put_flash(:info, "Question created successfully.")
@@ -44,52 +47,37 @@ defmodule PlungerWeb.QuestionController do
   end
 
   def upvote(conn, %{"id" => id}, user) do
-    Plunger.Posts.upvote_question!(id, user.id)
-    question = Posts.get_question!(id)
+    Questions.upvote_question!(id, user.id)
+    question = Questions.get_question!(id)
     conn |> redirect(to: question_path(conn, :show, question))
   end
 
   def downvote(conn, %{"id" => id}, user) do
-    Plunger.Posts.downvote_question!(id, user.id)
-    question = Posts.get_question!(id)
+    Questions.downvote_question!(id, user.id)
+    question = Questions.get_question!(id)
     conn |> redirect(to: question_path(conn, :show, question))
   end
 
   def show(conn, %{"id" => id}, user) do
-    question = Posts.get_question!(id)
-    response_changeset = question
-      |> Ecto.build_assoc(:responses)
-      |> Plunger.Posts.Response.changeset()
-
-    comment_changeset = question
-      |> Ecto.build_assoc(:comments)
-      |> Plunger.Posts.Comment.changeset()
+    question = Questions.get_question!(id)
+    response_changeset = question |> Responses.change_response()
+    comment_changeset = question |> Comments.change_comment()
 
     render(conn, "show.html", question: question, response_changeset:
     response_changeset, comment_changeset: comment_changeset)
   end
 
   def edit(conn, %{"id" => id}, user) do
-    question = Posts.get_question!(id)
+    question = Questions.get_question!(id)
     verify_owner(conn, question)
-    changeset = Posts.change_question(question)
+    changeset = Questions.change_question(question)
     render(conn, "edit.html", question: question, changeset: changeset)
-
-    #case question do
-    #  nil ->
-    #    conn
-    #      |> put_flash(:info, "You can't edit this Question")
-    #      |> redirect(to: question_path(conn, :index))
-    #  _ ->
-    #    changeset = Posts.change_question(question)
-    #    render(conn, "edit.html", question: question, changeset: changeset)
-    #end
   end
 
   def update(conn, %{"id" => id, "question" => question_params}, user) do
-    question = Posts.get_question!(id)
+    question = Questions.get_question!(id)
     verify_owner(conn, question)
-    case Posts.update_question(question, question_params) do
+    case Questions.update_question(question, question_params) do
       {:ok, question} ->
         conn
         |> put_flash(:info, "Question updated successfully.")
@@ -100,9 +88,9 @@ defmodule PlungerWeb.QuestionController do
   end
 
   def delete(conn, %{"id" => id}, user) do
-    question = Posts.get_question!(id)
+    question = Questions.get_question!(id)
     verify_owner(conn, question)
-    case Posts.delete_question(question) do
+    case Questions.delete_question(question) do
       {:ok, _question} ->
         conn
         |> put_flash(:info, "Question updated successfully.")
@@ -110,18 +98,6 @@ defmodule PlungerWeb.QuestionController do
       {:error, %Ecto.Changeset{} = changeset} ->
         raise "Delete Question Failed"
     end
-
-    #case question do
-    #  nil ->
-    #    conn
-    #    |> put_flash(:info, "You can't delete this Question")
-    #    |> redirect(to: question_path(conn, :index))
-    #  _ ->
-    #    {:ok, _question} = Posts.delete_question(question)
-    #    conn
-    #      |> put_flash(:info, "Question deleted successfully.")
-    #      |> redirect(to: question_path(conn, :index))
-    #end
   end
 
   defp verify_owner(conn, question) do

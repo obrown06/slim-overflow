@@ -1,10 +1,10 @@
-defmodule Plunger.Posts.CommentVote do
+defmodule Plunger.Comments.CommentVote do
   use Ecto.Schema
   alias Plunger.Repo
   import Ecto.Changeset
   alias Plunger.Accounts.User
-  alias Plunger.Posts.Comment
-  alias Plunger.Posts.CommentVote
+  alias Plunger.Comments.Comment
+  alias Plunger.Comments.CommentVote
 
   schema "comment_votes" do
     field :votes, :integer, default: 0

@@ -1,11 +1,10 @@
 defmodule PlungerWeb.ResponseView do
   use PlungerWeb, :view
-  alias Plunger.Posts
-  alias Plunger.Posts.Response
+  alias Plunger.Responses
+  alias Plunger.Responses.Response
   alias Plunger.Accounts
-  alias Plunger.Posts.Question
-  alias Plunger.Posts.Response
-  alias Plunger.Posts.ResponseVote
+  alias Plunger.Questions.Question
+  alias Plunger.Responses.ResponseVote
   alias Plunger.Repo
   import Ecto.Query, only: [from: 2]
 
@@ -34,7 +33,11 @@ defmodule PlungerWeb.ResponseView do
   end
 
   def get_num_votes(%Response{} = response) do
-    Repo.aggregate((from rv in ResponseVote, where: rv.response_id == ^response.id), :sum, :votes)
+    sum = Repo.aggregate((from rv in ResponseVote, where: rv.response_id == ^response.id), :sum, :votes)
+    case sum do
+      nil -> 0
+      _ -> sum
+    end
   end
 
 end

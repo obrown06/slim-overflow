@@ -1,11 +1,11 @@
-defmodule Plunger.Posts.Comment do
+defmodule Plunger.Comments.Comment do
   use Ecto.Schema
   import Ecto.Changeset
-  alias Plunger.Posts.Comment
+  alias Plunger.Comments.Comment
   alias Plunger.Accounts.User
-  alias Plunger.Posts.Question
-  alias Plunger.Posts.Response
-  alias Plunger.Posts.CommentVote
+  alias Plunger.Questions.Question
+  alias Plunger.Responses.Response
+  alias Plunger.Comments.CommentVote
   alias Plunger.Repo
 
   @recursion_limit 1000000

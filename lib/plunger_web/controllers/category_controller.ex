@@ -1,21 +1,22 @@
 defmodule PlungerWeb.CategoryController do
   use PlungerWeb, :controller
 
-  alias Plunger.Posts
-  alias Plunger.Posts.Category
+  alias Plunger.Categories
+  alias Plunger.Categories.Category
+  alias Plunger.Questions
 
   def index(conn, _params) do
-    categories = Posts.list_categories()
+    categories = Categories.list_categories()
     render(conn, "index.html", categories: categories)
   end
 
   def new(conn, _params) do
-    changeset = Posts.change_category(%Category{})
+    changeset = Categories.change_category(%Category{})
     render(conn, "new.html", changeset: changeset)
   end
 
   def create(conn, %{"category" => category_params}) do
-    case Posts.create_category(category_params) do
+    case Categories.create_category(category_params) do
       {:ok, category} ->
         conn
         |> put_flash(:info, "Category created successfully.")
@@ -26,21 +27,21 @@ defmodule PlungerWeb.CategoryController do
   end
 
   def show(conn, %{"id" => id}) do
-    category = Posts.get_category!(id)
-    questions = Posts.list_questions(category)
+    category = Categories.get_category!(id)
+    questions = Questions.list_questions(category)
     render(conn, "show.html", category: category, questions: questions)
   end
 
   def edit(conn, %{"id" => id}) do
-    category = Posts.get_category!(id)
-    changeset = Posts.change_category(category)
+    category = Categories.get_category!(id)
+    changeset = Categories.change_category(category)
     render(conn, "edit.html", category: category, changeset: changeset)
   end
 
   def update(conn, %{"id" => id, "category" => category_params}) do
-    category = Posts.get_category!(id)
+    category = Categories.get_category!(id)
 
-    case Posts.update_category(category, category_params) do
+    case Categories.update_category(category, category_params) do
       {:ok, category} ->
         conn
         |> put_flash(:info, "Category updated successfully.")
@@ -51,8 +52,8 @@ defmodule PlungerWeb.CategoryController do
   end
 
   def delete(conn, %{"id" => id}) do
-    category = Posts.get_category!(id)
-    {:ok, _category} = Posts.delete_category(category)
+    category = Categories.get_category!(id)
+    {:ok, _category} = Categories.delete_category(category)
 
     conn
     |> put_flash(:info, "Category deleted successfully.")

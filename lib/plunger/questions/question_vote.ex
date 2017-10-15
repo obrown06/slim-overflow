@@ -1,10 +1,10 @@
-defmodule Plunger.Posts.QuestionVote do
+defmodule Plunger.Questions.QuestionVote do
   use Ecto.Schema
   alias Plunger.Repo
   import Ecto.Changeset
   alias Plunger.Accounts.User
-  alias Plunger.Posts.Question
-  alias Plunger.Posts.QuestionVote
+  alias Plunger.Questions.Question
+  alias Plunger.Questions.QuestionVote
 
   schema "question_votes" do
     field :votes, :integer, default: 0

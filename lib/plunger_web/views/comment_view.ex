@@ -1,10 +1,10 @@
 defmodule PlungerWeb.CommentView do
   use PlungerWeb, :view
-  alias Plunger.Posts.Comment
-  alias Plunger.Posts.Question
-  alias Plunger.Posts.Response
+  alias Plunger.Comments.Comment
+  alias Plunger.Questions.Question
+  alias Plunger.Responses.Response
+  alias Plunger.Comments.CommentVote
   alias PlungerWeb.QuestionView
-  alias Plunger.Posts.CommentVote
   alias Plunger.Accounts
   alias Plunger.Repo
   import Ecto.Query, only: [from: 2]
@@ -71,7 +71,11 @@ defmodule PlungerWeb.CommentView do
   end
 
   def get_num_votes(%Comment{} = comment) do
-    Repo.aggregate((from cv in CommentVote, where: cv.comment_id == ^comment.id), :sum, :votes)
+    sum = Repo.aggregate((from cv in CommentVote, where: cv.comment_id == ^comment.id), :sum, :votes)
+    case sum do
+      nil -> 0
+      _ -> sum
+    end
   end
 
 end

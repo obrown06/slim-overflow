@@ -11,14 +11,14 @@ defmodule Plunger.Accounts.User do
     field :password, :string, virtual: true
     field :password_hash, :string
 
-    has_many :questions, Plunger.Posts.Question, on_delete: :delete_all
-    has_many :question_votes, Plunger.Posts.QuestionVote, on_delete: :delete_all
+    has_many :questions, Plunger.Questions.Question, on_delete: :delete_all
+    has_many :question_votes, Plunger.Questions.QuestionVote, on_delete: :delete_all
 
-    has_many :responses, Plunger.Posts.Response, on_delete: :delete_all
-    has_many :response_votes, Plunger.Posts.ResponseVote, on_delete: :delete_all
+    has_many :responses, Plunger.Responses.Response, on_delete: :delete_all
+    has_many :response_votes, Plunger.Responses.ResponseVote, on_delete: :delete_all
 
-    has_many :comments, Plunger.Posts.Comment, on_delete: :delete_all
-    has_many :comment_votes, Plunger.Posts.CommentVote, on_delete: :delete_all
+    has_many :comments, Plunger.Comments.Comment, on_delete: :delete_all
+    has_many :comment_votes, Plunger.Comments.CommentVote, on_delete: :delete_all
 
     timestamps()
   end

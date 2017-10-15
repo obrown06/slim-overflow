@@ -1,11 +1,12 @@
 defmodule PlungerWeb.QuestionView do
   use PlungerWeb, :view
   alias Plunger.Repo
-  alias Plunger.Posts.Question
+  alias Plunger.Questions.Question
   alias Plunger.Accounts
-  alias Plunger.Posts.Response
-  alias Plunger.Posts.Comment
-  alias Plunger.Posts.QuestionVote
+  alias Plunger.Responses.Response
+  alias Plunger.Categories
+  alias Plunger.Comments.Comment
+  alias Plunger.Questions.QuestionVote
   import Ecto.Query, only: [from: 2]
 
   def get_categories(%Question{} = question) do
@@ -20,6 +21,10 @@ defmodule PlungerWeb.QuestionView do
     |> Enum.join(", ")
   end
 
+  def list_categories() do
+    Categories.list_categories()
+  end
+
   def get_date_time(%Question{} = question) do
     question.inserted_at
   end
@@ -30,6 +35,10 @@ defmodule PlungerWeb.QuestionView do
   end
 
   def get_num_votes(%Question{} = question) do
-    Repo.aggregate((from qv in QuestionVote, where: qv.question_id == ^question.id), :sum, :votes)
+    sum = Repo.aggregate((from qv in QuestionVote, where: qv.question_id == ^question.id), :sum, :votes)
+    case sum do
+      nil -> 0
+      _ -> sum
+    end
   end
 end
