@@ -17,7 +17,7 @@ defmodule Plunger.Comments.Comment do
     belongs_to :question, Question, foreign_key: :question_id
     belongs_to :response, Response, foreign_key: :response_id
     belongs_to :parent, Comment, foreign_key: :parent_id
-    has_many :children, Comment, foreign_key: :parent_id, on_delete: :delete_all
+    has_many :comments, Comment, foreign_key: :parent_id, on_delete: :delete_all
     has_many :comment_votes, CommentVote, on_delete: :delete_all
 
     timestamps()
@@ -61,9 +61,9 @@ defmodule Plunger.Comments.Comment do
 
   #def load_children(%Comment{children: []} = comment, limit), do: comment
 
-  def load_children(%Comment{children: %Ecto.Association.NotLoaded{}} = comment, limit) do
-    comment = comment |> Repo.preload(:children)
-    Map.update!(comment, :children, fn(list) ->
+  def load_children(%Comment{comments: %Ecto.Association.NotLoaded{}} = comment, limit) do
+    comment = comment |> Repo.preload(:comments)
+    Map.update!(comment, :comments, fn(list) ->
     Enum.map(list, &Comment.load_children(&1, limit - 1))
     end)
   end

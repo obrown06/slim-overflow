@@ -31,7 +31,7 @@ defmodule PlungerWeb.QuestionController do
   end
 
   def new(conn, _params, user) do
-    changeset = Questions.change_question(user)
+    changeset = Questions.change_question()
     render(conn, "new.html", changeset: changeset)
   end
 
@@ -60,8 +60,8 @@ defmodule PlungerWeb.QuestionController do
 
   def show(conn, %{"id" => id}, user) do
     question = Questions.get_question!(id)
-    response_changeset = question |> Responses.change_response()
-    comment_changeset = question |> Comments.change_comment()
+    response_changeset = Responses.change_response()
+    comment_changeset = Comments.change_comment()
 
     render(conn, "show.html", question: question, response_changeset:
     response_changeset, comment_changeset: comment_changeset)

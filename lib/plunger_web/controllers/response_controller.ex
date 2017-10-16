@@ -30,7 +30,7 @@ defmodule PlungerWeb.ResponseController do
         |> put_flash(:info, "Response created successfully.")
         |> redirect(to: question_path(conn, :show, question))
       {:error, %Ecto.Changeset{} = response_changeset} ->
-        comment_changeset = question |> Comments.change_comment()
+        comment_changeset = Comments.change_comment()
         render(conn, PlungerWeb.QuestionView, "show.html", question: question,
         response_changeset: response_changeset, comment_changeset: comment_changeset)
     end

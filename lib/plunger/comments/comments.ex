@@ -38,11 +38,8 @@ defmodule Plunger.Comments do
   def get_comment!(id), do: Repo.get!(Comment, id)
 
   @doc """
-  Creates a comment and associates it with a question, response, or comment.
-
-  IMPORTANT: do not flip the order; 'attrs' contains "question_id" and so moving up
-  the corresponding 'create_comment' function will cause every comment to be associated
-  with its ancestor question and NOT its parent response/comment.
+  Creates a comment and associates it with its parent comment.
+  DO NOT SWITCH THE ORDER; IF YOU DO, ALL COMMENTS WILL BE ASSOCIATED WITH QUESTIONS.
 
   ## Examples
 
@@ -55,25 +52,59 @@ defmodule Plunger.Comments do
   """
 
   def create_comment(%User{} = user, %{"comment" => comment_params, "comment_id" => comment_id}) do
-    comment = get_comment!(comment_id)
-    |> Ecto.build_assoc(:children, description: comment_params["description"])
-    |> Map.put(:parent_id, String.to_integer(comment_id))
-    |> Comment.changeset(comment_params)
-    |> Ecto.Changeset.put_assoc(:user, user, :required)
-    |> Repo.insert()
+    get_comment!(comment_id) |> create_comment(user, comment_params)
   end
+
+  @doc """
+  Creates a comment and associates it with its parent response.
+  DO NOT SWITCH THE ORDER; IF YOU DO, ALL COMMENTS WILL BE ASSOCIATED WITH QUESTIONS.
+
+  ## Examples
+
+      iex> create_comment(%{field: value})
+      {:ok, %Comment{}}
+
+      iex> create_comment(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
 
   def create_comment(%User{} = user, %{"comment" => comment_params, "response_id" => response_id}) do
-    response = Responses.get_response!(response_id)
-    build_and_insert_comment(response, user, comment_params)
+    Responses.get_response!(response_id) |> create_comment(user, comment_params)
   end
+
+  @doc """
+  Creates a comment and associates it with its parent question.
+  DO NOT SWITCH THE ORDER; IF YOU DO, ALL COMMENTS WILL BE ASSOCIATED WITH QUESTIONS.
+
+  ## Examples
+
+      iex> create_comment(%{field: value})
+      {:ok, %Comment{}}
+
+      iex> create_comment(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
 
   def create_comment(%User{} = user, %{"comment" => comment_params, "question_id" => question_id}) do
-    question = Questions.get_question!(question_id)
-    build_and_insert_comment(question, user, comment_params)
+    Questions.get_question!(question_id) |> create_comment(user, comment_params)
   end
 
-  def build_and_insert_comment(struct, user, attrs) do
+  @doc """
+  Creates a comment and associates it with the provided struct (could be question, comment, response).
+
+  ## Examples
+
+      iex> create_comment(%{field: value})
+      {:ok, %Comment{}}
+
+      iex> create_comment(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+
+  defp create_comment(struct, user, attrs) do
     struct
     |> Ecto.build_assoc(:comments, description: attrs["description"])
     |> Comment.changeset(attrs)
@@ -90,20 +121,11 @@ defmodule Plunger.Comments do
       %Ecto.Changeset{source: %Comment{}}
 
   """
-  def change_comment(%Comment{} = comment) do
-    Comment.changeset(comment, %{})
+
+  def change_comment(%Comment{} = comment \\ %Comment{}) do
+    comment |> Comment.changeset(%{})
   end
 
-  def change_comment(%Question{} = question) do
-    question
-      |> Ecto.build_assoc(:comments)
-      |> Comment.changeset(%{})
-  end
-
-
-  defp get_comment_vote(comment_id, user_id) do
-    Repo.one(from cv in CommentVote, where: cv.comment_id == ^comment_id and cv.user_id == ^user_id)
-  end
 
   def upvote_comment!(comment_id, user_id) do
     comment_vote = get_comment_vote(comment_id, user_id)
@@ -128,6 +150,10 @@ defmodule Plunger.Comments do
         |> Repo.update!()
       true -> comment_vote
     end
+  end
+
+  defp get_comment_vote(comment_id, user_id) do
+    Repo.one(from cv in CommentVote, where: cv.comment_id == ^comment_id and cv.user_id == ^user_id)
   end
 
   defp create_comment_upvote!(comment_id, user_id) do

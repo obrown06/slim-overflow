@@ -100,21 +100,11 @@ defmodule Plunger.Responses do
       %Ecto.Changeset{source: %Response{}}
 
   """
-  def change_response(%User{} = user) do
-    user
-      |> Ecto.build_assoc(:responses)
-      |> Response.changeset(%{})
+
+  def change_response(%Response{} = response \\ %Response{}) do
+    response |> Response.changeset(%{})
   end
 
-  def change_response(%Question{} = question) do
-    question
-      |> Ecto.build_assoc(:responses)
-      |> Response.changeset(%{})
-  end
-
-  defp get_response_vote(response_id, user_id) do
-    Repo.one(from rv in ResponseVote, where: rv.response_id == ^response_id and rv.user_id == ^user_id)
-  end
 
   def upvote_response!(response_id, user_id) do
     response_vote = get_response_vote(response_id, user_id)
@@ -139,6 +129,10 @@ defmodule Plunger.Responses do
         |> Repo.update!()
       true -> response_vote
     end
+  end
+
+  defp get_response_vote(response_id, user_id) do
+    Repo.one(from rv in ResponseVote, where: rv.response_id == ^response_id and rv.user_id == ^user_id)
   end
 
   defp create_response_upvote!(response_id, user_id) do

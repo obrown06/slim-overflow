@@ -188,21 +188,8 @@ Returns the list of questions.
     %Ecto.Changeset{source: %Question{}}
 
   """
-  def change_question(%Question{} = question) do
-    question
-      |> Repo.preload(:categories)
-      |> Question.changeset(%{})
-  end
-
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking question changes
-  with the user_id field assigned to 'user'.
-
-  """
-  def change_question(%User{} = user) do
-    user
-      |> Ecto.build_assoc(:questions)
-      |> change_question()
+  def change_question(%Question{} = question \\ %Question{}) do
+    question |> Question.changeset(%{})
   end
 
   alias Plunger.Questions.QuestionVote

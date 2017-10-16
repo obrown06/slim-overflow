@@ -5,14 +5,14 @@ defmodule Plunger.Categories do
   import Ecto.Query
 
 
-  def alphabetical(query) do
+  defp alphabetical(query) do
     from c in query, order_by: c.name
   end
 
   def load_categories(conn, _) do
     query =
       Category
-      |> Categories.alphabetical
+      |> alphabetical()
     categories = Repo.all query
     Plug.Conn.assign(conn, :categories, categories)
   end

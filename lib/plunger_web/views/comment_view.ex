@@ -36,7 +36,7 @@ defmodule PlungerWeb.CommentView do
   end
 
   def get_nested_comments(%Comment{} = comment) do
-    comment_list = comment |> Map.get(:children)
+    comment_list = comment |> Map.get(:comments)
     |> Enum.sort_by(&get_date_time(&1))
     |> Enum.reduce([], fn(comment, acc) -> [comment] ++ get_nested_comments(comment) ++ acc end)
   end
