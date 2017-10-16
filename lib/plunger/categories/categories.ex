@@ -5,9 +5,19 @@ defmodule Plunger.Categories do
   import Ecto.Query
 
 
+  @doc """
+  Orders a query for category objects by the 'name' field
+  (effectively sorting the resulting list alphabetically).
+  """
+
   defp alphabetical(query) do
     from c in query, order_by: c.name
   end
+
+  @doc """
+  Assigns the alphabetically sorted list of all categories to :categories in conn.assigns.
+
+  """
 
   def load_categories(conn, _) do
     query =
