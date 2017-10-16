@@ -105,7 +105,13 @@ defmodule Plunger.Responses do
     response |> Response.changeset(%{})
   end
 
+  @doc """
+  Decrements the :votes field in the ResponseVote table associated with the given response_id and user_id.
+  If the field doesn't exist, creates and inserts it with a :votes value of '1'.
 
+  If the field does exist: increments it for values of '0' and '-1' and does nothing for a value of '1'.
+
+  """
   def upvote_response!(response_id, user_id) do
     response_vote = get_response_vote(response_id, user_id)
 
@@ -119,6 +125,14 @@ defmodule Plunger.Responses do
     end
   end
 
+  @doc """
+  Decrements the :votes field in the ResponseVote table associated with the given response_id and user_id.
+  If the field doesn't exist, creates and inserts it with a :votes value of '-1'.
+
+  If the field does exist: decrements it for values of '0' and '1' and does nothing for a value of '-1'.
+
+  """
+
   def downvote_response!(response_id, user_id) do
     response_vote = get_response_vote(response_id, user_id)
     cond do
@@ -131,9 +145,21 @@ defmodule Plunger.Responses do
     end
   end
 
+  @doc """
+  Retrieves a ResponseVote associated with the given 'response_id' and 'user_id'.
+  If no ResponseVote is found, returns nil.
+
+  """
+
   defp get_response_vote(response_id, user_id) do
     Repo.one(from rv in ResponseVote, where: rv.response_id == ^response_id and rv.user_id == ^user_id)
   end
+
+  @doc """
+  Creates a ResponseVote struct, associates it with the response and user corresponding to the given IDs,
+  initializes, the :votes field to '1', and inserts.
+
+  """
 
   defp create_response_upvote!(response_id, user_id) do
     user = Plunger.Accounts.get_user!(user_id)
@@ -148,6 +174,12 @@ defmodule Plunger.Responses do
       |> Repo.insert!()
   end
 
+  @doc """
+  Creates a ResponseVote struct, associates it with the response and user corresponding to the given IDs,
+  initializes, the :votes field to '-1', and inserts. 
+
+  """
+
   defp create_response_downvote!(response_id, user_id) do
     user = Plunger.Accounts.get_user!(user_id)
     response = get_response!(response_id)
@@ -160,5 +192,4 @@ defmodule Plunger.Responses do
       |> Ecto.Changeset.put_assoc(:response, response, :required)
       |> Repo.insert!()
   end
-
 end

@@ -127,6 +127,14 @@ defmodule Plunger.Comments do
   end
 
 
+  @doc """
+  Increments the :votes field in the CommentVote table associated with the given comment_id and user_id.
+  If the field doesn't exist, creates and inserts it with a :votes value of '1'.
+
+  If the field does exist: increments it for values of '0' and '-1' and does nothing for a value of '1'.
+
+  """
+
   def upvote_comment!(comment_id, user_id) do
     comment_vote = get_comment_vote(comment_id, user_id)
 
@@ -140,6 +148,14 @@ defmodule Plunger.Comments do
     end
   end
 
+  @doc """
+  Decrements the :votes field in the CommentVote table associated with the given comment_id and user_id.
+  If the field doesn't exist, creates and inserts it with a :votes value of '-1'.
+
+  If the field does exist: decrements it for values of '0' and '1' and does nothing for a value of '-1'.
+
+  """
+
   def downvote_comment!(comment_id, user_id) do
     comment_vote = get_comment_vote(comment_id, user_id)
     cond do
@@ -152,9 +168,20 @@ defmodule Plunger.Comments do
     end
   end
 
+  @doc """
+  Retrieves a CommentVote associated with the given 'comment_id' and 'user_id'.
+  If no CommentVote is found, returns nil.
+
+  """
+
   defp get_comment_vote(comment_id, user_id) do
     Repo.one(from cv in CommentVote, where: cv.comment_id == ^comment_id and cv.user_id == ^user_id)
   end
+
+  @doc """
+  Creates a CommentVote struct, associates it with the comment and user corresponding to the given IDs,
+  initializes, the :votes field to '1', and inserts.
+  """
 
   defp create_comment_upvote!(comment_id, user_id) do
     user = Plunger.Accounts.get_user!(user_id)
@@ -168,6 +195,11 @@ defmodule Plunger.Comments do
       |> Ecto.Changeset.put_assoc(:comment, comment, :required)
       |> Repo.insert!()
   end
+
+  @doc """
+  Creates a CommentVote struct, associates it with the comment and user corresponding to the given IDs,
+  initializes, the :votes field to '-1', and inserts.
+  """
 
   defp create_comment_downvote!(comment_id, user_id) do
     user = Plunger.Accounts.get_user!(user_id)

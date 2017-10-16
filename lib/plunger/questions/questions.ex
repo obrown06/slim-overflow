@@ -12,34 +12,43 @@ defmodule Plunger.Questions do
   import Ecto.Query, warn: false
 
 
-@doc """
-Returns the list of questions.
+  @doc """
+  Returns the complete list of questions.
 
-## Examples
+  ## Examples
 
     iex> list_questions()
     [%Question{}, ...]
 
-"""
+  """
 
   def list_questions do
     Repo.all(Question)
   end
 
+  @doc """
+  Returns the list of questions associated with a particular category.
+
+  ## Examples
+
+    iex> list_questions()
+    [%Question{}, ...]
+
+  """
+
   def list_questions(%Category{} = category) do
     category =
-      category
-      |> Repo.preload(:questions)
-      category.questions
+      category |> Repo.preload(:questions)
+    category.questions
   end
 
 
   @doc """
   Returns a query containing all the questions scoped to the given user.
   """
-  def list_questions(%User{} = user) do
-    Ecto.assoc(user, :questions)
-  end
+  #def list_questions(%User{} = user) do
+  #  Ecto.assoc(user, :questions)
+  #end
 
   @doc """
   Gets a single question.
@@ -57,7 +66,6 @@ Returns the list of questions.
   """
   def get_question!(id) do
     Repo.get!(Question, id)
-      |> Repo.preload(:responses)
   end
 
   @doc """
@@ -74,27 +82,27 @@ Returns the list of questions.
     nil
 
   """
-  def get_question(id, user) do
-    Repo.get(list_questions(user), id)
-  end
+  #def get_question(id, user) do
+  #  Repo.get(list_questions(user), id)
+  #end
 
-  def get_parent_question!(%Response{} = response) do
-    get_question!(response.question_id)
-  end
+  #def get_parent_question!(%Response{} = response) do
+  #  get_question!(response.question_id)
+  #end
 
-  def get_parent_question!(%Comment{} = comment) do
-    cond do
-      comment.question_id != nil ->
-        get_question!(comment.question_id)
-      comment.response_id != nil ->
-        response = Responses.get_response!(comment.response_id)
-        get_parent_question!(response)
-      true ->
-        comment.parent_id
-        |> Comments.get_comment!()
-        |> get_parent_question!()
-      end
-  end
+  #def get_parent_question!(%Comment{} = comment) do
+  #  cond do
+  #    comment.question_id != nil ->
+  #      get_question!(comment.question_id)
+  #    comment.response_id != nil ->
+  #      response = Responses.get_response!(comment.response_id)
+  #      get_parent_question!(response)
+  #    true ->
+  #      comment.parent_id
+  #      |> Comments.get_comment!()
+  #      |> get_parent_question!()
+  #    end
+  #end
 
   @doc """
   Creates a question.
@@ -189,14 +197,20 @@ Returns the list of questions.
 
   """
   def change_question(%Question{} = question \\ %Question{}) do
-    question |> Question.changeset(%{})
+    question
+    |> Repo.preload(:categories)
+    |> Question.changeset(%{})
   end
 
   alias Plunger.Questions.QuestionVote
 
-  defp get_question_vote(question_id, user_id) do
-    Repo.one(from qv in QuestionVote, where: qv.question_id == ^question_id and qv.user_id == ^user_id)
-  end
+  @doc """
+  Increments the :votes field in the QuestionVote table associated with the given question_id and user_id.
+  If the field doesn't exist, creates and inserts it with a :votes value of '1'.
+
+  If the field does exist: increments it for values of '-1' and '0' and does nothing for a value of '1'.
+
+  """
 
   def upvote_question!(question_id, user_id) do
     question_vote = get_question_vote(question_id, user_id)
@@ -211,6 +225,14 @@ Returns the list of questions.
     end
   end
 
+  @doc """
+  Decrements the :votes field in the QuestionVote table associated with the given question_id and user_id.
+  If the field doesn't exist, creates and inserts it with a :votes value of '-1'.
+
+  If the field does exist: decrements it for values of '0' and '1' and does nothing for a value of '-1'.
+
+  """
+
   def downvote_question!(question_id, user_id) do
     question_vote = get_question_vote(question_id, user_id)
     cond do
@@ -222,6 +244,20 @@ Returns the list of questions.
       true -> question_vote
     end
   end
+
+  @doc """
+  Retrieves a QuestionVote associated with the given 'question_id' and 'user_id'.
+  If no QuestionVote is found, returns nil.
+
+  """
+  defp get_question_vote(question_id, user_id) do
+    Repo.one(from qv in QuestionVote, where: qv.question_id == ^question_id and qv.user_id == ^user_id)
+  end
+
+  @doc """
+  Creates a QuestionVote struct, associates it with the question and user corresponding to the given IDs,
+  initializes, the :votes field to '1', and inserts.
+  """
 
   defp create_question_upvote!(question_id, user_id) do
     user = Plunger.Accounts.get_user!(user_id)
@@ -236,6 +272,10 @@ Returns the list of questions.
       |> Repo.insert!()
   end
 
+  @doc """
+  Creates a QuestionVote struct, associates it with the question and user corresponding to the given IDs,
+  initializes, the :votes field to '-1', and inserts.
+  """
   defp create_question_downvote!(question_id, user_id) do
     user = Plunger.Accounts.get_user!(user_id)
     question = get_question!(question_id)
