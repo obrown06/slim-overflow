@@ -14,6 +14,7 @@ defmodule PlungerWeb.Router do
     plug :accepts, ["json"]
   end
 
+
   scope "/", PlungerWeb do
     pipe_through :browser # Use the default browser stack
 
@@ -24,7 +25,6 @@ defmodule PlungerWeb.Router do
 
     get "/questions/:id/upvote", QuestionController, :upvote
     get "/questions/:id/downvote", QuestionController, :downvote
-    resources "/questions", QuestionController
 
     get "/responses/:id/upvote", ResponseController, :upvote
     get "/responses/:id/downvote", ResponseController, :downvote

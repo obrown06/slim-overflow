@@ -3,7 +3,6 @@ defmodule Plunger.Comments do
   alias Plunger.Repo
   alias Plunger.Accounts.User
   alias Plunger.Comments.CommentVote
-  alias Plunger.Questions.Question
   alias Plunger.Responses
   alias Plunger.Questions
   import Ecto.Query
@@ -51,7 +50,7 @@ defmodule Plunger.Comments do
 
   """
 
-  def create_comment(%User{} = user, %{"comment" => comment_params, "comment_id" => comment_id}) do
+  def create_comment(%User{} = user, %{"parent_type" => "comment", "comment" => comment_params, "comment_id" => comment_id}) do
     get_comment!(comment_id) |> create_comment(user, comment_params)
   end
 
@@ -69,7 +68,7 @@ defmodule Plunger.Comments do
 
   """
 
-  def create_comment(%User{} = user, %{"comment" => comment_params, "response_id" => response_id}) do
+  def create_comment(%User{} = user, %{"parent_type" => "response", "comment" => comment_params, "response_id" => response_id}) do
     Responses.get_response!(response_id) |> create_comment(user, comment_params)
   end
 
@@ -87,22 +86,20 @@ defmodule Plunger.Comments do
 
   """
 
-  def create_comment(%User{} = user, %{"comment" => comment_params, "question_id" => question_id}) do
+  def create_comment(%User{} = user, %{"parent_type" => question, "comment" => comment_params, "question_id" => question_id}) do
     Questions.get_question!(question_id) |> create_comment(user, comment_params)
   end
 
-  @doc """
-  Creates a comment and associates it with the provided struct (could be question, comment, response).
+
+  #Creates a comment and associates it with the provided struct (could be question, comment, response).
 
   ## Examples
 
-      iex> create_comment(%{field: value})
-      {:ok, %Comment{}}
+  #    iex> create_comment(%{field: value})
+  #    {:ok, %Comment{}}
 
-      iex> create_comment(%{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
+  #    iex> create_comment(%{field: bad_value})
+  #    {:error, %Ecto.Changeset{}}
 
   defp create_comment(struct, user, attrs) do
     struct
@@ -168,27 +165,23 @@ defmodule Plunger.Comments do
     end
   end
 
-  @doc """
-  Retrieves a CommentVote associated with the given 'comment_id' and 'user_id'.
-  If no CommentVote is found, returns nil.
 
-  """
+  #Retrieves a CommentVote associated with the given 'comment_id' and 'user_id'.
+  #If no CommentVote is found, returns nil.
 
   defp get_comment_vote(comment_id, user_id) do
     Repo.one(from cv in CommentVote, where: cv.comment_id == ^comment_id and cv.user_id == ^user_id)
   end
 
-  @doc """
-  Creates a CommentVote struct, associates it with the comment and user corresponding to the given IDs,
-  initializes, the :votes field to '1', and inserts.
-  """
+
+  #Creates a CommentVote struct, associates it with the comment and user corresponding to the given IDs,
+  #initializes, the :votes field to '1', and inserts.
 
   defp create_comment_upvote!(comment_id, user_id) do
     user = Plunger.Accounts.get_user!(user_id)
     comment = get_comment!(comment_id)
 
-    changeset =
-      user
+    user
       |> Ecto.build_assoc(:comment_votes)
       |> CommentVote.changeset()
       |> Ecto.Changeset.change(%{votes: 1})
@@ -196,17 +189,15 @@ defmodule Plunger.Comments do
       |> Repo.insert!()
   end
 
-  @doc """
-  Creates a CommentVote struct, associates it with the comment and user corresponding to the given IDs,
-  initializes, the :votes field to '-1', and inserts.
-  """
+
+  #Creates a CommentVote struct, associates it with the comment and user corresponding to the given IDs,
+  #initializes, the :votes field to '-1', and inserts.
 
   defp create_comment_downvote!(comment_id, user_id) do
     user = Plunger.Accounts.get_user!(user_id)
     comment = get_comment!(comment_id)
 
-    changeset =
-      user
+    user
       |> Ecto.build_assoc(:comment_votes)
       |> CommentVote.changeset()
       |> Ecto.Changeset.change(%{votes: -1})

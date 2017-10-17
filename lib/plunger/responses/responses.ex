@@ -48,8 +48,7 @@ defmodule Plunger.Responses do
 
   """
   def create_response(%User{} = user, %Question{} = question, attrs \\ %{}) do
-    changeset =
-      question
+    question
       |> Ecto.build_assoc(:responses, description: attrs["description"])
       #|> Repo.preload(:users)
       |> Response.changeset(attrs)
@@ -145,28 +144,23 @@ defmodule Plunger.Responses do
     end
   end
 
-  @doc """
-  Retrieves a ResponseVote associated with the given 'response_id' and 'user_id'.
-  If no ResponseVote is found, returns nil.
 
-  """
+  #Retrieves a ResponseVote associated with the given 'response_id' and 'user_id'.
+  #If no ResponseVote is found, returns nil.
 
   defp get_response_vote(response_id, user_id) do
     Repo.one(from rv in ResponseVote, where: rv.response_id == ^response_id and rv.user_id == ^user_id)
   end
 
-  @doc """
-  Creates a ResponseVote struct, associates it with the response and user corresponding to the given IDs,
-  initializes, the :votes field to '1', and inserts.
 
-  """
+  #Creates a ResponseVote struct, associates it with the response and user corresponding to the given IDs,
+  #initializes, the :votes field to '1', and inserts.
 
   defp create_response_upvote!(response_id, user_id) do
     user = Plunger.Accounts.get_user!(user_id)
     response = get_response!(response_id)
 
-    changeset =
-      user
+    user
       |> Ecto.build_assoc(:response_votes)
       |> ResponseVote.changeset()
       |> Ecto.Changeset.change(%{votes: 1})
@@ -174,18 +168,15 @@ defmodule Plunger.Responses do
       |> Repo.insert!()
   end
 
-  @doc """
-  Creates a ResponseVote struct, associates it with the response and user corresponding to the given IDs,
-  initializes, the :votes field to '-1', and inserts. 
 
-  """
+  #Creates a ResponseVote struct, associates it with the response and user corresponding to the given IDs,
+  #initializes, the :votes field to '-1', and inserts.
 
   defp create_response_downvote!(response_id, user_id) do
     user = Plunger.Accounts.get_user!(user_id)
     response = get_response!(response_id)
 
-    changeset =
-      user
+    user
       |> Ecto.build_assoc(:response_votes)
       |> ResponseVote.changeset()
       |> Ecto.Changeset.change(%{votes: -1})

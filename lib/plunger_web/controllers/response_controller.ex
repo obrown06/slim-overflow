@@ -2,7 +2,6 @@ defmodule PlungerWeb.ResponseController do
   use PlungerWeb, :controller
   plug :authenticate_user when action in [:new, :create, :edit, :update, :delete, :upvote, :downvote]
   alias Plunger.Responses
-  alias Plunger.Responses.Response
   alias Plunger.Comments
   alias Plunger.Questions
 
@@ -18,14 +17,16 @@ defmodule PlungerWeb.ResponseController do
   #end
 
   def action(conn, _) do
-    question = Questions.get_question!(conn.params["question_id"])
+    question =
+      conn.params["question_id"]
+      |> Questions.get_question!
     apply(__MODULE__, action_name(conn),
       [conn, conn.params, conn.assigns.current_user, question])
   end
 
   def create(conn, %{"response" => response_params}, user, question) do
     case Responses.create_response(user, question, response_params) do
-      {:ok, response} ->
+      {:ok, _} ->
         conn
         |> put_flash(:info, "Response created successfully.")
         |> redirect(to: question_path(conn, :show, question))

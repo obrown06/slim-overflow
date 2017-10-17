@@ -46,17 +46,17 @@
  <%= for comment <- PlungerWeb.CommentView.get_nested_comments(@question) do %>
    <%= render PlungerWeb.CommentView, "show.html", comment: comment %>
 
-   <%= link "Upvote Comment", to: comment_path(@conn, :upvote, @question, comment)%></span>
-   <%= link "Downvote Comment", to: comment_path(@conn, :downvote, @question, comment)%></span>
+   <%= link "Upvote Comment", to: comment_path(@conn, :upvote, comment, question_id: @question.id)%></span>
+   <%= link "Downvote Comment", to: comment_path(@conn, :downvote, comment, question_id: @question.id)%></span>
 
    <%= render PlungerWeb.CommentView, "form.html", conn: @conn, question: @question,
-     comment_changeset: @comment_changeset, action: comment_path(@conn, :create, @question, comment)
+     comment_changeset: @comment_changeset, action: comment_path(@conn, :create, parent_type: "question", question_id: @question.id)
    %>
  <% end %>
 </div>
 
 <%= render PlungerWeb.CommentView, "form.html", conn: @conn, question: @question,
-  comment_changeset: @comment_changeset, action: comment_path(@conn, :create, @question)
+  comment_changeset: @comment_changeset, action: question_comment_path(@conn, :create, @question)
 %>
 
 <div class="responses">
@@ -64,22 +64,22 @@
  <%= for response <- PlungerWeb.ResponseView.get_responses(@question) do %>
    <%= render PlungerWeb.ResponseView, "show.html", response: response %>
 
-   <%= link "Upvote Response", to: response_path(@conn, :upvote, @question, response)%></span>
-   <%= link "Downvote Response", to: response_path(@conn, :downvote, @question, response)%></span>
+   <%= link "Upvote Response", to: response_path(@conn, :upvote, response, question_id: @question.id)%></span>
+   <%= link "Downvote Response", to: response_path(@conn, :downvote, response, question_id: @question.id)%></span>
 
    <%= render PlungerWeb.CommentView, "form.html", conn: @conn,
      comment_changeset: @comment_changeset,
-     action: comment_path(@conn, :create, @question, response)
+     action: comment_path(@conn, :create, parent_type: "response", question_id: @question.id, response_id: response.id)
    %>
 
    <%= for comment <- PlungerWeb.CommentView.get_nested_comments(response) do %>
       <%= render PlungerWeb.CommentView, "show.html", comment: comment %>
 
-      <%= link "Upvote Comment", to: comment_path(@conn, :upvote, @question, comment)%></span>
-      <%= link "Downvote Comment", to: comment_path(@conn, :downvote, @question, comment)%></span>
+      <%= link "Upvote Comment", to: comment_path(@conn, :upvote, comment, question_id: @question.id)%></span>
+      <%= link "Downvote Comment", to: comment_path(@conn, :downvote, comment, question_id: @question.id)%></span>
 
       <%= render PlungerWeb.CommentView, "form.html", conn: @conn, question: @question,
-        comment_changeset: @comment_changeset, action: comment_path(@conn, :create, @question, comment)
+        comment_changeset: @comment_changeset, action: comment_path(@conn, :create, parent_type: "comment", question_id: @question.id, comment_id: comment.id)
       %>
    <% end %>
 
@@ -87,5 +87,5 @@
 </div>
 
 <%= render PlungerWeb.ResponseView, "form.html", conn: @conn,
-  response_changeset: @response_changeset, action: response_path(@conn, :create, @question)
+  response_changeset: @response_changeset, action: response_path(@conn, :create, question_id: @question.id)
 %>

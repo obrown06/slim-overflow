@@ -4,7 +4,6 @@ defmodule PlungerWeb.CommentController do
   alias Plunger.Comments
   alias Plunger.Questions
   alias Plunger.Responses
-  alias Plunger.Comments.Comment
 
   #def index(conn, _params) do
   #  comments = Posts.list_comments()
@@ -28,14 +27,16 @@ defmodule PlungerWeb.CommentController do
   #end
 
   def action(conn, _) do
-    question = Questions.get_question!(conn.params["question_id"])
+    question =
+      conn.params["question_id"]
+      |> Questions.get_question!
     apply(__MODULE__, action_name(conn),
       [conn, conn.params, conn.assigns.current_user, question])
   end
 
   def create(conn, attrs, user, question) do
     case Comments.create_comment(user, attrs) do
-      {:ok, comment} ->
+      {:ok, _} ->
         conn
         |> put_flash(:info, "Comment created successfully.")
         |> redirect(to: question_path(conn, :show, question))

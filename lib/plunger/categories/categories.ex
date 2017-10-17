@@ -1,14 +1,8 @@
 defmodule Plunger.Categories do
   alias Plunger.Repo
   alias Plunger.Categories.Category
-  alias Plunger.Categories
   import Ecto.Query
 
-
-  @doc """
-  Orders a query for category objects by the 'name' field
-  (effectively sorting the resulting list alphabetically).
-  """
 
   defp alphabetical(query) do
     from c in query, order_by: c.name

@@ -20,6 +20,7 @@ defmodule PlungerWeb.ConnCase do
       # Import conveniences for testing with connections
       use Phoenix.ConnTest
       import PlungerWeb.Router.Helpers
+      import Plunger.TestHelpers
 
       # The default endpoint for testing
       @endpoint PlungerWeb.Endpoint

@@ -22,6 +22,7 @@ defmodule Plunger.DataCase do
       import Ecto.Changeset
       import Ecto.Query
       import Plunger.DataCase
+      import Plunger.TestHelpers
     end
   end
 
