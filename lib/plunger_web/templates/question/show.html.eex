@@ -50,13 +50,13 @@
    <%= link "Downvote Comment", to: comment_path(@conn, :downvote, comment, question_id: @question.id)%></span>
 
    <%= render PlungerWeb.CommentView, "form.html", conn: @conn, question: @question,
-     comment_changeset: @comment_changeset, action: comment_path(@conn, :create, parent_type: "question", question_id: @question.id)
+     comment_changeset: @comment_changeset, action: comment_path(@conn, :create, parent_type: "comment", question_id: @question.id)
    %>
  <% end %>
 </div>
 
 <%= render PlungerWeb.CommentView, "form.html", conn: @conn, question: @question,
-  comment_changeset: @comment_changeset, action: question_comment_path(@conn, :create, @question)
+  comment_changeset: @comment_changeset, action: comment_path(@conn, :create, parent_type: "question", question_id: @question.id)
 %>
 
 <div class="responses">
