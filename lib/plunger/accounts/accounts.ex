@@ -85,8 +85,8 @@ defmodule Plunger.Accounts do
       {:error, %Ecto.Changeset{}}
 
   """
-  def delete_user(%User{} = user) do
-    Repo.delete(user)
+  def delete_user!(%User{} = user) do
+    Repo.delete!(user)
   end
 
   @doc """

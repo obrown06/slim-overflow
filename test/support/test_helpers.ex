@@ -1,25 +1,71 @@
 defmodule Plunger.TestHelpers do
   alias Plunger.Repo
+  alias Plunger.Questions.Question
+  alias Plunger.Questions
+  alias Plunger.Questions.QuestionVote
+  alias Plunger.Responses
+  alias Plunger.Responses.Response
+  alias Plunger.Responses.ResponseVote
+  alias Plunger.Accounts
+  import Ecto.Query, only: [from: 2]
 
   def insert_user(attrs \\ %{}) do
-    changes = Dict.merge(%{name: "Test User",
+    changes = Map.merge(%{name: "Test User",
     username: "testuser",
     email: "test@test.com",
-    password: "test123",
+    #password: "test123",
     }, attrs)
 
-    %Plunger.Accounts.User{}
-    |> Plunger.Accounts.User.registration_changeset(changes)
-    |> Repo.insert!()
+    {:ok, user} = Accounts.create_user(changes)
+
+    user
   end
 
   def insert_category(attrs \\ %{}) do
-    changes = Dict.merge(%{name: "Test Category",
+    changes = Map.merge(%{name: "Test Category",
     }, attrs)
 
-    %Plunger.Categories.Category{}
-    |> Plunger.Categories.Category.changeset(changes)
-    |> Repo.insert!()
+    {:ok, category} =
+      %Plunger.Categories.Category{}
+      |> Plunger.Categories.Category.changeset(changes)
+      |> Repo.insert()
+
+    category
+  end
+
+  def get_num_votes(%Question{} = question) do
+    sum = Repo.aggregate((from qv in QuestionVote, where: qv.question_id == ^question.id), :sum, :votes)
+    case sum do
+      nil -> 0
+      _ -> sum
+    end
+  end
+
+  def get_num_votes(%Response{} = response) do
+    sum = Repo.aggregate((from rv in ResponseVote, where: rv.response_id == ^response.id), :sum, :votes)
+    case sum do
+      nil -> 0
+      _ -> sum
+    end
+  end
+
+  def insert_question(user, category, attrs \\ %{}) do
+    valid_attrs = %{"body" => "some body", "title" => "some title"}
+    category_attrs = %{"categories" => [Integer.to_string(category.id)]}
+    {:ok, question} =
+      attrs
+      |> Enum.into(category_attrs)
+      |> Enum.into(valid_attrs)
+      |> Questions.create_question(user)
+
+    question
+  end
+
+  def insert_response(user, question, attrs \\ %{}) do
+    valid_attrs = %{"description" => "some description"}
+    {:ok, response} = Responses.create_response(user, question, attrs |> Enum.into(valid_attrs))
+
+    response
   end
 
 end

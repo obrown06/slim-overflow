@@ -55,12 +55,15 @@ defmodule PlungerWeb.UserController do
     end
   end
 
-  def delete(conn, %{"id" => id}) do
-    user = Accounts.get_user!(id)
-    {:ok, _user} = Accounts.delete_user(user)
-
-    conn
-    |> put_flash(:info, "User deleted successfully.")
-    |> redirect(to: user_path(conn, :index))
-  end
+  #def delete(conn, %{"id" => id}) do
+  #  user = Accounts.get_user!(id)
+  #  case Accounts.delete_user!(user) do
+  #    {:ok, _user} ->
+  #      conn
+  #        |> put_flash(:info, "User deleted successfully.")
+  #        |> redirect(to: user_path(conn, :index))
+  #    {:error, %Ecto.Changeset{} = changeset} ->
+  #      render(conn, "index.html", user: user, changeset: changeset)
+  #  end
+  #end
 end

@@ -1,6 +1,9 @@
 <h2>Listing Questions</h2>
 
-<%= render "form_filter.html", conn: @conn, categories: list_categories() %>
+<%= render "form_filter.html", conn: @conn, categories: list_categories()
+     %>
+
+
 
 <table class="table">
   <thead>
