@@ -86,7 +86,7 @@ defmodule Plunger.Comments do
 
   """
 
-  def create_comment(%User{} = user, %{"parent_type" => question, "comment" => comment_params, "question_id" => question_id}) do
+  def create_comment(%User{} = user, %{"parent_type" => "question", "comment" => comment_params, "question_id" => question_id}) do
     Questions.get_question!(question_id) |> create_comment(user, comment_params)
   end
 

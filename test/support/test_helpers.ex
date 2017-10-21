@@ -6,6 +6,9 @@ defmodule Plunger.TestHelpers do
   alias Plunger.Responses
   alias Plunger.Responses.Response
   alias Plunger.Responses.ResponseVote
+  alias Plunger.Comments
+  alias Plunger.Comments.Comment
+  alias Plunger.Comments.CommentVote
   alias Plunger.Accounts
   import Ecto.Query, only: [from: 2]
 
@@ -49,6 +52,14 @@ defmodule Plunger.TestHelpers do
     end
   end
 
+  def get_num_votes(%Comment{} = comment) do
+    sum = Repo.aggregate((from cv in CommentVote, where: cv.comment_id == ^comment.id), :sum, :votes)
+    case sum do
+      nil -> 0
+      _ -> sum
+    end
+  end
+
   def insert_question(user, category, attrs \\ %{}) do
     valid_attrs = %{"body" => "some body", "title" => "some title"}
     category_attrs = %{"categories" => [Integer.to_string(category.id)]}
@@ -66,6 +77,30 @@ defmodule Plunger.TestHelpers do
     {:ok, response} = Responses.create_response(user, question, attrs |> Enum.into(valid_attrs))
 
     response
+  end
+
+  def insert_comment_on_question(user, question, attrs \\ %{}) do
+    valid_attrs = %{"comment" => %{"description" => "some description"}, "parent_type" => "question", "question_id" => question.id}
+
+    {:ok, comment} = Comments.create_comment(user, attrs |> Enum.into(valid_attrs))
+
+    comment
+  end
+
+  def insert_comment_on_response(user, response, attrs \\ %{}) do
+    valid_attrs = %{"comment" => %{"description" => "some description"}, "parent_type" => "response", "response_id" => response.id}
+
+    {:ok, comment} = Comments.create_comment(user, attrs |> Enum.into(valid_attrs))
+
+    comment
+  end
+
+  def insert_comment_on_comment(user, comment, attrs \\ %{}) do
+    valid_attrs = %{"comment" => %{"description" => "some description"}, "parent_type" => "comment", "comment_id" => comment.id}
+
+    {:ok, comment} = Comments.create_comment(user, attrs |> Enum.into(valid_attrs))
+
+    comment
   end
 
 end
