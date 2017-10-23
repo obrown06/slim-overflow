@@ -5,6 +5,7 @@ defmodule PlungerWeb.QuestionView do
   alias Plunger.Accounts
   alias Plunger.Responses.Response
   alias Plunger.Categories
+  alias Plunger.Categories.Category
   alias Plunger.Comments.Comment
   alias Plunger.Questions.QuestionVote
   import Ecto.Query, only: [from: 2]

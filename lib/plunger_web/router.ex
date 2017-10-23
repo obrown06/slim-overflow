@@ -26,6 +26,7 @@ defmodule PlungerWeb.Router do
     get "/questions/:id/upvote", QuestionController, :upvote
     get "/questions/:id/downvote", QuestionController, :downvote
     resources "/questions", QuestionController
+    post "/questions", QuestionController, :index
 
     get "/responses/:id/upvote", ResponseController, :upvote
     get "/responses/:id/downvote", ResponseController, :downvote

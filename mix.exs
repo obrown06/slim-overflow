@@ -43,7 +43,8 @@ defmodule Plunger.Mixfile do
       {:cowboy, "~> 1.0"},
       {:comeonin, "~> 4.0"},
       {:bcrypt_elixir, "~> 1.0"},
-      {:phoenix_mtm, "~> 0.5.1"}
+      {:phoenix_mtm, "~> 0.5.1"},
+      {:hound, "~> 1.0"}
     ]
   end
 

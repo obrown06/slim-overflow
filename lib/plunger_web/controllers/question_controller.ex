@@ -15,15 +15,18 @@ defmodule PlungerWeb.QuestionController do
 
   def index(conn, params, _user) do
     question_list =
-      case Map.fetch(params, "filter") do
+      case Map.fetch(params, "categories") do
         {:ok, filters} ->
           filters
-          |> Map.get("categories")
+          #|> Map.get("categories")
           |> Enum.filter(fn(elem) -> elem != "" end)
-          |> Enum.reduce([], fn(category_id, acc) ->
-            questions =
-              category_id |> Categories.get_category!() |> Questions.list_questions()
-            acc ++ questions end)
+          |> Enum.reduce([], fn({category_id, value}, acc) ->
+            if value == "true" do
+              questions = category_id |> String.to_integer() |> Categories.get_category!() |> Questions.list_questions()
+              acc ++ questions
+            else
+              acc
+            end end)
         :error -> Questions.list_questions()
       end
     render(conn, "index.html", questions: question_list)

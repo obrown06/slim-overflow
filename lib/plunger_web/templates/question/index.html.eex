@@ -1,9 +1,25 @@
 <h2>Listing Questions</h2>
 
-<%= render "form_filter.html", conn: @conn, categories: list_categories()
+<%= #render "form_filter.html", conn: @conn, categories: list_categories()
      %>
 
+<%= form_tag(question_path(@conn, :index), [method: :get]) do %>
 
+    <h3>Filter by Category</h2>
+
+    <%= for category <- list_categories() do %>
+
+      <%= category.name %>
+      <%= checkbox(:categories, category.id) %>
+
+    <% end %>
+
+
+    <div class="form-group">
+      <%= submit "Filter", class: "btn btn-primary" %>
+    </div>
+
+<%= end %>
 
 <table class="table">
   <thead>
