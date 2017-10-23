@@ -19,7 +19,7 @@
       <%= submit "Filter", class: "btn btn-primary" %>
     </div>
 
-<%= end %>
+<% end %>
 
 <table class="table">
   <thead>
@@ -29,6 +29,7 @@
       <th>Categories</th>
       <th>User</th>
       <th>DateTime Posted</th>
+      <th>Votes</th>
 
       <th></th>
     </tr>
@@ -41,8 +42,12 @@
       <td><%= list_categories(question) %></td>
       <td><%= get_username(question) %></td>
       <td><%= get_date_time(question) %></td>
+      <td><%= get_num_votes(question) %></td>
+
 
       <td class="text-right">
+        <span><%= link "Upvote Question", to: question_path(@conn, :upvote, question), class: "btn btn-default btn-xs"%></span>
+        <span><%= link "Downvote Question", to: question_path(@conn, :downvote, question), class: "btn btn-default btn-xs"%></span>
         <span><%= link "Show", to: question_path(@conn, :show, question), class: "btn btn-default btn-xs" %></span>
         <span><%= link "Edit", to: question_path(@conn, :edit, question), class: "btn btn-default btn-xs" %></span>
         <span><%= link "Delete", to: question_path(@conn, :delete, question), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
