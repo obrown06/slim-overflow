@@ -6,38 +6,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
+    <%= if Guardian.Plug.current_token(@conn) do %>
+      <meta name="guardian_token" content="<%= Guardian.Plug.current_token(@conn) %>" username="<%= @current_user.name %>">
+    <% end %>
 
-    <title>Hello Plunger!</title>
+    <title>Plunger</title>
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,400,300,600,700" rel="stylesheet" type="text/css">
     <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
   </head>
-
   <body>
-    <div class="container">
-      <div class="header">
-        <ol class="breadcrumb text-right">
-          <%= if @current_user do %>
-            <li><%= @current_user.username %></li>
-            <li>
-              <%= link "Log out", to: session_path(@conn, :delete, @current_user),
-                method: "delete" %>
-            </li>
-            <li> <%= link "My Account", to: user_path(@conn, :show, @current_user)%></li>
-          <% else %>
-            <li><%= link "Register", to: user_path(@conn, :new) %></li>
-            <li><%= link "Log in", to: session_path(@conn, :new) %></li>
-          <% end %>
-        </ol>
-        <span class="logo"></span>
+    <nav class="plunger-nav">
+      <div class="ul-wrap">
+        <ul class="nav-ul">
+          <li>Plunger</li>
+          <%= render "login_bar.html", current_user: @current_user, conn: @conn %>
+        </ul>
       </div>
-
-      <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
-      <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
-
-      <main role="main">
-        <%= render @view_module, @view_template, assigns %>
-      </main>
-
-    </div> <!-- /container -->
+    </nav>
+    <main>
+      <%= show_flash(@conn) %>
+      <%= render @view_module, @view_template, assigns %>
+    </main>
     <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
   </body>
 </html>

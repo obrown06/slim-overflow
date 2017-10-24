@@ -20,7 +20,9 @@ defmodule Plunger.Mixfile do
   def application do
     [
       mod: {Plunger.Application, []},
-      extra_applications: [:logger, :runtime_tools, :comeonin, :bcrypt_elixir]
+      extra_applications: [:logger, :runtime_tools,
+      :comeonin, :bcrypt_elixir, :oauth2,
+      :ueberauth, :ueberauth_google, :ueberauth_github]
     ]
   end
 
@@ -45,7 +47,13 @@ defmodule Plunger.Mixfile do
       {:bcrypt_elixir, "~> 1.0"},
       {:phoenix_mtm, "~> 0.5.1"},
       {:hound, "~> 1.0"},
-      {:navigation_history, "~> 0.0"}
+      {:navigation_history, "~> 0.0"},
+      {:ueberauth, "~> 0.4"},
+      {:ueberauth_identity, "~> 0.2"},
+      {:ueberauth_google, "~> 0.2"},
+      {:ueberauth_github, "~> 0.4"},
+      {:guardian_db, "~> 0.8.0"},
+      {:guardian, "~> 0.14"}
     ]
   end
 

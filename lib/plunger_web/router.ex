@@ -7,7 +7,7 @@ defmodule PlungerWeb.Router do
     plug :fetch_flash
     plug :protect_from_forgery
     plug :put_secure_browser_headers
-    plug PlungerWeb.Auth, repo: Plunger.Repo
+    #plug PlungerWeb.Auth, repo: Plunger.Repo
     plug NavigationHistory.Tracker
   end
 
@@ -15,11 +15,19 @@ defmodule PlungerWeb.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :browser_auth do
+    plug Guardian.Plug.VerifySession
+    plug Guardian.Plug.LoadResource
+  end
+
 
   scope "/", PlungerWeb do
-    pipe_through :browser # Use the default browser stack
+    pipe_through [:browser, :browser_auth] # Use the default browser stack
 
     get "/", PageController, :index
+    delete "/logout", AuthController, :logout
+    get "/credentials", AuthController, :credentials
+    get "/signup", SignupController, :new
     resources "/users", UserController, except: [:delete]
     resources "/sessions", SessionController, only: [:new, :create, :delete]
     resources "/categories", CategoryController, only: [:index, :new, :create, :show]
@@ -36,6 +44,14 @@ defmodule PlungerWeb.Router do
     get "/comments/:id/upvote", CommentController, :upvote
     get "/comments/:id/downvote", CommentController, :downvote
     resources "/comments", CommentController, only: [:create]
+  end
+
+  scope "/auth", PlungerWeb do
+    pipe_through [:browser, :browser_auth]
+
+    get "/:identity", AuthController, :login
+    get "/:identity/callback", AuthController, :callback
+    post "/:identity/callback", AuthController, :callback
   end
 
   # Other scopes may use custom stacks.

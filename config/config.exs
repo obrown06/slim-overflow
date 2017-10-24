@@ -22,6 +22,26 @@ config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
+
+config :guardian, Guardian,
+  issuer: "Plunger.#{Mix.env}",
+  ttl: {30, :days},
+  verify_issuer: true,
+  serializer: PlungerWeb.GuardianSerializer,
+  secret_key: to_string(Mix.env),
+  hooks: GuardianDb,
+  permissions: %{
+  default: [
+      :read_profile,
+      :write_profile,
+      :read_token,
+      :revoke_token,
+    ],
+  }
+
+config :guardian_db, GuardianDb,
+       repo: Plunger.Repo
+
 config :hound, browser: "chrome"
 
 # Import environment specific config. This must remain at the bottom
