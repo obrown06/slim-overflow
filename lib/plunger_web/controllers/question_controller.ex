@@ -51,13 +51,13 @@ defmodule PlungerWeb.QuestionController do
   def upvote(conn, %{"id" => id}, user) do
     Questions.upvote_question!(id, user.id)
     question = Questions.get_question!(id)
-    conn |> redirect(to: question_path(conn, :show, question))
+    conn |> redirect(to: NavigationHistory.last_path(conn, 1)) #question_path(conn, :show, question))
   end
 
   def downvote(conn, %{"id" => id}, user) do
     Questions.downvote_question!(id, user.id)
     question = Questions.get_question!(id)
-    conn |> redirect(to: question_path(conn, :show, question))
+    conn |> redirect(to: NavigationHistory.last_path(conn, 1)) #question_path(conn, :show, question))
   end
 
   def show(conn, %{"id" => id}, _user) do

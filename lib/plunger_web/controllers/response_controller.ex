@@ -39,12 +39,12 @@ defmodule PlungerWeb.ResponseController do
 
   def upvote(conn, %{"id" => id}, user, question) do
     Responses.upvote_response!(id, user.id)
-    conn |> redirect(to: question_path(conn, :show, question))
+    conn |> redirect(to: NavigationHistory.last_path(conn, 1))
   end
 
   def downvote(conn, %{"id" => id}, user, question) do
     Responses.downvote_response!(id, user.id)
-    conn |> redirect(to: question_path(conn, :show, question))
+    conn |> redirect(to: NavigationHistory.last_path(conn, 1))
   end
 
   #def upvote(conn, %{"id" => id}, user) do

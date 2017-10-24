@@ -10,7 +10,7 @@ defmodule PlungerWeb.Auth do
     else
       conn
       |> put_flash(:error, "You must be logged in to access that page")
-      |> redirect(to: Helpers.question_path(conn, :index))
+      |> redirect(to: NavigationHistory.last_path(conn, 1))
       |> halt()
     end
   end
@@ -22,7 +22,7 @@ defmodule PlungerWeb.Auth do
     else
       conn
       |> put_flash(:error, "You cannot perform this action on this user")
-      |> redirect(to: Helpers.question_path(conn, :index))
+      |> redirect(to: NavigationHistory.last_path(conn, 1))
       |> halt()
     end
   end

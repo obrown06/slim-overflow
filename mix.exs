@@ -44,7 +44,8 @@ defmodule Plunger.Mixfile do
       {:comeonin, "~> 4.0"},
       {:bcrypt_elixir, "~> 1.0"},
       {:phoenix_mtm, "~> 0.5.1"},
-      {:hound, "~> 1.0"}
+      {:hound, "~> 1.0"},
+      {:navigation_history, "~> 0.0"}
     ]
   end
 

@@ -49,12 +49,12 @@ defmodule PlungerWeb.CommentController do
 
   def upvote(conn, %{"id" => id}, user, question) do
     Comments.upvote_comment!(id, user.id)
-    conn |> redirect(to: question_path(conn, :show, question))
+    conn |> redirect(to: NavigationHistory.last_path(conn, 1))
   end
 
   def downvote(conn, %{"id" => id}, user, question) do
     Comments.downvote_comment!(id, user.id)
-    conn |> redirect(to: question_path(conn, :show, question))
+    conn |> redirect(to: NavigationHistory.last_path(conn, 1))
   end
 
   #def show(conn, %{"id" => id}) do

@@ -8,6 +8,7 @@ defmodule PlungerWeb.Router do
     plug :protect_from_forgery
     plug :put_secure_browser_headers
     plug PlungerWeb.Auth, repo: Plunger.Repo
+    plug NavigationHistory.Tracker
   end
 
   pipeline :api do
