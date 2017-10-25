@@ -133,7 +133,7 @@ defmodule PlungerWeb.UserFromAuth do
     end
   end
 
-  defp auth_and_validate(%{provider: service} = auth, repo)  when service in [:google, :facebook] do
+  defp auth_and_validate(%{provider: service} = auth, repo)  when service in [:google, :facebook, :github] do
     case repo.get_by(Authorization, uid: uid_from_auth(auth), provider: to_string(auth.provider)) do
       nil -> {:error, :not_found}
       authorization ->
@@ -152,7 +152,6 @@ defmodule PlungerWeb.UserFromAuth do
         if authorization.token == auth.credentials.token do
           authorization
         else
-          IO.puts(auth.credentials.token)
           {:error, :token_mismatch}
         end
     end
