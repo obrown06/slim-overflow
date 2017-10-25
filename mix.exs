@@ -51,6 +51,7 @@ defmodule Plunger.Mixfile do
       {:ueberauth, "~> 0.4"},
       {:ueberauth_identity, "~> 0.2"},
       {:ueberauth_google, "~> 0.2"},
+      {:ueberauth_facebook, "~> 0.7"},
       {:ueberauth_github, "~> 0.4"},
       {:guardian_db, "~> 0.8.0"},
       {:guardian, "~> 0.14"}

@@ -15,6 +15,14 @@
           <a href="<%= auth_path(@conn, :login, "github") %>" class="c-btn c-btn--full github"><i class="typcn typcn-social-github"></i> Github</a>
         <% end %>
 
+        <%= if not Enum.member?(@current_auths, "google") do %>
+          <a href="<%= auth_path(@conn, :login, "google") %>" class="c-btn c-btn--full google"><i class="typcn typcn-social-google"></i> Google</a>
+        <% end %>
+
+        <%= if not Enum.member?(@current_auths, "facebook") do %>
+          <a href="<%= auth_path(@conn, :login, "facebook") %>" class="c-btn c-btn--full facebook"><i class="typcn typcn-social-facebook"></i> Facebook</a>
+        <% end %>
+
         <%= if not Enum.member?(@current_auths, "identity") do %>
           <div class="u-font-center u-mar-top-m">or</div>
 

@@ -152,6 +152,7 @@ defmodule PlungerWeb.UserFromAuth do
         if authorization.token == auth.credentials.token do
           authorization
         else
+          IO.puts(auth.credentials.token)
           {:error, :token_mismatch}
         end
     end
