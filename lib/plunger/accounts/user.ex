@@ -7,6 +7,7 @@ defmodule Plunger.Accounts.User do
   schema "users" do
     field :email, :string
     field :name, :string
+    field :is_admin, :boolean, default: false
     #field :email_verified, :boolean
     #field :username, :string
     #field :password, :string, virtual: true

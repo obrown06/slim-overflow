@@ -101,4 +101,10 @@ defmodule Plunger.Accounts do
   def change_user(%User{} = user) do
     User.changeset(user, %{})
   end
+
+  def promote(%User{} = user) do
+    user
+    |> Ecto.Changeset.change(is_admin: true)
+    |> Repo.update()
+  end
 end

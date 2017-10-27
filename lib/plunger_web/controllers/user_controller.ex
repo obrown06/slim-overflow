@@ -55,6 +55,18 @@ defmodule PlungerWeb.UserController do
     end
   end
 
+  def promote(conn, %{"id" => id}, user, _claims) do
+    promote_user = Accounts.get_user!(id)
+    case Accounts.promote(promote_user) do
+      {:ok, promoted_user} ->
+        conn
+        |> put_flash(:info, "User promoted successfully.")
+        |> redirect(to: user_path(conn, :show, promoted_user))
+      {:error, %Ecto.Changeset{} = changeset} ->
+        render(conn, "show.html", user: promote_user, changeset: changeset)
+    end
+  end
+
   defp unauthenticated(conn, _params) do
     conn
       |> put_flash(:error, "You must be logged in to access that page")
@@ -65,7 +77,7 @@ defmodule PlungerWeb.UserController do
   def check_identity(conn, _opts) do
     user = Guardian.Plug.current_resource(conn)
     user_id = Map.get(conn.params, "id") |> String.to_integer()
-    if user.id == user_id do
+    if user.id == user_id or user.is_admin do
       conn
     else
       conn

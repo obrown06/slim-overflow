@@ -32,6 +32,7 @@ defmodule PlungerWeb.Router do
 
     get "/signup", SignupController, :new
     resources "/users", UserController, except: [:delete]
+    get "/users/:id/promote", UserController, :promote
     resources "/sessions", SessionController, only: [:new, :create, :delete]
     resources "/categories", CategoryController, only: [:index, :new, :create, :show]
 

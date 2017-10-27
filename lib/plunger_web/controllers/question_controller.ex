@@ -3,7 +3,8 @@ defmodule PlungerWeb.QuestionController do
   #plug :authenticate_user when action in [:new, :create, :edit, :update, :delete, :upvote, :downvote]
   plug :load_categories when action in [:new, :create, :edit, :update]
   plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
-  plug :verify_owner when action in [:edit, :update, :delete]
+  plug :verify_owner when action in [:delete]
+  plug :verify_owner_or_admin when action in [:edit, :update]
   alias Plunger.Questions
   alias Plunger.Categories
   alias Plunger.Comments
@@ -107,6 +108,19 @@ defmodule PlungerWeb.QuestionController do
     user = Guardian.Plug.current_resource(conn)
     question = Questions.get_question!(conn.params["id"])
     if user.id == question.user_id do
+      conn
+    else
+      conn
+        |> put_flash(:info, "You aren't this question's owner")
+        |> redirect(to: question_path(conn, :index))
+        |> halt()
+    end
+  end
+
+  def verify_owner_or_admin(conn, _params) do
+    user = Guardian.Plug.current_resource(conn)
+    question = Questions.get_question!(conn.params["id"])
+    if user.id == question.user_id or user.is_admin do
       conn
     else
       conn

@@ -10,3 +10,7 @@
 </ul>
 
 <span><%= link "Back", to: user_path(@conn, :index) %></span>
+
+<%= if current_user(@conn).is_admin and not @user.is_admin do %>
+  <span><%= link "Promote To Admin", to: user_path(@conn, :promote, @user), class: "btn btn-default btn-xs" %></span>
+<% end %>

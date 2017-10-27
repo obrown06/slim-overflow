@@ -37,7 +37,11 @@
 
 </ul>
 
-<span><%= link "Edit", to: question_path(@conn, :edit, @question) %></span>
+
+<%= if current_user(@conn).is_admin or current_user(@conn).id == @question.user_id do %>
+  <span><%= link "Edit", to: question_path(@conn, :edit, @question), class: "btn btn-default btn-xs" %></span>
+<% end %>
+
 <span><%= link "Question List", to: question_path(@conn, :index) %></span>
 
 
