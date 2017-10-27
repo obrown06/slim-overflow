@@ -4,6 +4,7 @@ defmodule Plunger.Repo.Migrations.CreateResponses do
   def change do
     create table(:responses) do
       add :description, :string
+      add :is_best, :boolean, default: false
       add :user_id, references(:users, on_delete: :delete_all)
       add :question_id, references(:questions, on_delete: :delete_all)
 

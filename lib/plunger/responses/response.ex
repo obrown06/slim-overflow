@@ -12,6 +12,7 @@ defmodule Plunger.Responses.Response do
 
   schema "responses" do
     field :description, :string
+    field :is_best, :boolean, default: false
     belongs_to :user, User, foreign_key: :user_id
     belongs_to :question, Question, foreign_key: :question_id
     has_many :comments, Comment, on_delete: :delete_all

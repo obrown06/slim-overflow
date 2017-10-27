@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <%= if Guardian.Plug.current_token(@conn) do %>
-      <meta name="guardian_token" content="<%= Guardian.Plug.current_token(@conn) %>" username="<%= @current_user.name %>">
+      <meta name="guardian_token" content="<%= Guardian.Plug.current_token(@conn) %>" username="<%= current_user(@conn).name %>">
     <% end %>
 
     <title>Plunger</title>
@@ -19,7 +19,7 @@
       <div class="ul-wrap">
         <ul class="nav-ul">
           <li>Plunger</li>
-          <%= render "login_bar.html", current_user: @current_user, conn: @conn %>
+          <%= render "login_bar.html", current_user: current_user(@conn), conn: @conn %>
         </ul>
       </div>
     </nav>

@@ -1,21 +1,21 @@
 defmodule PlungerWeb.UserController do
   use PlungerWeb, :controller
-  plug :authenticate_user when action in [:index, :show, :delete, :update, :edit]
-  plug :verify_user when action in [:edit, :update, :delete]
+  plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
+  plug :check_identity when action in [:edit, :update, :delete]
   alias Plunger.Accounts
   alias Plunger.Accounts.User
 
-  def index(conn, _params) do
+  def index(conn, _params, user, _claims) do
     users = Accounts.list_users()
     render(conn, "index.html", users: users)
   end
 
-  def new(conn, _params) do
+  def new(conn, _params, user, _claims) do
     changeset = Accounts.change_user(%User{})
     render(conn, "new.html", changeset: changeset)
   end
 
-  def create(conn, %{"user" => user_params}) do
+  def create(conn, %{"user" => user_params}, user, _claims) do
     case Accounts.create_user(user_params) do
       {:ok, user} ->
         conn
@@ -27,22 +27,22 @@ defmodule PlungerWeb.UserController do
     end
   end
 
-  def show(conn, %{"id" => id}) do
+  def show(conn, %{"id" => id}, current_user, _claims) do
     user = Accounts.get_user!(id)
-    if user == conn.assigns.current_user do
+    if user == current_user do
       render(conn, "my_account.html", user: user)
     else
       render(conn, "show.html", user: user)
     end
   end
 
-  def edit(conn, %{"id" => id}) do
+  def edit(conn, %{"id" => id}, user, _claims) do
     user = Accounts.get_user!(id)
     changeset = Accounts.change_user(user)
     render(conn, "edit.html", user: user, changeset: changeset)
   end
 
-  def update(conn, %{"id" => id, "user" => user_params}) do
+  def update(conn, %{"id" => id, "user" => user_params}, user, _claims) do
     user = Accounts.get_user!(id)
 
     case Accounts.update_user(user, user_params) do
@@ -52,6 +52,26 @@ defmodule PlungerWeb.UserController do
         |> redirect(to: user_path(conn, :show, user))
       {:error, %Ecto.Changeset{} = changeset} ->
         render(conn, "edit.html", user: user, changeset: changeset)
+    end
+  end
+
+  defp unauthenticated(conn, _params) do
+    conn
+      |> put_flash(:error, "You must be logged in to access that page")
+      |> redirect(to: "/") #NavigationHistory.last_path(conn, 1))
+      |> halt()
+  end
+
+  def check_identity(conn, _opts) do
+    user = Guardian.Plug.current_resource(conn)
+    user_id = Map.get(conn.params, "id") |> String.to_integer()
+    if user.id == user_id do
+      conn
+    else
+      conn
+      |> put_flash(:error, "You cannot perform this action on this user")
+      |> redirect(to: NavigationHistory.last_path(conn, 1))
+      |> halt()
     end
   end
 

@@ -2,13 +2,13 @@
   <div class="o-grid__col o-grid__col--4-of-12"></div>
     <div class="o-grid__col o-grid__col--4-of-12">
       <div class="c-card c-card--floating is-selected form-card">
-        <h3>
+        <h4>
           <%= if @current_user do %>
             Connect your account to
           <% else %>
             Login with
           <% end %>
-        </h3>
+        </h4>
         <hr></hr>
 
         <%= if not Enum.member?(@current_auths, "github") do %>
@@ -42,7 +42,7 @@
         <% end %>
 
         <%= if !@current_user do %>
-          <p class="u-font-center u-mar-top-m"><%= link "Sign up with your email", to: signup_path(@conn, :new) %></p>
+          <p class="u-font-center u-mar-top-m"><%= link "Sign Up", to: signup_path(@conn, :new) %></p>
         <% end %>
       </div>
     </div>

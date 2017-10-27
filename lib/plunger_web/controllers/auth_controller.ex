@@ -64,6 +64,22 @@ defmodule PlungerWeb.AuthController do
     end
   end
 
+  #def verify_email(conn, %{"token" => token}, current_user, _claims) do
+  #  with {:ok, user_id} <- Plunger.Token.verify_new_account_token(token),
+  #       {:ok, %User{verified: false} = user} <- Plunger.Accounts.get_user!(user_id)
+  #    Plunger.Accounts.mark_as_verified(user)
+  #    render(conn, "verified.html")
+  #  else
+  #    _ -> render(conn, "invalid_token.html")
+  #  end
+  #end
+
+  #def verify_email(conn, _, current_user, _claims) do
+  #  conn
+  #  |> put_flash(:error, "The verification link is invalid.")
+  #  |> redirect(to: "/")
+  #end
+
   defp auths(nil), do: []
   defp auths(%Plunger.Accounts.User{} = user) do
     Ecto.assoc(user, :authorizations)

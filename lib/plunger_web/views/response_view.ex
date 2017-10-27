@@ -13,18 +13,32 @@ defmodule PlungerWeb.ResponseView do
     user.username
   end
 
+  def get_name(%Response{} = response) do
+    user = Accounts.get_user!(response.user_id)
+    user.name
+  end
+
   def get_date_time(%Response{} = response) do
     response.inserted_at
   end
 
 
   def get_responses(%Question{} = question) do
-    query = (from r in Response,
+    responses = (from r in Response,
               where: r.question_id == ^question.id,
               select: r)
       |> order_by_time_posted
       |> Repo.all
 
+    question = question |> Repo.preload(:responses)
+    best = Enum.filter(question.responses, fn(r) -> r.is_best == true end)
+
+    if [best] != [] do
+      rest = responses |> Enum.filter(fn(response) -> [response] != best end)
+      best ++ rest
+    else
+      responses
+    end
   end
 
   def order_by_time_posted(query) do

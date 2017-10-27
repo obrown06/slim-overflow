@@ -10,7 +10,7 @@ defmodule PlungerWeb.LayoutView do
   end
 
   def flash_msg(%{"error" => msg}) do
-    ~E"div><%= msg %></div>"
+    ~E"<div><%= msg %></div>"
   end
 
   def flash_msg(_) do

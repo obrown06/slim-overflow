@@ -1,6 +1,7 @@
 defmodule PlungerWeb.CommentController do
   use PlungerWeb, :controller
-  plug :authenticate_user when action in [:create, :upvote, :downvote]
+  #plug :authenticate_user when action in [:create, :upvote, :downvote]
+  plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
   alias Plunger.Comments
   alias Plunger.Questions
   alias Plunger.Responses
@@ -26,16 +27,17 @@ defmodule PlungerWeb.CommentController do
   #  end
   #end
 
-  def action(conn, _) do
-    question =
-      conn.params["question_id"]
-      |> Questions.get_question!
-    apply(__MODULE__, action_name(conn),
-      [conn, conn.params, conn.assigns.current_user, question])
-  end
+  #def action(conn, _) do
+  #  question =
+  #    conn.params["question_id"]
+  #    |> Questions.get_question!
+  #  apply(__MODULE__, action_name(conn),
+  #    [conn, conn.params, conn.assigns.current_user, question])
+  #end
 
-  def create(conn, attrs, user, question) do
-    case Comments.create_comment(user, attrs) do
+  def create(conn, params, user, _claims) do
+    question = conn.params["question_id"] |> Questions.get_question!
+    case Comments.create_comment(user, params) do
       {:ok, _} ->
         conn
         |> put_flash(:info, "Comment created successfully.")
@@ -47,14 +49,21 @@ defmodule PlungerWeb.CommentController do
     end
   end
 
-  def upvote(conn, %{"id" => id}, user, question) do
+  def upvote(conn, %{"id" => id}, user, _claims) do
     Comments.upvote_comment!(id, user.id)
     conn |> redirect(to: NavigationHistory.last_path(conn, 1))
   end
 
-  def downvote(conn, %{"id" => id}, user, question) do
+  def downvote(conn, %{"id" => id}, user, _claims) do
     Comments.downvote_comment!(id, user.id)
     conn |> redirect(to: NavigationHistory.last_path(conn, 1))
+  end
+
+  defp unauthenticated(conn, _params) do
+    conn
+      |> put_flash(:error, "You must be logged in to access that page")
+      |> redirect(to: "/") #NavigationHistory.last_path(conn, 1))
+      |> halt()
   end
 
   #def show(conn, %{"id" => id}) do

@@ -15,6 +15,11 @@ defmodule PlungerWeb.CommentView do
     user.username
   end
 
+  def get_name(%Comment{} = comment) do
+    user = Accounts.get_user!(comment.user_id)
+    user.name
+  end
+
   def get_date_time(%Comment{} = comment) do
     comment.inserted_at
   end

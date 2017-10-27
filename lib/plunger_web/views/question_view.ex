@@ -30,9 +30,14 @@ defmodule PlungerWeb.QuestionView do
     question.inserted_at
   end
 
-  def get_username(%Question{} = question) do
+  #def get_username(%Question{} = question) do
+  #  user = Accounts.get_user!(question.user_id)
+  #  user.username
+  #end
+
+  def get_name(%Question{} = question) do
     user = Accounts.get_user!(question.user_id)
-    user.username
+    user.name
   end
 
   def get_num_votes(%Question{} = question) do

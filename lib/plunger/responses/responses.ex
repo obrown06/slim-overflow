@@ -104,6 +104,23 @@ defmodule Plunger.Responses do
     response |> Response.changeset(%{})
   end
 
+  def promote_response(%Question{} = question, %Response{} = response) do
+    question = question |> Repo.preload(:responses)
+
+    old_best = Enum.filter(question.responses, fn(r) -> r.is_best == true end)
+
+    if old_best != [] do
+      old_best
+        |> List.first()
+        |> Ecto.Changeset.change(is_best: false)
+        |> Repo.update!()
+    end
+
+    response
+    |> Ecto.Changeset.change(is_best: true)
+    |> Repo.update()
+  end
+
   @doc """
   Decrements the :votes field in the ResponseVote table associated with the given response_id and user_id.
   If the field doesn't exist, creates and inserts it with a :votes value of '1'.

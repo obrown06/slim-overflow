@@ -25,8 +25,11 @@ defmodule PlungerWeb.Router do
     pipe_through [:browser, :browser_auth] # Use the default browser stack
 
     get "/", PageController, :index
+
     delete "/logout", AuthController, :logout
     get "/credentials", AuthController, :credentials
+    get "/verify", AuthController, :verify_email
+
     get "/signup", SignupController, :new
     resources "/users", UserController, except: [:delete]
     resources "/sessions", SessionController, only: [:new, :create, :delete]
@@ -39,6 +42,7 @@ defmodule PlungerWeb.Router do
 
     get "/responses/:id/upvote", ResponseController, :upvote
     get "/responses/:id/downvote", ResponseController, :downvote
+    get "/responses/:id/promote", ResponseController, :promote
     resources "/responses", ResponseController, only: [:create]
 
     get "/comments/:id/upvote", CommentController, :upvote

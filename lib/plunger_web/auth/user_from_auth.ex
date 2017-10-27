@@ -109,7 +109,7 @@ defmodule PlungerWeb.UserFromAuth do
 
   defp create_user(auth, repo) do
     name = name_from_auth(auth)
-    result = User.registration_changeset(%User{}, scrub(%{email: auth.info.email, name: name}))
+    result = User.registration_changeset(%User{}, scrub(%{email: auth.info.email, email_verified: false, name: name}))
     |> repo.insert
     case result do
       {:ok, user} -> user

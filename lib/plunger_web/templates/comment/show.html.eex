@@ -10,7 +10,7 @@
   </li>
   <li>
     <strong>Posted by: </strong>
-    <%= get_username(@comment) %>
+    <%= get_name(@comment) %>
   </li>
   <li>
     <strong>Votes: </strong>
