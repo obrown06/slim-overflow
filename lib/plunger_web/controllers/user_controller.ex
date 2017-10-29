@@ -1,6 +1,6 @@
 defmodule PlungerWeb.UserController do
   use PlungerWeb, :controller
-  plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
+  plug Guardian.Plug.EnsureAuthenticated when action in [:index, :show, :edit, :update, :delete, :promote]#, handler: __MODULE__
   plug :check_identity when action in [:edit, :update, :delete]
   alias Plunger.Accounts
   alias Plunger.Accounts.User

@@ -1,5 +1,10 @@
 <h2>Show User</h2>
 
+<%= if @user.avatar == nil do %>
+  <img src="/uploads/no_profile_image.gif" width=200 height=200/>
+<%= else %>
+  <img src="<%= PlungerWeb.Avatar.url({@user.avatar, @user}) %>" width="200" height="200"/><td>
+<% end %>
 <ul>
 
   <li>

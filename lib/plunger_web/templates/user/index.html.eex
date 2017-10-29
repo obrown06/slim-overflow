@@ -3,6 +3,7 @@
 <table class="table">
   <thead>
     <tr>
+      <th>Picture</th>
       <th>Email</th>
       <th>Name</th>
 
@@ -12,6 +13,13 @@
   <tbody>
 <%= for user <- @users do %>
     <tr>
+      <td>
+        <%= if user.avatar == nil do %>
+          <img src="/uploads/no_profile_image.gif" width=200 height=200/>
+        <%= else %>
+          <img src="<%= PlungerWeb.Avatar.url({user.avatar, user}) %>" width="200" height="200"/>
+        <% end %>
+      </td>
       <td><%= user.email %></td>
       <td><%= user.name %></td>
 

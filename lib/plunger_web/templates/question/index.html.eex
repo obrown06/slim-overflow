@@ -3,6 +3,10 @@
 <%= #render "form_filter.html", conn: @conn, categories: list_categories()
      %>
 
+<script type="text/javascript" src="/path/to/jquery-latest.js"></script>
+<script type="text/javascript" src="/path/to/jquery.tablesorter.js"></script>
+
+
 <%= form_tag(question_path(@conn, :index), [method: :get]) do %>
 
     <h3>Filter by Category</h2>
@@ -21,7 +25,7 @@
 
 <% end %>
 
-<table class="table">
+<table class="table" class="tablesorter">
   <thead>
     <tr>
       <th>Title</th>

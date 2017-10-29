@@ -1,10 +1,11 @@
 defmodule Plunger.Accounts.User do
   use Ecto.Schema
+  use Arc.Ecto.Schema
   import Ecto.Changeset
   alias Plunger.Accounts.User
 
-
   schema "users" do
+    field :avatar, PlungerWeb.Avatar.Type
     field :email, :string
     field :name, :string
     field :is_admin, :boolean, default: false
@@ -30,10 +31,14 @@ defmodule Plunger.Accounts.User do
   @required_fields ~w(email name)
   @optional_fields ~w()
 
+  @required_file_fields ~w()
+  @optional_file_fields ~w(avatar)
+
   @doc false
   def changeset(%User{} = user, attrs) do
     user
     |> cast(attrs, @required_fields, @optional_fields)
+    |> cast_attachments(attrs, @optional_file_fields)
     |> validate_format(:email, ~r/@/)
     #|> cast_attachments(attrs, @required_file_fields, @optional_file_fields)
     #|> cast(attrs, [:email, :username, :name])
@@ -45,6 +50,7 @@ defmodule Plunger.Accounts.User do
   def registration_changeset(%User{} = user, attrs) do
     user
     |> cast(attrs, @required_fields)
+    |> cast_attachments(attrs, @optional_file_fields)
     #user
     #|> changeset(attrs)
     #|> cast(attrs, [:password])

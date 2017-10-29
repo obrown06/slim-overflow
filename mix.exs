@@ -54,7 +54,9 @@ defmodule Plunger.Mixfile do
       {:ueberauth_facebook, "~> 0.7"},
       {:ueberauth_github, "~> 0.4"},
       {:guardian_db, "~> 0.8.0"},
-      {:guardian, "~> 0.14"}
+      {:guardian, "~> 0.14"},
+      {:arc, "~> 0.8.0"},
+      {:arc_ecto, "~> 0.7.0"}
     ]
   end
 
