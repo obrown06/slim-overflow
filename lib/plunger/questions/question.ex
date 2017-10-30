@@ -19,6 +19,7 @@ defmodule Plunger.Questions.Question do
     has_many :comments, Comment, on_delete: :delete_all
     many_to_many :categories, Category, join_through: "questions_categories", on_delete: :delete_all, on_replace: :delete
     has_many :question_votes, QuestionVote, on_delete: :delete_all
+    #has_many :messages, Plunger.Messages.Message, on_delete: :delete_all
 
     timestamps()
   end

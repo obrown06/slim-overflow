@@ -8,6 +8,7 @@
     <meta name="author" content="">
     <%= if Guardian.Plug.current_token(@conn) do %>
       <meta name="guardian_token" content="<%= Guardian.Plug.current_token(@conn) %>" username="<%= current_user(@conn).name %>">
+      <script>window.userToken = "<%= assigns[:user_token] %>";</script>
     <% end %>
 
     <title>Plunger</title>

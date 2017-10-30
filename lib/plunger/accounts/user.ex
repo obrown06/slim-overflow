@@ -21,9 +21,11 @@ defmodule Plunger.Accounts.User do
 
     has_many :questions, Plunger.Questions.Question, on_delete: :delete_all
     has_many :question_votes, Plunger.Questions.QuestionVote, on_delete: :delete_all
+    #has_many :messages, Plunger.Messages.Message, on_delete: :delete_all
 
     has_many :comments, Plunger.Comments.Comment, on_delete: :delete_all
     has_many :comment_votes, Plunger.Comments.CommentVote, on_delete: :delete_all
+
 
     timestamps()
   end

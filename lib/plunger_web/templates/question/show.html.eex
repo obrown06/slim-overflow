@@ -45,6 +45,9 @@
 <span><%= link "Question List", to: question_path(@conn, :index) %></span>
 
 
+<div id="messages"></div>
+<input id="chat-input" type="text"></input>
+
 <div class="comments">
  <h2>Comments</h2>
  <%= for comment <- PlungerWeb.CommentView.get_nested_comments(@question) do %>

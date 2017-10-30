@@ -58,7 +58,7 @@ defmodule PlungerWeb do
       import Plug.Conn
       import Phoenix.Controller
 
-      #import PlungerWeb.Auth, only: [authenticate_user: 2]
+      import PlungerWeb.AuthHelpers, only: [put_user_token: 2]
     end
   end
 
@@ -66,6 +66,7 @@ defmodule PlungerWeb do
     quote do
       use Phoenix.Channel
       import PlungerWeb.Gettext
+      import Ecto.Query
     end
   end
 

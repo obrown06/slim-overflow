@@ -18,6 +18,7 @@ defmodule PlungerWeb.Router do
   pipeline :browser_auth do
     plug Guardian.Plug.VerifySession
     plug Guardian.Plug.LoadResource
+    plug :put_user_token
   end
 
 
