@@ -5,7 +5,10 @@
 // and connect at the socket path in "lib/web/endpoint.ex":
 import {Socket} from "phoenix"
 
-let socket = new Socket("/socket", {params: {token: window.userToken}})
+let socket = new Socket("/socket", {
+  params: {token: window.userToken},
+  logger: (kind, msg, data) => { console.log(`${kind}: ${msg}`, data) }
+})
 
 // When you connect, you'll often need to authenticate the client.
 // For example, imagine you have an authentication plug, `MyAuth`,
@@ -51,28 +54,28 @@ let socket = new Socket("/socket", {params: {token: window.userToken}})
 // Finally, pass the token on connect as below. Or remove it
 // from connect if you don't care about authentication.
 
-socket.connect()
+//socket.connect()
 
 // Now that you are connected, you can join channels with a topic:
-let channel           = socket.channel("question:lobby", {})
-let chatInput         = document.querySelector("#chat-input")
-let messagesContainer = document.querySelector("#messages")
+//let channel           = socket.channel("question:" <> question_id, {})
+//let chatInput         = document.querySelector("#chat-input")
+//let messagesContainer = document.querySelector("#messages")
 
-chatInput.addEventListener("keypress", event => {
-  if(event.keyCode === 13){
-    channel.push("new_msg", {body: chatInput.value})
-    chatInput.value = ""
-  }
-})
+//chatInput.addEventListener("keypress", event => {
+//  if(event.keyCode === 13){
+//    channel.push("new_msg", {body: chatInput.value})
+//    chatInput.value = ""
+//  }
+//})
 
-channel.on("new_msg", payload => {
-  let messageItem = document.createElement("li");
-  messageItem.innerText = `[${Date()}] ${payload.body}`
-  messagesContainer.appendChild(messageItem)
-})
+//channel.on("new_msg", payload => {
+//  let messageItem = document.createElement("li");
+//  messageItem.innerText = `[${Date()}] ${payload.body}`
+//  messagesContainer.appendChild(messageItem)
+//})
 
-channel.join()
-  .receive("ok", resp => { console.log("Joined successfully", resp) })
-  .receive("error", resp => { console.log("Unable to join", resp) })
+//channel.join()
+//  .receive("ok", resp => { console.log("Joined successfully", resp) })
+//  .receive("error", resp => { console.log("Unable to join", resp) })
 
 export default socket

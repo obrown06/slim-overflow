@@ -22,7 +22,7 @@ defmodule PlungerWeb.UserSocket do
   def connect(%{"token" => token}, socket) do
     case Phoenix.Token.verify(socket, "user socket", token, max_age: 1209600) do
       {:ok, user_id} ->
-        {:ok, assign(socket, :current_user, user_id)}
+        {:ok, assign(socket, :user_id, user_id)}
       {:error, reason} ->
         :error
     end
@@ -38,5 +38,5 @@ defmodule PlungerWeb.UserSocket do
   #     PlungerWeb.Endpoint.broadcast("user_socket:#{user.id}", "disconnect", %{})
   #
   # Returning `nil` makes this socket anonymous.
-  def id(socket), do: nil #{}"users_socket:#{socket.assigns.current_user}"
+  def id(socket), do: "users_socket:#{socket.assigns.user_id}"
 end

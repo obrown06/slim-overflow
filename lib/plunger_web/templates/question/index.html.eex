@@ -3,9 +3,10 @@
 <%= #render "form_filter.html", conn: @conn, categories: list_categories()
      %>
 
+<!--
 <script type="text/javascript" src="/path/to/jquery-latest.js"></script>
 <script type="text/javascript" src="/path/to/jquery.tablesorter.js"></script>
-
+-->
 
 <%= form_tag(question_path(@conn, :index), [method: :get]) do %>
 
@@ -24,9 +25,6 @@
     </div>
 
 <% end %>
-
-<div id="messages"></div>
-<input id="chat-input" type="text"></input>
 
 <table class="table" class="tablesorter">
   <thead>
