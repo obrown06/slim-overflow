@@ -2,7 +2,7 @@ defmodule PlungerWeb.UserSocket do
   use Phoenix.Socket
 
   ## Channels
-   channel "room:*", PlungerWeb.RoomChannel
+   channel "question:*", PlungerWeb.QuestionChannel
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket

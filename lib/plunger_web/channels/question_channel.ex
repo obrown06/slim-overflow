@@ -1,10 +1,10 @@
-defmodule PlungerWeb.RoomChannel do
+defmodule PlungerWeb.QuestionChannel do
   use Phoenix.Channel
 
-  def join("room:lobby", _message, socket) do
+  def join("question:lobby", _message, socket) do
     {:ok, socket}
   end
-  def join("room:" <> _private_room_id, _params, _socket) do
+  def join("question:" <> _private_question_id, _params, _socket) do
     {:error, %{reason: "unauthorized"}}
   end
 
