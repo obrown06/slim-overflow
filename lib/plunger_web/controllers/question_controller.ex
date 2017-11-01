@@ -7,6 +7,7 @@ defmodule PlungerWeb.QuestionController do
   plug :load_categories when action in [:new, :create, :edit, :update]
   alias Plunger.Questions
   alias Plunger.Categories
+  alias Plunger.Categories.Category
   alias Plunger.Comments
   alias Plunger.Responses
 
@@ -16,22 +17,35 @@ defmodule PlungerWeb.QuestionController do
   #end
 
   def index(conn, params, _user, _claims) do
-    question_list =
+    categories =
       case Map.fetch(params, "categories") do
-        {:ok, filters} ->
-          filters
-          #|> Map.get("categories")
-          |> Enum.filter(fn(elem) -> elem != "" end)
-          |> Enum.reduce([], fn({category_id, value}, acc) ->
-            if value == "true" do
-              questions = category_id |> String.to_integer() |> Categories.get_category!() |> Questions.list_questions()
-              acc ++ questions
-            else
-              acc
-            end end)
-        :error -> Questions.list_questions()
+        {:ok, list} -> list
+        :error -> "all"
       end
-    render(conn, "index.html", questions: question_list)
+
+    render(conn, "index.html", categories: categories, sort: Map.get(params, "sort"))
+    #question_list =
+    #  case Map.fetch(params, "categories") do
+    #    {:ok, category_list} ->
+    #      category_list
+    #      |> Enum.filter()
+    #question_list =
+    #  case Map.fetch(params, "categories") do
+    #    {:ok, filters} ->
+    #      filters
+    #      #|> Map.get("categories")
+    #      |> Enum.filter(fn(elem) -> elem != "" end)
+    #      |> Enum.reduce([], fn({category_id, value}, acc) ->
+    #        if value == "true" do
+    #          questions = category_id |> String.to_integer() |> Categories.get_category!() |> Questions.list_questions()
+    #          acc ++ questions
+    #        else
+    #          acc
+    #        end end)
+    #    :error -> Questions.list_questions()
+    #  end
+
+    #render(conn, "index.html", questions: question_list, sort: Map.get(params, "sort"))
   end
 
   def new(conn, _params, _user, _claims) do
@@ -62,10 +76,11 @@ defmodule PlungerWeb.QuestionController do
     conn |> redirect(to: NavigationHistory.last_path(conn, 1)) #question_path(conn, :show, question))
   end
 
-  def show(conn, %{"id" => id}, _user, _claims) do
+  def show(conn, %{"id" => id}, user, _claims) do
     question = Questions.get_question!(id)
     response_changeset = Responses.change_response()
     comment_changeset = Comments.change_comment()
+    Questions.view_question!(id, user.id)
 
     render(conn, "show.html", question: question, response_changeset:
     response_changeset, comment_changeset: comment_changeset)

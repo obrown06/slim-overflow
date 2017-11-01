@@ -26,6 +26,12 @@
 
 <% end %>
 
+<span><%= link "Sort: Votes", to: question_path(@conn, :index, sort: "votes", categories: @categories), class: "btn btn-default btn-xs"%></span>
+<span><%= link "Sort: Responses", to: question_path(@conn, :index, sort: "responses", categories: @categories), class: "btn btn-default btn-xs"%></span>
+<span><%= link "Sort: Unique User Views", to: question_path(@conn, :index, sort: "views", categories: @categories), class: "btn btn-default btn-xs"%></span>
+<span><%= link "Sort: Date Posted", to: question_path(@conn, :index, sort: "date", categories: @categories), class: "btn btn-default btn-xs"%></span>
+
+
 <table class="table" class="tablesorter">
   <thead>
     <tr>
@@ -40,7 +46,7 @@
     </tr>
   </thead>
   <tbody>
-<%= for question <- @questions do %>
+<%= for question <- sort(get_questions(@categories), @sort) do %>
     <tr>
       <td><%= question.title %></td>
       <td><%= as_html(question.body) %></td>

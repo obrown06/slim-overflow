@@ -276,4 +276,42 @@ defmodule Plunger.Questions do
       |> Repo.insert!()
   end
 
+  alias Plunger.Questions.QuestionView
+
+  @doc """
+  Increments the :votes field in the QuestionVote table associated with the given question_id and user_id.
+  If the field doesn't exist, creates and inserts it with a :votes value of '1'.
+
+  If the field does exist: increments it for values of '-1' and '0' and does nothing for a value of '1'.
+
+  """
+
+  def view_question!(question_id, user_id) do
+    question_view = get_question_view(question_id, user_id)
+
+    case question_view do
+      nil -> create_question_view!(question_id, user_id)
+      _ -> question_view
+    end
+  end
+
+  #Retrieves a QuestionView associated with the given 'question_id' and 'user_id'.
+  #If no QuestionView is found, returns nil.
+
+  defp get_question_view(question_id, user_id) do
+    Repo.one(from qv in QuestionView, where: qv.question_id == ^question_id and qv.user_id == ^user_id)
+  end
+
+  def create_question_view!(question_id, user_id) do
+    user = Plunger.Accounts.get_user!(user_id)
+    question = get_question!(question_id)
+
+    user
+      |> Ecto.build_assoc(:question_views)
+      |> QuestionView.changeset()
+      |> Ecto.Changeset.change()
+      |> Ecto.Changeset.put_assoc(:question, question, :required)
+      |> Repo.insert!()
+  end
+
 end
