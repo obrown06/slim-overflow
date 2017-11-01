@@ -56,7 +56,8 @@ defmodule Plunger.Mixfile do
       {:guardian_db, "~> 0.8.0"},
       {:guardian, "~> 0.14"},
       {:arc, "~> 0.8.0"},
-      {:arc_ecto, "~> 0.7.0"}
+      {:arc_ecto, "~> 0.7.0"},
+      {:earmark, "~> 1.1.1"}
     ]
   end
 

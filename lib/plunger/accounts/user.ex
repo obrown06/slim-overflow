@@ -14,6 +14,8 @@ defmodule Plunger.Accounts.User do
     #field :password, :string, virtual: true
     #field :password_hash, :string
 
+    many_to_many :categories, Plunger.Categories.Category, join_through: "categories_users", on_delete: :delete_all, on_replace: :delete
+
     has_many :authorizations, Plunger.Accounts.Authorization, on_delete: :delete_all
 
     has_many :responses, Plunger.Responses.Response, on_delete: :delete_all

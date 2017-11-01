@@ -1,0 +1,23 @@
+<%= form_for @changeset, @action, fn f -> %>
+
+  <h3>Identify Your Interests</h2>
+
+  <div class="form-group">
+    <%= selected_categories =
+          if Map.has_key?(f.data, :categories) do
+            Enum.map(f.data.categories, &(&1.id))
+          else
+            []
+          end %>
+    <%= PhoenixMTM.Helpers.collection_checkboxes f, :categories,
+      Enum.map(@categories, fn(category) -> {category.name, category.id} end),
+      selected: selected_categories,
+      label_opts: [class: "form-input"], input_opts: [class: "form-control"],
+      wrapper: &Phoenix.HTML.Tag.content_tag(:p, &1) %>
+    <%= error_tag f, :categories %>
+  </div>
+
+  <div class="form-group">
+    <%= submit "Mark as Interested!", class: "btn btn-primary" %>
+  </div>
+<% end %>

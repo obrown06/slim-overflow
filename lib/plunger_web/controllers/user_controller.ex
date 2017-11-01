@@ -2,6 +2,7 @@ defmodule PlungerWeb.UserController do
   use PlungerWeb, :controller
   plug Guardian.Plug.EnsureAuthenticated when action in [:index, :show, :edit, :update, :delete, :promote]#, handler: __MODULE__
   plug :check_identity when action in [:edit, :update, :delete]
+  plug :load_categories when action in [:show]
   alias Plunger.Accounts
   alias Plunger.Accounts.User
 
@@ -43,7 +44,6 @@ defmodule PlungerWeb.UserController do
   end
 
   def update(conn, %{"id" => id, "user" => user_params}, user, _claims) do
-    user = Accounts.get_user!(id)
 
     case Accounts.update_user(user, user_params) do
       {:ok, user} ->

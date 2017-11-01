@@ -30,6 +30,12 @@ defmodule PlungerWeb.QuestionView do
     question.inserted_at
   end
 
+  def as_html(text) do
+    text
+    |> Earmark.as_html!()
+    |> raw()
+  end
+
   #def get_username(%Question{} = question) do
   #  user = Accounts.get_user!(question.user_id)
   #  user.username

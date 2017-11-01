@@ -7,6 +7,7 @@ defmodule Plunger.Accounts do
   alias Plunger.Repo
 
   alias Plunger.Accounts.User
+  alias Plunger.Categories
 
   @doc """
   Returns the list of users.
@@ -68,9 +69,27 @@ defmodule Plunger.Accounts do
 
   """
   def update_user(%User{} = user, attrs) do
-    user
-    |> User.changeset(attrs)
-    |> Repo.update()
+    categories = parse_categories(attrs)
+
+    changeset =
+      user
+      |> Repo.preload(:categories)
+      |> User.changeset(attrs)
+
+    if length(categories) > 0 do
+      changeset = Ecto.Changeset.put_assoc(changeset, :categories, categories, :required)
+    end
+
+    Repo.update(changeset)
+  end
+
+  defp parse_categories(attrs) do
+    attrs
+      |> Map.get("categories")
+      |> Enum.filter(&(&1 != ""))
+      |> Enum.map(fn(category_id) ->
+        Categories.get_category!(String.to_integer(category_id))
+      end)
   end
 
   @doc """
@@ -99,7 +118,9 @@ defmodule Plunger.Accounts do
 
   """
   def change_user(%User{} = user) do
-    User.changeset(user, %{})
+    user
+    |> Repo.preload(:categories)
+    |> User.changeset(%{})
   end
 
   def promote(%User{} = user) do

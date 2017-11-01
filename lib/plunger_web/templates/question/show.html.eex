@@ -13,7 +13,7 @@
 
   <li>
     <strong>Body:</strong>
-    <%= @question.body %>
+    <%= as_html(@question.body) %>
   </li>
 
   <li>

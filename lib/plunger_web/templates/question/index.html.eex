@@ -43,7 +43,7 @@
 <%= for question <- @questions do %>
     <tr>
       <td><%= question.title %></td>
-      <td><%= question.body %></td>
+      <td><%= as_html(question.body) %></td>
       <td><%= list_categories(question) %></td>
       <td><%= get_name(question) %></td>
       <td><%= get_date_time(question) %></td>

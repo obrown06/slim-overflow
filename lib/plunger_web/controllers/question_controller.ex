@@ -1,10 +1,10 @@
 defmodule PlungerWeb.QuestionController do
   use PlungerWeb, :controller
   #plug :authenticate_user when action in [:new, :create, :edit, :update, :delete, :upvote, :downvote]
-  plug :load_categories when action in [:new, :create, :edit, :update]
   plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
   plug :verify_owner when action in [:delete]
   plug :verify_owner_or_admin when action in [:edit, :update]
+  plug :load_categories when action in [:new, :create, :edit, :update]
   alias Plunger.Questions
   alias Plunger.Categories
   alias Plunger.Comments

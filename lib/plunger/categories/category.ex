@@ -7,6 +7,7 @@ defmodule Plunger.Categories.Category do
   schema "categories" do
     field :name, :string
     many_to_many :questions, Plunger.Questions.Question, join_through: "questions_categories", on_delete: :delete_all, on_replace: :delete
+    many_to_many :users, Plunger.Accounts.User, join_through: "categories_users", on_delete: :delete_all, on_replace: :delete
 
     timestamps()
   end
