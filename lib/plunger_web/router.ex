@@ -59,6 +59,8 @@ defmodule PlungerWeb.Router do
     pipe_through :protected
 
     resources "/users", UserController, except: [:delete]
+    get "/users/:id/edit_email", UserController, :edit_email
+    get "/users/:id/update_email", UserController, :update_email
     get "/users/:id/promote", UserController, :promote
     get "/select_categories", UserController, :select_categories
     put "/lock/:id", UserController, :lock

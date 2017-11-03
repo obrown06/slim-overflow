@@ -56,6 +56,24 @@ defmodule PlungerWeb.UserController do
     end
   end
 
+  def edit_email(conn, %{"id" => id}) do
+    user = Accounts.get_user!(id)
+    #changeset = Accounts.change_user(user)
+    render(conn, "edit_email.html", user: user)
+  end
+
+  def update_email(conn, params) do
+    user = Accounts.get_user!(params["id"])
+    case Accounts.update_user_email(user, params["user"]) do
+      {:ok, user} ->
+        conn
+        |> put_flash(:info, "Email updated; confirm it to reactivate your account.")
+        |> redirect(to: confirmation_path(conn, :create, user, params))
+      {:error, %Ecto.Changeset{} = changeset} ->
+        render(conn, "edit_email.html", user: user, changeset: changeset)
+    end
+  end
+
   def promote(conn, %{"id" => id}) do
     promote_user = Accounts.get_user!(id)
     case Accounts.promote(promote_user) do

@@ -21,8 +21,7 @@ defmodule Plunger.Mixfile do
     [
       mod: {Plunger.Application, []},
       extra_applications: [:coherence, :logger, :runtime_tools,
-      :comeonin, :bcrypt_elixir, :oauth2,
-      :ueberauth, :ueberauth_google, :ueberauth_github]
+      :comeonin, :bcrypt_elixir]
     ]
   end
 
@@ -48,13 +47,13 @@ defmodule Plunger.Mixfile do
       {:phoenix_mtm, "~> 0.5.1"},
       {:hound, "~> 1.0"},
       {:navigation_history, "~> 0.0"},
-      {:ueberauth, "~> 0.4"},
-      {:ueberauth_identity, "~> 0.2"},
-      {:ueberauth_google, "~> 0.2"},
-      {:ueberauth_facebook, "~> 0.7"},
-      {:ueberauth_github, "~> 0.4"},
-      {:guardian_db, "~> 0.8.0"},
-      {:guardian, "~> 0.14"},
+      #{:ueberauth, "~> 0.4"},
+      #{:ueberauth_identity, "~> 0.2"},
+      #{:ueberauth_google, "~> 0.2"},
+      #{:ueberauth_facebook, "~> 0.7"},
+      #{:ueberauth_github, "~> 0.4"},
+      #{:guardian_db, "~> 0.8.0"},
+      #{:guardian, "~> 0.14"},
       {:arc, "~> 0.8.0"},
       {:arc_ecto, "~> 0.7.0"},
       {:coherence, "~> 0.4"},

@@ -9,8 +9,8 @@ defmodule Plunger.Repo.Migrations.CreateCategories do
     end
 
     create table(:questions_categories) do
-      add :question_id, references(:questions)
-      add :category_id, references(:categories)
+      add :question_id, references(:questions, on_delete: :delete_all)
+      add :category_id, references(:categories, on_delete: :delete_all)
     end
 
     create unique_index(:categories, [:name])

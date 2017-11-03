@@ -69,7 +69,7 @@ defmodule Plunger.Accounts do
 
   """
   def update_user(%User{} = user, attrs) do
-    categories = 
+    categories =
       if Map.get(attrs, "categories") != nil do
         parse_categories(attrs)
       else
@@ -80,12 +80,16 @@ defmodule Plunger.Accounts do
       user
       |> Repo.preload(:categories)
       |> User.changeset(attrs)
+      |> Ecto.Changeset.put_assoc(:categories, categories, :required)
+      |> Repo.update
+  end
 
-    if length(categories) > 0 do
-      changeset = Ecto.Changeset.put_assoc(changeset, :categories, categories, :required)
-    end
-
-    Repo.update(changeset)
+  def update_user_email(%User{} = user, attrs) do
+    changeset =
+      user
+      |> User.changeset(attrs)
+      |> Ecto.Changeset.change(%{:confirmed_at =>  nil})
+      |> Repo.update
   end
 
   defp parse_categories(attrs) do

@@ -1,0 +1,24 @@
+<%= form_for @conn, confirmation_path(@conn, :create), [as: :update], fn f -> %>
+
+  <div class="form-group">
+    <%= label f, :current_email, class: "control-label" %>
+    <%= text_input f, :current_email, class: "form-control" %>
+    <%= error_tag f, :current_email %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :new_email, class: "control-label" %>
+    <%= text_input f, :new_email, class: "form-control" %>
+    <%= error_tag f, :new_email %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :confirm_new_email, class: "control-label" %>
+    <%= text_input f, :confirm_new_email, class: "form-control" %>
+    <%= error_tag f, :confirm_new_email %>
+  </div>
+
+  <div class="form-group">
+    <%= submit "Submit", class: "btn btn-primary" %>
+  </div>
+<% end %>
