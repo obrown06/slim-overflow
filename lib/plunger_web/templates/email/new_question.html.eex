@@ -1,0 +1,10 @@
+<div>
+  <p><%= dgettext "coherence", "Hello %{name}!", name: @name %><p>
+  <p>
+    <%= dgettext("coherence", "A new question was posted in one of your flagged categories: %{category}. Click the link to view it!", category: @category)%>
+  </p>
+  <p>
+    <a href="<%= @url %>"><%= dgettext "coherence", "View Question" %></a>
+  </p>
+  <p><%= dgettext "coherence", "Thank you!" %></p>
+</div>

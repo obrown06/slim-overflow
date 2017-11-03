@@ -20,16 +20,16 @@ defmodule PlungerWeb do
   def controller do
     quote do
       use Phoenix.Controller, namespace: PlungerWeb
-      use Guardian.Phoenix.Controller
-      alias Guardian.Plug.EnsureAuthenticated
-      alias Guardian.Plug.EnsurePermissions
+    #  use Guardian.Phoenix.Controller
+    #  alias Guardian.Plug.EnsureAuthenticated
+    #  alias Guardian.Plug.EnsurePermissions
       alias Plunger.Repo
       import Ecto
       import Ecto.Query, only: [from: 1, from: 2]
       import Plug.Conn
       import PlungerWeb.Router.Helpers
       import PlungerWeb.Gettext
-      #import PlungerWeb.Auth, only: [authenticate_user: 2]
+      import PlungerWeb.Auth, only: [authenticate_user: 2]
       import Plunger.Categories, only: [load_categories: 2]
     end
   end
@@ -58,7 +58,7 @@ defmodule PlungerWeb do
       import Plug.Conn
       import Phoenix.Controller
 
-      import PlungerWeb.AuthHelpers, only: [put_user_token: 2]
+      #import PlungerWeb.AuthHelpers, only: [put_user_token: 2]
     end
   end
 

@@ -1,7 +1,7 @@
 defmodule PlungerWeb.CommentController do
   use PlungerWeb, :controller
-  #plug :authenticate_user when action in [:create, :upvote, :downvote]
-  plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
+  plug :authenticate_user when action in [:create, :upvote, :downvote]
+  #plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
   alias Plunger.Comments
   alias Plunger.Questions
   alias Plunger.Responses
@@ -27,16 +27,15 @@ defmodule PlungerWeb.CommentController do
   #  end
   #end
 
-  #def action(conn, _) do
-  #  question =
-  #    conn.params["question_id"]
-  #    |> Questions.get_question!
-  #  apply(__MODULE__, action_name(conn),
-  #    [conn, conn.params, conn.assigns.current_user, question])
-  #end
+  def action(conn, _) do
+    question =
+      conn.params["question_id"]
+      |> Questions.get_question!
+    apply(__MODULE__, action_name(conn),
+      [conn, conn.params, Coherence.current_user(conn), question])
+  end
 
-  def create(conn, params, user, _claims) do
-    question = conn.params["question_id"] |> Questions.get_question!
+  def create(conn, params, user, question) do
     case Comments.create_comment(user, params) do
       {:ok, _} ->
         conn
@@ -49,22 +48,22 @@ defmodule PlungerWeb.CommentController do
     end
   end
 
-  def upvote(conn, %{"id" => id}, user, _claims) do
+  def upvote(conn, %{"id" => id}, user, question) do
     Comments.upvote_comment!(id, user.id)
     conn |> redirect(to: NavigationHistory.last_path(conn, 1))
   end
 
-  def downvote(conn, %{"id" => id}, user, _claims) do
+  def downvote(conn, %{"id" => id}, user, question) do
     Comments.downvote_comment!(id, user.id)
     conn |> redirect(to: NavigationHistory.last_path(conn, 1))
   end
 
-  defp unauthenticated(conn, _params) do
-    conn
-      |> put_flash(:error, "You must be logged in to access that page")
-      |> redirect(to: "/") #NavigationHistory.last_path(conn, 1))
-      |> halt()
-  end
+  #defp unauthenticated(conn, _params) do
+  #  conn
+  #    |> put_flash(:error, "You must be logged in to access that page")
+  #    |> redirect(to: "/") #NavigationHistory.last_path(conn, 1))
+  #    |> halt()
+  #end
 
   #def show(conn, %{"id" => id}) do
   #  comment = Posts.get_comment!(id)

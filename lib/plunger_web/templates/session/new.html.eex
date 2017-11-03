@@ -7,7 +7,7 @@
       <%= text_input f, :email, placeholder: "Email", class: "form-control" %>
     </div>
     <div class="form-group">
-      <%= password_input f, :password, placeholder: "Password", class: "form-control" %>
+      <%= password_input f, :password, placeholder: "Hlehhleh", class: "form-control" %>
     </div>
     <%= submit "Log in", class: "btn btn-primary" %>
 <% end %>

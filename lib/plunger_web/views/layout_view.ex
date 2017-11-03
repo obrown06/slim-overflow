@@ -1,5 +1,6 @@
 defmodule PlungerWeb.LayoutView do
   use PlungerWeb, :view
+  import PlungerWeb.Coherence.ViewHelpers
 
   def show_flash(conn) do
     get_flash(conn) |> flash_msg

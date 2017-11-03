@@ -1,7 +1,7 @@
 defmodule PlungerWeb.ResponseController do
   use PlungerWeb, :controller
-  #plug :authenticate_user when action in [:new, :create, :edit, :update, :delete, :upvote, :downvote]
-  plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
+  plug :authenticate_user when action in [:new, :create, :edit, :update, :delete, :upvote, :downvote]
+  #plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
   alias Plunger.Responses
   alias Plunger.Comments
   alias Plunger.Questions
@@ -17,17 +17,16 @@ defmodule PlungerWeb.ResponseController do
   #  render(conn, "new.html", changeset: changeset, question_id: question_id)
   #end
 
-  #def action(conn, params, user, claims) do
-  #  question =
-  #    params["question_id"]
-  #    |> Questions.get_question!
-  #  apply(__MODULE__, action_name(conn),
-  #    [conn, conn.params, user, question])
-  #end
+  def action(conn, params) do
+    question =
+      conn.params["question_id"]
+      |> Questions.get_question!
+    apply(__MODULE__, action_name(conn),
+      [conn, conn.params, Coherence.current_user(conn), question])
+  end
 
-  def create(conn, params, user, _claims) do
-    question = params["question_id"] |> Questions.get_question!
-    case Responses.create_response(user, question, params["response"]) do
+  def create(conn, %{"response" => response_params}, user, question) do
+    case Responses.create_response(user, question, response_params) do
       {:ok, _} ->
         conn
         |> put_flash(:info, "Response created successfully.")
@@ -39,9 +38,8 @@ defmodule PlungerWeb.ResponseController do
     end
   end
 
-  def promote(conn, params, user, _claims) do
-    question = params["question_id"] |> Questions.get_question!
-    response = params["id"] |> Responses.get_response!
+  def promote(conn, %{"id" => id}, user, question) do
+    response = Responses.get_response!(id)
     case Responses.promote_response(question, response) do
       {:ok, response} ->
         conn
@@ -56,22 +54,22 @@ defmodule PlungerWeb.ResponseController do
     end
   end
 
-  def upvote(conn, %{"id" => id}, user, _claims) do
+  def upvote(conn, %{"id" => id}, user, question) do
     Responses.upvote_response!(id, user.id)
     conn |> redirect(to: NavigationHistory.last_path(conn, 1))
   end
 
-  def downvote(conn, %{"id" => id}, user, _claims) do
+  def downvote(conn, %{"id" => id}, user, question) do
     Responses.downvote_response!(id, user.id)
     conn |> redirect(to: NavigationHistory.last_path(conn, 1))
   end
 
-  defp unauthenticated(conn, _params) do
-    conn
-      |> put_flash(:error, "You must be logged in to access that page")
-      |> redirect(to: "/") #NavigationHistory.last_path(conn, 1))
-      |> halt()
-  end
+  #defp unauthenticated(conn, _params) do
+  #  conn
+  #    |> put_flash(:error, "You must be logged in to access that page")
+  #    |> redirect(to: "/") #NavigationHistory.last_path(conn, 1))
+  #    |> halt()
+  #end
 
   #def upvote(conn, %{"id" => id}, user) do
   #  Plunger.Posts.upvote_response!(id)

@@ -1,5 +1,6 @@
 defmodule Plunger.Accounts.User do
   use Ecto.Schema
+  use Coherence.Schema
   use Arc.Ecto.Schema
   import Ecto.Changeset
   alias Plunger.Accounts.User
@@ -8,15 +9,15 @@ defmodule Plunger.Accounts.User do
     field :avatar, PlungerWeb.Avatar.Type
     field :email, :string
     field :name, :string
-    field :is_admin, :boolean, default: false
-    #field :email_verified, :boolean
     #field :username, :string
     #field :password, :string, virtual: true
     #field :password_hash, :string
+    field :is_admin, :boolean, default: false
+    coherence_schema()
 
     many_to_many :categories, Plunger.Categories.Category, join_through: "categories_users", on_delete: :delete_all, on_replace: :delete
 
-    has_many :authorizations, Plunger.Accounts.Authorization, on_delete: :delete_all
+    #has_many :authorizations, Plunger.Accounts.Authorization, on_delete: :delete_all
 
     has_many :responses, Plunger.Responses.Response, on_delete: :delete_all
     has_many :response_votes, Plunger.Responses.ResponseVote, on_delete: :delete_all
@@ -24,7 +25,6 @@ defmodule Plunger.Accounts.User do
     has_many :questions, Plunger.Questions.Question, on_delete: :delete_all
     has_many :question_votes, Plunger.Questions.QuestionVote, on_delete: :delete_all
     has_many :question_views, Plunger.Questions.QuestionView, on_delete: :delete_all
-    #has_many :messages, Plunger.Messages.Message, on_delete: :delete_all
 
     has_many :comments, Plunger.Comments.Comment, on_delete: :delete_all
     has_many :comment_votes, Plunger.Comments.CommentVote, on_delete: :delete_all
@@ -33,7 +33,7 @@ defmodule Plunger.Accounts.User do
     timestamps()
   end
 
-  @required_fields ~w(email name)
+  @required_fields ~w(name email)
   @optional_fields ~w()
 
   @required_file_fields ~w()
@@ -42,21 +42,19 @@ defmodule Plunger.Accounts.User do
   @doc false
   def changeset(%User{} = user, attrs) do
     user
-    |> cast(attrs, @required_fields, @optional_fields)
+    |> cast(attrs, @required_fields ++ coherence_fields)
+    |> validate_required([:email, :name])
     |> cast_attachments(attrs, @optional_file_fields)
     |> validate_format(:email, ~r/@/)
-    #|> cast_attachments(attrs, @required_file_fields, @optional_file_fields)
-    #|> cast(attrs, [:email, :username, :name])
-    #|> validate_required([:email, :username, :name])
-    #|> unique_constraint(:email)
+    |> validate_coherence(attrs)
+    |> unique_constraint(:email)
     #|> unique_constraint(:username)
   end
 
-  def registration_changeset(%User{} = user, attrs) do
+  def changeset(%User{} = user, attrs, :password) do
     user
-    |> cast(attrs, @required_fields)
-    |> cast_attachments(attrs, @optional_file_fields)
-    #user
+    |> cast(attrs, ~w(password password_confirmation reset_password_token reset_password_sent_at))
+    |> validate_coherence_password_reset(attrs)
     #|> changeset(attrs)
     #|> cast(attrs, [:password])
     #|> validate_length(:password, min: 6, max: 100)

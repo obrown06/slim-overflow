@@ -20,7 +20,7 @@ defmodule Plunger.Mixfile do
   def application do
     [
       mod: {Plunger.Application, []},
-      extra_applications: [:logger, :runtime_tools,
+      extra_applications: [:coherence, :logger, :runtime_tools,
       :comeonin, :bcrypt_elixir, :oauth2,
       :ueberauth, :ueberauth_google, :ueberauth_github]
     ]
@@ -43,7 +43,7 @@ defmodule Plunger.Mixfile do
       {:phoenix_live_reload, "~> 1.0", only: :dev},
       {:gettext, "~> 0.11"},
       {:cowboy, "~> 1.0"},
-      {:comeonin, "~> 4.0"},
+      {:comeonin, "~> 3.0"},
       {:bcrypt_elixir, "~> 1.0"},
       {:phoenix_mtm, "~> 0.5.1"},
       {:hound, "~> 1.0"},
@@ -57,6 +57,7 @@ defmodule Plunger.Mixfile do
       {:guardian, "~> 0.14"},
       {:arc, "~> 0.8.0"},
       {:arc_ecto, "~> 0.7.0"},
+      {:coherence, "~> 0.4"},
       {:earmark, "~> 1.1.1"}
     ]
   end

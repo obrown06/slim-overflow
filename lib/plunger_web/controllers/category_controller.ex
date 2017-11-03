@@ -5,17 +5,17 @@ defmodule PlungerWeb.CategoryController do
   alias Plunger.Categories.Category
   alias Plunger.Questions
 
-  def index(conn, _params, _user, _claims) do
+  def index(conn, _params) do
     categories = Categories.list_categories()
     render(conn, "index.html", categories: categories)
   end
 
-  def new(conn, _params, _user, _claims) do
+  def new(conn, _params) do
     changeset = Categories.change_category(%Category{})
     render(conn, "new.html", changeset: changeset)
   end
 
-  def create(conn, %{"category" => category_params}, _user, _claims) do
+  def create(conn, %{"category" => category_params}) do
     case Categories.create_category(category_params) do
       {:ok, category} ->
         conn
@@ -26,19 +26,19 @@ defmodule PlungerWeb.CategoryController do
     end
   end
 
-  def show(conn, %{"id" => id}, _user, _claims) do
+  def show(conn, %{"id" => id}) do
     category = Categories.get_category!(id)
     questions = Questions.list_questions(category)
     render(conn, "show.html", category: category, questions: questions)
   end
 
-  def edit(conn, %{"id" => id}, _user, _claims) do
+  def edit(conn, %{"id" => id}) do
     category = Categories.get_category!(id)
     changeset = Categories.change_category(category)
     render(conn, "edit.html", category: category, changeset: changeset)
   end
 
-  def update(conn, %{"id" => id, "category" => category_params}, _user, _claims) do
+  def update(conn, %{"id" => id, "category" => category_params}) do
     category = Categories.get_category!(id)
 
     case Categories.update_category(category, category_params) do
@@ -51,7 +51,7 @@ defmodule PlungerWeb.CategoryController do
     end
   end
 
-  def delete(conn, %{"id" => id}, _user, _claims) do
+  def delete(conn, %{"id" => id}) do
     category = Categories.get_category!(id)
     {:ok, _category} = Categories.delete_category(category)
 

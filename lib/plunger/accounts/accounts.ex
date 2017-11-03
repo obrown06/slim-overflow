@@ -69,7 +69,12 @@ defmodule Plunger.Accounts do
 
   """
   def update_user(%User{} = user, attrs) do
-    categories = parse_categories(attrs)
+    categories = 
+      if Map.get(attrs, "categories") != nil do
+        parse_categories(attrs)
+      else
+        []
+      end
 
     changeset =
       user

@@ -6,6 +6,7 @@ defmodule Plunger.Questions.Question do
   alias Plunger.Responses.Response
   alias Plunger.Questions.Question
   alias Plunger.Questions.QuestionVote
+  alias Plunger.Questions.QuestionView
   alias Plunger.Categories.Category
   alias Plunger.Repo
 

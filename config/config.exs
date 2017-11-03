@@ -22,27 +22,29 @@ config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
-
-config :guardian, Guardian,
-  issuer: "Plunger.#{Mix.env}",
-  ttl: {30, :days},
-  verify_issuer: true,
-  serializer: PlungerWeb.GuardianSerializer,
-  secret_key: to_string(Mix.env),
-  hooks: GuardianDb,
-  permissions: %{
-  default: [
-      :read_profile,
-      :write_profile,
-      :read_token,
-      :revoke_token,
-    ],
-  }
-
-config :guardian_db, GuardianDb,
-       repo: Plunger.Repo
+config :plunger, PlungerWeb.Mailer,
+  adapter: Swoosh.Adapters.Sendgrid,
+  api_key: "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"
 
 config :hound, browser: "chrome"
+
+# %% Coherence Configuration %%   Don't remove this line
+config :coherence,
+  user_schema: Plunger.Accounts.User,
+  repo: Plunger.Repo,
+  module: Plunger,
+  web_module: PlungerWeb,
+  router: PlungerWeb.Router,
+  messages_backend: PlungerWeb.Coherence.Messages,
+  logged_out_url: "/",
+  email_from_name: "Plunger",
+  email_from_email: "test@localhost.com",
+  opts: [:authenticatable, :recoverable, :lockable, :trackable, :unlockable_with_token, :confirmable, :registerable]
+
+config :coherence, PlungerWeb.Coherence.Mailer,
+  adapter: Swoosh.Adapters.Sendgrid,
+  api_key: "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"
+# %% End Coherence Configuration %%
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
