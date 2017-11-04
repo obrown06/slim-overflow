@@ -56,7 +56,8 @@ defmodule Plunger.Mixfile do
       #{:guardian, "~> 0.14"},
       {:arc, "~> 0.8.0"},
       {:arc_ecto, "~> 0.7.0"},
-      {:coherence, "~> 0.4"},
+      {:coherence, "~> 0.5"},
+      {:coherence_assent, "~> 0.2.0"},
       {:earmark, "~> 1.1.1"}
     ]
   end

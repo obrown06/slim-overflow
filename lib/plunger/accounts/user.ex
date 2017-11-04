@@ -1,6 +1,7 @@
 defmodule Plunger.Accounts.User do
   use Ecto.Schema
   use Coherence.Schema
+  use CoherenceAssent.Schema
   use Arc.Ecto.Schema
   import Ecto.Changeset
   alias Plunger.Accounts.User
@@ -14,6 +15,7 @@ defmodule Plunger.Accounts.User do
     #field :password_hash, :string
     field :is_admin, :boolean, default: false
     coherence_schema()
+    coherence_assent_schema()
 
     many_to_many :categories, Plunger.Categories.Category, join_through: "categories_users", on_delete: :delete_all, on_replace: :delete
 
@@ -43,10 +45,10 @@ defmodule Plunger.Accounts.User do
   def changeset(%User{} = user, attrs) do
     user
     |> cast(attrs, @required_fields ++ coherence_fields)
-    |> validate_required([:email, :name])
+    |> validate_required([:email])
     |> cast_attachments(attrs, @optional_file_fields)
     |> validate_format(:email, ~r/@/)
-    |> validate_coherence(attrs)
+    |> validate_coherence_assent(attrs)
     |> unique_constraint(:email)
     #|> unique_constraint(:username)
   end
@@ -61,12 +63,12 @@ defmodule Plunger.Accounts.User do
     #|> put_pass_hash()
   end
 
-  defp put_pass_hash(changeset) do
-    case changeset do
-      %Ecto.Changeset{valid?: true, changes: %{password: pass}} ->
-        put_change(changeset, :password_hash, Comeonin.Bcrypt.hashpwsalt(pass))
-      _ ->
-        changeset
-    end
-  end
+  #defp put_pass_hash(changeset) do
+  #  case changeset do
+  #    %Ecto.Changeset{valid?: true, changes: %{password: pass}} ->
+  #      put_change(changeset, :password_hash, Comeonin.Bcrypt.hashpwsalt(pass))
+  #    _ ->
+  #      changeset
+  #  end
+  #end
 end

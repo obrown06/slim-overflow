@@ -1,6 +1,7 @@
 defmodule PlungerWeb.Router do
   use PlungerWeb, :router
   use Coherence.Router
+  use CoherenceAssent.Router
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -11,6 +12,7 @@ defmodule PlungerWeb.Router do
     #plug PlungerWeb.Auth, repo: Plunger.Repo
     plug Coherence.Authentication.Session
     plug NavigationHistory.Tracker
+    plug :put_user_token
   end
 
   pipeline :protected do
@@ -21,6 +23,7 @@ defmodule PlungerWeb.Router do
     plug :put_secure_browser_headers
     plug Coherence.Authentication.Session, protected: true  # Add this
     plug NavigationHistory.Tracker
+    plug :put_user_token
   end
 
   pipeline :api do
@@ -36,6 +39,7 @@ defmodule PlungerWeb.Router do
   scope "/" do
     pipe_through :browser
     coherence_routes()
+    coherence_assent_routes()
   end
 
   scope "/" do
@@ -58,7 +62,7 @@ defmodule PlungerWeb.Router do
   scope "/", PlungerWeb do
     pipe_through :protected
 
-    resources "/users", UserController, except: [:delete]
+    resources "/users", UserController, except: [:delete, :new, :create]
     get "/users/:id/edit_email", UserController, :edit_email
     get "/users/:id/update_email", UserController, :update_email
     get "/users/:id/promote", UserController, :promote
@@ -85,16 +89,9 @@ defmodule PlungerWeb.Router do
     resources "/comments", CommentController, only: [:create]
   end
 
-  #scope "/auth", PlungerWeb do
-  #  pipe_through [:browser, :browser_auth]
-
-  #  get "/:identity", AuthController, :login
-  #  get "/:identity/callback", AuthController, :callback
-  #  post "/:identity/callback", AuthController, :callback
-  #end
-
   # Other scopes may use custom stacks.
   # scope "/api", PlungerWeb do
   #   pipe_through :api
   # end
+
 end

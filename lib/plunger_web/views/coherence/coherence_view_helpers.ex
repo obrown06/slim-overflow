@@ -11,6 +11,7 @@ defmodule PlungerWeb.Coherence.ViewHelpers do
 
   @seperator {:safe, "&nbsp; | &nbsp;"}
   @helpers PlungerWeb.Router.Helpers
+  use CoherenceAssent.ViewHelpers, helpers: PlungerWeb.Router.Helpers
 
   @recover_link  dgettext("coherence", "Forgot your password?")
   @unlock_link   dgettext("coherence", "Send an unlock email")

@@ -58,7 +58,7 @@ defmodule PlungerWeb do
       import Plug.Conn
       import Phoenix.Controller
 
-      #import PlungerWeb.AuthHelpers, only: [put_user_token: 2]
+      import PlungerWeb.Auth, only: [put_user_token: 2]
     end
   end
 

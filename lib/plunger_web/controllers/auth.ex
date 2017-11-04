@@ -15,6 +15,17 @@ defmodule PlungerWeb.Auth do
     end
   end
 
+  def put_user_token(conn, _) do
+    if current_user = Coherence.current_user(conn) do
+      #IO.inspect current_user
+      token = Phoenix.Token.sign(conn, "user socket", current_user.id)
+      conn = assign(conn, :user_token, token)
+    else
+      IO.puts "USER NOT LOGGED IN"
+      conn
+    end
+  end
+
   def verify_user(conn, _opts) do
     id = Map.get(conn.params, "id") |> String.to_integer()
     if Coherence.current_user(conn).id == id do

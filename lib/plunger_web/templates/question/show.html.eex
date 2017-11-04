@@ -50,34 +50,6 @@
 <input id="chat-input" type="text"></input>
 -->
 
-
-<div class="col-sm-7">
-    <%= content_tag :div, id: "question",
-          data: [id: @question.id] do %>
-    <% end %>
-</div>
-
-<div class="col-sm-5">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Chat</h3>
-      </div>
-      <div id="msg-container" class="panel-body questions">
-
-      </div>
-      <div class="panel-footer">
-        <textarea id="msg-input"
-                  rows="3"
-                  class="form-control"
-                  placeholder="Comment..."></textarea>
-        <button id="msg-submit" class="btn btn-primary form-control"
-type="submit">
-          Post
-        </button>
-      </div>
-    </div>
-  </div>
-
 <div class="comments">
  <h2>Comments</h2>
  <%= for comment <- PlungerWeb.CommentView.get_nested_comments(@question) do %>
@@ -134,3 +106,30 @@ type="submit">
 <%= render PlungerWeb.ResponseView, "form.html", conn: @conn,
   response_changeset: @response_changeset, action: response_path(@conn, :create, question_id: @question.id)
 %>
+
+<div class="col-sm-7">
+    <%= content_tag :div, id: "question",
+          data: [id: @question.id] do %>
+    <% end %>
+</div>
+
+<div class="col-sm-5">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Chat</h3>
+      </div>
+      <div id="msg-container" class="panel-body questions">
+
+      </div>
+      <div class="panel-footer">
+        <textarea id="msg-input"
+                  rows="3"
+                  class="form-control"
+                  placeholder="Chat..."></textarea>
+        <button id="msg-submit" class="btn btn-primary form-control"
+type="submit">
+          Post
+        </button>
+      </div>
+    </div>
+  </div>
