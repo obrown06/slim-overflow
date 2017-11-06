@@ -44,6 +44,56 @@ defmodule PlungerWeb.UserController do
     render(conn, "edit.html", user: user, changeset: changeset)
   end
 
+  def edit_email(conn, %{"id" => id}) do
+    user = Accounts.get_user!(id)
+    #changeset = Accounts.change_user(user)
+    render(conn, "edit_email.html", user: user)
+  end
+
+  @doc """
+  Create a new confirmation token and resend the email.
+  """
+  @spec create(Plug.Conn.t, Map.t) :: Plug.Conn.t
+  def update_email(conn, %{"update" => params}) do
+    user = Coherence.Schemas.get_by_user email: params["current_email"]
+    cond do
+      user == nil or Coherence.current_user(conn).id != user.id ->
+        conn
+        |> put_flash(:info, "The 'Current Email' field must match your own!")
+        |> redirect(to: user_path(conn, :edit_email, Coherence.current_user(conn))) #, Coherence.current_user(conn)))
+      params["new_email"] != params["confirm_new_email"] ->
+        conn
+        |> put_flash(:info, "New Email and Confirm New Email fields must match!")
+        |> redirect(to: user_path(conn, :edit_email, user)) #, Coherence.current_user(conn)))
+      true ->
+        case Accounts.update_user_email(user, params) do
+          {:ok, updated_user} ->
+            user_schema = Coherence.Config.user_schema
+            conn
+            |> Coherence.ControllerHelpers.send_confirmation(updated_user, user_schema)
+            |> put_flash(:info, "Confirmation email sent")
+            |> redirect(to: user_path(conn, :show, updated_user))
+          {:error, %Ecto.Changeset{} = changeset} ->
+            render(conn, "edit_email.html", user: user, changeset: changeset)
+            #conn
+            #|> put_flash(:error, "Errors; see below")
+            #|> redirect(to: user_path(conn, :edit_email, user)) #, Coherence.current_user(conn)))
+          end
+    end
+  end
+
+  def update_categories(conn, %{"id" => id, "user" => user_params}) do
+    user = Accounts.get_user!(id)
+    case Accounts.update_user_categories(user, user_params) do
+      {:ok, user} ->
+        conn
+        |> put_flash(:info, "User updated successfully.")
+        |> redirect(to: user_path(conn, :show, user))
+      {:error, %Ecto.Changeset{} = changeset} ->
+        render(conn, "edit.html", user: user, changeset: changeset)
+    end
+  end
+
   def update(conn, %{"id" => id, "user" => user_params}) do
     user = Accounts.get_user!(id)
     case Accounts.update_user(user, user_params) do
@@ -56,23 +106,17 @@ defmodule PlungerWeb.UserController do
     end
   end
 
-  def edit_email(conn, %{"id" => id}) do
-    user = Accounts.get_user!(id)
-    #changeset = Accounts.change_user(user)
-    render(conn, "edit_email.html", user: user)
-  end
-
-  def update_email(conn, params) do
-    user = Accounts.get_user!(params["id"])
-    case Accounts.update_user_email(user, params["user"]) do
-      {:ok, user} ->
-        conn
-        |> put_flash(:info, "Email updated; confirm it to reactivate your account.")
-        |> redirect(to: confirmation_path(conn, :create, user, params))
-      {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, "edit_email.html", user: user, changeset: changeset)
-    end
-  end
+  #def update_email(conn, params) do
+  #  user = Accounts.get_user!(params["id"])
+  #  case Accounts.update_user_email(user, params["user"]) do
+  #    {:ok, user} ->
+  #      conn
+  #      |> put_flash(:info, "Email updated; confirm it to reactivate your account.")
+  #      |> redirect(to: confirmation_path(conn, :create, user, params))
+  #    {:error, %Ecto.Changeset{} = changeset} ->
+  #      render(conn, "edit_email.html", user: user, changeset: changeset)
+  #  end
+  #end
 
   def promote(conn, %{"id" => id}) do
     promote_user = Accounts.get_user!(id)

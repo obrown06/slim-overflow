@@ -2,6 +2,7 @@ defmodule PlungerWeb.QuestionControllerTest do
   use PlungerWeb.ConnCase
 
   alias Plunger.Questions
+  import Timex
 
   @create_attrs %{body: "some body", title: "some title"}
   @update_attrs %{body: "some updated body", title: "some updated title"}
@@ -13,11 +14,11 @@ defmodule PlungerWeb.QuestionControllerTest do
   end
 
   setup %{conn: conn} = config do
-    if username = config[:login_as] do
-      user = insert_user(%{username: username})
+    if email = config[:login_as] do
+      user = insert_user(%{email: email, password: "test123", confirmed_at: Timex.now})
+      conn = assign(conn, :current_user, user)
       category = insert_category()
       question = insert_question(user, category)
-      conn = assign(conn, :current_user, user)
       {:ok, conn: conn, user: user, question: question, category: category}
     else
       :ok
@@ -25,7 +26,7 @@ defmodule PlungerWeb.QuestionControllerTest do
   end
 
   describe "index" do
-    @tag login_as: "nick"
+    @tag login_as: "test@test.com"
     test "lists all questions", %{conn: conn} do
       conn = get conn, question_path(conn, :index)
       assert html_response(conn, 200) =~ "Listing Questions"
@@ -33,7 +34,7 @@ defmodule PlungerWeb.QuestionControllerTest do
   end
 
   describe "new question" do
-    @tag login_as: "nick"
+    @tag login_as: "test@test.com"
     test "renders form", %{conn: conn} do
       conn = get conn, question_path(conn, :new)
       assert html_response(conn, 200) =~ "New Question"
@@ -41,7 +42,7 @@ defmodule PlungerWeb.QuestionControllerTest do
   end
 
   describe "create question" do
-    @tag login_as: "nick"
+    @tag login_as: "test@test.com"
     test "redirects to show when data is valid", %{conn: conn, category: category} do
       valid_category_attrs = %{"categories" => [Integer.to_string(category.id)]}
       conn = post conn, question_path(conn, :create), question: @create_attrs |> Enum.into(valid_category_attrs)
@@ -53,14 +54,14 @@ defmodule PlungerWeb.QuestionControllerTest do
       assert html_response(conn, 200) =~ "Show Question"
     end
 
-    @tag login_as: "nick"
+    @tag login_as: "test@test.com"
     test "renders errors when question data is invalid", %{conn: conn, category: category} do
       valid_category_attrs = %{"categories" => [Integer.to_string(category.id)]}
       conn = post conn, question_path(conn, :create), question: @invalid_attrs |> Enum.into(valid_category_attrs)
       assert html_response(conn, 200) =~ "New Question"
     end
 
-    @tag login_as: "nick"
+    @tag login_as: "test@test.com"
     test "raises NoResultsError when category data is invalid", %{conn: conn} do
       invalid_category_attrs = %{"categories" => [Integer.to_string(-1)]}
       assert_raise Ecto.NoResultsError, fn -> post conn, question_path(conn, :create), question: @invalid_attrs |> Enum.into(invalid_category_attrs) end
@@ -70,7 +71,7 @@ defmodule PlungerWeb.QuestionControllerTest do
 
   describe "edit question" do
     #setup [:create_question]
-    @tag login_as: "nick"
+    @tag login_as: "test@test.com"
     test "renders form for editing chosen question", %{conn: conn, question: question} do
       conn = get conn, question_path(conn, :edit, question)
       assert html_response(conn, 200) =~ "Edit Question"
@@ -79,24 +80,25 @@ defmodule PlungerWeb.QuestionControllerTest do
 
   describe "update question" do
     #setup [:create_question]
-    @tag login_as: "nick"
-    test "redirects when data is valid", %{conn: conn, question: question, category: category} do
+    @tag login_as: "test@test.com"
+    test "redirects when data is valid", %{conn: conn, question: question, category: category, user: user} do
       valid_category_attrs = %{"categories" => [Integer.to_string(category.id)]}
       conn = put conn, question_path(conn, :update, question), question: @update_attrs |> Enum.into(valid_category_attrs)
       assert redirected_to(conn) == question_path(conn, :show, question)
 
+      refute conn.assigns[:current_user] == nil
       conn = get conn, question_path(conn, :show, question)
       assert html_response(conn, 200) =~ "some updated body"
     end
 
-    @tag login_as: "nick"
+    @tag login_as: "test@test.com"
     test "renders errors when data is invalid", %{conn: conn, question: question, category: category} do
       valid_category_attrs = %{"categories" => [Integer.to_string(category.id)]}
       conn = put conn, question_path(conn, :update, question), question: @invalid_attrs |> Enum.into(valid_category_attrs)
       assert html_response(conn, 200) =~ "Edit Question"
     end
 
-    @tag login_as: "nick"
+    @tag login_as: "test@test.com"
     test "raises NoResultsError when category data is invalid", %{conn: conn, question: question} do
       invalid_category_attrs = %{"categories" => [Integer.to_string(-1)]}
       assert_raise Ecto.NoResultsError, fn -> put conn, question_path(conn, :update, question), question: @update_attrs |> Enum.into(invalid_category_attrs) end
@@ -106,7 +108,7 @@ defmodule PlungerWeb.QuestionControllerTest do
   describe "delete question" do
     #setup [:create_question]
 
-    @tag login_as: "nick"
+    @tag login_as: "test@test.com"
     test "deletes chosen question", %{conn: conn, question: question} do
       conn = delete conn, question_path(conn, :delete, question)
       assert redirected_to(conn) == question_path(conn, :index)
@@ -118,12 +120,12 @@ defmodule PlungerWeb.QuestionControllerTest do
 
   describe "upvote question" do
 
-    @tag login_as: "nick"
+    @tag login_as: "test@test.com"
     test ":votes is initialized to zero", %{question: question} do
       assert 0 == get_num_votes(question)
     end
 
-    @tag login_as: "nick"
+    @tag login_as: "test@test.com"
     test "upvoting a question increments its vote count", %{conn: conn, question: question, user: user} do
       assert 0 == get_num_votes(question)
       #Questions.upvote_question!(question.id, user.id)
@@ -132,7 +134,7 @@ defmodule PlungerWeb.QuestionControllerTest do
       assert 1 == get_num_votes(question)
     end
 
-    @tag login_as: "nick"
+    @tag login_as: "test@test.com"
     test "upvoting a question after its question_votes :votes count is set to 1 has no effect", %{conn: conn, question: question, user: user} do
       assert 0 == get_num_votes(question)
       conn = get conn, question_path(conn, :upvote, question)
@@ -144,14 +146,14 @@ defmodule PlungerWeb.QuestionControllerTest do
 
   describe "downvote question" do
 
-    @tag login_as: "nick"
+    @tag login_as: "test@test.com"
     test "downvoting a question decrements its vote count", %{conn: conn, question: question, user: user} do
       assert 0 == get_num_votes(question)
       conn = get conn, question_path(conn, :downvote, question)
       assert -1 == get_num_votes(question)
     end
 
-    @tag login_as: "nick"
+    @tag login_as: "test@test.com"
     test "downvoting a question after its question_votes :votes count is set to -1 has no effect", %{conn: conn, question: question, user: user} do
       assert 0 == get_num_votes(question)
       conn = get conn, question_path(conn, :downvote, question)
@@ -161,7 +163,7 @@ defmodule PlungerWeb.QuestionControllerTest do
     end
   end
 
-  @tag login_as: "nick"
+  @tag login_as: "test@test.com"
   test "requires user authentication on actions", %{conn: conn, question: question} do
     conn = recycle(conn)
     Enum.each([
@@ -178,10 +180,10 @@ defmodule PlungerWeb.QuestionControllerTest do
       end)
   end
 
-  @tag login_as: "nick"
+  @tag login_as: "test@test.com"
   test "authorizes actions against access by other users", %{conn: conn, question: question} do
 
-    non_owner = insert_user(%{username: "sneaky", email: "sneaky@test.com", name: "sneak"})
+    non_owner = insert_user(%{email: "sneaky@test.com", name: "sneak", password: "sneak123"})
     conn = get build_conn(), "/"
     conn = assign(conn, :current_user, non_owner)
 

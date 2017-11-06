@@ -6,9 +6,9 @@ defmodule Plunger.AccountsTest do
   describe "users" do
     alias Plunger.Accounts.User
 
-    @valid_attrs %{email: "some email", name: "some name", username: "some username"}
-    @update_attrs %{email: "some updated email", name: "some updated name", username: "some updated username"}
-    @invalid_attrs %{email: nil, name: nil, username: nil}
+    @valid_attrs %{email: "some@email.com", name: "some name", password: "some password"}
+    @update_attrs %{email: "some@updatedemail.com", name: "some updated name"}
+    @invalid_attrs %{email: nil, name: nil}
 
     def user_fixture(attrs \\ %{}) do
       {:ok, user} =
@@ -16,7 +16,7 @@ defmodule Plunger.AccountsTest do
         |> Enum.into(@valid_attrs)
         |> Accounts.create_user()
 
-      user
+      Accounts.get_user!(user.id)
     end
 
     test "list_users/0 returns all users" do
@@ -31,9 +31,8 @@ defmodule Plunger.AccountsTest do
 
     test "create_user/1 with valid data creates a user" do
       assert {:ok, %User{} = user} = Accounts.create_user(@valid_attrs)
-      assert user.email == "some email"
+      assert user.email == "some@email.com"
       assert user.name == "some name"
-      assert user.username == "some username"
     end
 
     test "create_user/1 with invalid data returns error changeset" do
@@ -44,9 +43,8 @@ defmodule Plunger.AccountsTest do
       user = user_fixture()
       assert {:ok, user} = Accounts.update_user(user, @update_attrs)
       assert %User{} = user
-      assert user.email == "some updated email"
+      assert user.email == "some@updatedemail.com"
       assert user.name == "some updated name"
-      assert user.username == "some updated username"
     end
 
     test "update_user/2 with invalid data returns error changeset" do

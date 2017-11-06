@@ -66,7 +66,7 @@ config :coherence_assent, :providers,
          client_secret: "9b84d64c9cc4c99afdc02c423a67e964",
          strategy: CoherenceAssent.Strategy.Facebook
       ]
-      ]
+    ]
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

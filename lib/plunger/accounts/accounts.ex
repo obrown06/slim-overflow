@@ -52,7 +52,7 @@ defmodule Plunger.Accounts do
   """
   def create_user(attrs \\ %{}) do
     %User{}
-    |> User.registration_changeset(attrs)
+    |> User.changeset(attrs)
     |> Repo.insert()
   end
 
@@ -68,7 +68,7 @@ defmodule Plunger.Accounts do
       {:error, %Ecto.Changeset{}}
 
   """
-  def update_user(%User{} = user, attrs) do
+  def update_user_categories(%User{} = user, attrs) do
     categories =
       if Map.get(attrs, "categories") != nil do
         parse_categories(attrs)
@@ -84,11 +84,16 @@ defmodule Plunger.Accounts do
       |> Repo.update
   end
 
-  def update_user_email(%User{} = user, attrs) do
-    changeset =
-      user
+  def update_user(%User{} = user, attrs) do
+    user
       |> User.changeset(attrs)
-      |> Ecto.Changeset.change(%{:confirmed_at =>  nil})
+      |> Repo.update
+  end
+
+  def update_user_email(%User{} = user, attrs) do
+    user
+      |> Ecto.Changeset.change(%{:email => attrs["new_email"], :confirmed_at => nil})
+      |> Ecto.Changeset.unique_constraint(:email)
       |> Repo.update
   end
 

@@ -14,9 +14,8 @@ defmodule Plunger.TestHelpers do
 
   def insert_user(attrs \\ %{}) do
     changes = Map.merge(%{name: "Test User",
-    username: "testuser",
     email: "test@test.com",
-    #password: "test123",
+    password: "test123",
     }, attrs)
 
     {:ok, user} = Accounts.create_user(changes)
@@ -76,7 +75,7 @@ defmodule Plunger.TestHelpers do
     valid_attrs = %{"description" => "some description"}
     {:ok, response} = Responses.create_response(user, question, attrs |> Enum.into(valid_attrs))
 
-    response
+    response = Responses.get_response!(response.id) |> Repo.preload(:user)
   end
 
   def insert_comment_on_question(user, question, attrs \\ %{}) do
@@ -84,7 +83,7 @@ defmodule Plunger.TestHelpers do
 
     {:ok, comment} = Comments.create_comment(user, attrs |> Enum.into(valid_attrs))
 
-    comment
+    comment = Comments.get_comment!(comment.id) |> Repo.preload(:user)
   end
 
   def insert_comment_on_response(user, response, attrs \\ %{}) do
@@ -92,7 +91,7 @@ defmodule Plunger.TestHelpers do
 
     {:ok, comment} = Comments.create_comment(user, attrs |> Enum.into(valid_attrs))
 
-    comment
+    comment = Comments.get_comment!(comment.id) |> Repo.preload(:user)
   end
 
   def insert_comment_on_comment(user, comment, attrs \\ %{}) do
@@ -100,7 +99,7 @@ defmodule Plunger.TestHelpers do
 
     {:ok, comment} = Comments.create_comment(user, attrs |> Enum.into(valid_attrs))
 
-    comment
+    comment = Comments.get_comment!(comment.id) |> Repo.preload(:user)
   end
 
 end

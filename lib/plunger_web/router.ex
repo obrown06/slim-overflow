@@ -64,9 +64,9 @@ defmodule PlungerWeb.Router do
 
     resources "/users", UserController, except: [:delete, :new, :create]
     get "/users/:id/edit_email", UserController, :edit_email
-    get "/users/:id/update_email", UserController, :update_email
+    post "/users/:id/update_email", UserController, :update_email
+    put "/users/:id/update_categories", UserController, :update_categories
     get "/users/:id/promote", UserController, :promote
-    get "/select_categories", UserController, :select_categories
     put "/lock/:id", UserController, :lock
     put "/unlock/:id", UserController, :unlock
     put "/confirm/:id", UserController, :confirm

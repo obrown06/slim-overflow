@@ -1,4 +1,4 @@
-<%= form_for @conn, confirmation_path(@conn, :create), [as: :update], fn f -> %>
+<%= form_for @conn, user_path(@conn, :update_email, @user), [as: :update], fn f -> %>
 
   <div class="form-group">
     <%= label f, :current_email, class: "control-label" %>

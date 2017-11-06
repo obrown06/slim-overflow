@@ -13,8 +13,8 @@ defmodule PlungerWeb.CommentControllerTest do
   end
 
   setup %{conn: conn} = config do
-    if username = config[:login_as] do
-      user = insert_user(%{username: username})
+    if email = config[:login_as] do
+      user = insert_user(%{email: email, password: "test123"})
       category = insert_category()
       question = insert_question(user, category)
       response = insert_response(user, question)
@@ -44,7 +44,7 @@ defmodule PlungerWeb.CommentControllerTest do
   #end
 
   describe "create comment_on_question" do
-    @tag login_as: "nick"
+    @tag login_as: "test@test.com"
     test "redirects to show when data is valid", %{conn: conn, question: question} do
       conn = post conn, comment_path(conn, :create, parent_type: "question", question_id: question.id), comment: @create_attrs
 
@@ -56,7 +56,7 @@ defmodule PlungerWeb.CommentControllerTest do
     end
 
 
-    @tag login_as: "nick"
+    @tag login_as: "test@test.com"
     test "renders errors when data is invalid", %{conn: conn, question: question} do
       conn = post conn, comment_path(conn, :create, parent_type: "question", question_id: question.id), comment: @invalid_attrs
       assert html_response(conn, 200) =~ "Show Question"
@@ -64,7 +64,7 @@ defmodule PlungerWeb.CommentControllerTest do
   end
 
   describe "create comment_on_response" do
-    @tag login_as: "nick"
+    @tag login_as: "test@test.com"
     test "redirects to show when data is valid", %{conn: conn, question: question, response: response} do
       conn = post conn, comment_path(conn, :create, parent_type: "response", response_id: response.id, question_id: question.id), comment: @create_attrs
 
@@ -76,7 +76,7 @@ defmodule PlungerWeb.CommentControllerTest do
     end
 
 
-    @tag login_as: "nick"
+    @tag login_as: "test@test.com"
     test "renders errors when data is invalid", %{conn: conn, response: response, question: question} do
       conn = post conn, comment_path(conn, :create, parent_type: "response", response_id: response.id, question_id: question.id), comment: @invalid_attrs
       assert html_response(conn, 200) =~ "Show Question"
@@ -84,7 +84,7 @@ defmodule PlungerWeb.CommentControllerTest do
   end
 
   describe "create comment_on_comment" do
-    @tag login_as: "nick"
+    @tag login_as: "test@test.com"
     test "redirects to show when data is valid", %{conn: conn, comment_on_question: comment_on_question, question: question} do
       conn = post conn, comment_path(conn, :create, parent_type: "comment", question_id: question.id, comment_id: comment_on_question.id), comment: @create_attrs
 
@@ -96,7 +96,7 @@ defmodule PlungerWeb.CommentControllerTest do
     end
 
 
-    @tag login_as: "nick"
+    @tag login_as: "test@test.com"
     test "renders errors when data is invalid", %{conn: conn, question: question, comment_on_question: comment_on_question} do
       conn = post conn, comment_path(conn, :create, parent_type: "comment", comment_id: comment_on_question.id, question_id: question.id), comment: @invalid_attrs
       assert html_response(conn, 200) =~ "Show Question"
@@ -106,19 +106,19 @@ defmodule PlungerWeb.CommentControllerTest do
 
   describe "upvote comment" do
 
-    @tag login_as: "nick"
+    @tag login_as: "test@test.com"
     test ":votes is initialized to zero", %{comment_on_question: comment} do
       assert 0 == get_num_votes(comment)
     end
 
-    @tag login_as: "nick"
+    @tag login_as: "test@test.com"
     test "upvoting a comment increments its vote count", %{conn: conn, question: question, comment_on_question: comment} do
       assert 0 == get_num_votes(comment)
       get conn, comment_path(conn, :upvote, comment), question_id: question.id
       assert 1 == get_num_votes(comment)
     end
 
-    @tag login_as: "nick"
+    @tag login_as: "test@test.com"
     test "upvoting a comment after its comment_votes :votes count is set to 1 has no effect", %{conn: conn, question: question, comment_on_question: comment} do
       assert 0 == get_num_votes(comment)
       conn = get conn, comment_path(conn, :upvote, comment), question_id: question.id
@@ -130,14 +130,14 @@ defmodule PlungerWeb.CommentControllerTest do
 
   describe "downvote comment" do
 
-    @tag login_as: "nick"
+    @tag login_as: "test@test.com"
     test "downvoting a comment decrements its vote count", %{conn: conn, question: question, comment_on_question: comment} do
       assert 0 == get_num_votes(comment)
       get conn, comment_path(conn, :downvote, comment), question_id: question.id
       assert -1 == get_num_votes(comment)
     end
 
-    @tag login_as: "nick"
+    @tag login_as: "test@test.com"
     test "downvoting a comment after its comment_vote :votes count is set to -1 has no effect", %{conn: conn, question: question, comment_on_question: comment} do
       assert 0 == get_num_votes(comment)
       conn = get conn, comment_path(conn, :downvote, comment), question_id: question.id
@@ -147,7 +147,7 @@ defmodule PlungerWeb.CommentControllerTest do
     end
   end
 
-  @tag login_as: "nick"
+  @tag login_as: "test@test.com"
   test "requires user authentication on all actions", %{conn: conn, response: response, question: question, comment_on_question: comment} do
     conn = recycle(conn)
     Enum.each([
