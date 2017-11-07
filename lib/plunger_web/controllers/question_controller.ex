@@ -1,6 +1,6 @@
 defmodule PlungerWeb.QuestionController do
   use PlungerWeb, :controller
-  plug :authenticate_user when action in [:new, :create, :edit, :update, :delete, :upvote, :downvote]
+  #plug :authenticate_user when action in [:new, :create, :edit, :update, :delete, :upvote, :downvote]
   #plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
   plug :verify_owner when action in [:delete]
   plug :verify_owner_or_admin when action in [:edit, :update]
@@ -25,28 +25,6 @@ defmodule PlungerWeb.QuestionController do
       end
 
     render(conn, "index.html", categories: categories, sort: Map.get(params, "sort"))
-    #question_list =
-    #  case Map.fetch(params, "categories") do
-    #    {:ok, category_list} ->
-    #      category_list
-    #      |> Enum.filter()
-    #question_list =
-    #  case Map.fetch(params, "categories") do
-    #    {:ok, filters} ->
-    #      filters
-    #      #|> Map.get("categories")
-    #      |> Enum.filter(fn(elem) -> elem != "" end)
-    #      |> Enum.reduce([], fn({category_id, value}, acc) ->
-    #        if value == "true" do
-    #          questions = category_id |> String.to_integer() |> Categories.get_category!() |> Questions.list_questions()
-    #          acc ++ questions
-    #        else
-    #          acc
-    #        end end)
-    #    :error -> Questions.list_questions()
-    #  end
-
-    #render(conn, "index.html", questions: question_list, sort: Map.get(params, "sort"))
   end
 
   def new(conn, _params, _user) do
@@ -90,14 +68,12 @@ defmodule PlungerWeb.QuestionController do
 
   def edit(conn, %{"id" => id}, user) do
     question = Questions.get_question!(id)
-    #verify_owner(conn, question, user)
     changeset = Questions.change_question(question)
     render(conn, "edit.html", question: question, changeset: changeset)
   end
 
   def update(conn, %{"id" => id, "question" => question_params}, user) do
     question = Questions.get_question!(id)
-    #verify_owner(conn, question, user)
     case Questions.update_question(question, question_params) do
       {:ok, question} ->
         conn
@@ -110,7 +86,6 @@ defmodule PlungerWeb.QuestionController do
 
   def delete(conn, %{"id" => id}, user) do
     question = Questions.get_question!(id)
-    #verify_owner(conn, question, user)
     case Questions.delete_question(question) do
       {:ok, _question} ->
         conn

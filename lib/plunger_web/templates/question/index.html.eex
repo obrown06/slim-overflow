@@ -1,12 +1,6 @@
 <h2>Listing Questions</h2>
 
-<%= #render "form_filter.html", conn: @conn, categories: list_categories()
-     %>
-
-<!--
-<script type="text/javascript" src="/path/to/jquery-latest.js"></script>
-<script type="text/javascript" src="/path/to/jquery.tablesorter.js"></script>
--->
+<span> <%= link "Categories", to: category_path(@conn, :index), class: "btn btn-default btn-xs" %></span>
 
 <%= form_tag(question_path(@conn, :index), [method: :get]) do %>
 
@@ -15,7 +9,11 @@
     <%= for category <- list_categories() do %>
 
       <%= category.name %>
+      <%= if category_checked(@categories, category) do %>
+      <%= checkbox(:categories, category.id, checked: "checked") %>
+      <%= else %>
       <%= checkbox(:categories, category.id) %>
+      <%  end %>
 
     <% end %>
 
@@ -73,4 +71,3 @@
 </table>
 
 <span><%= link "New Question", to: question_path(@conn, :new) %></span>
-<span> <%= link "Categories", to: category_path(@conn, :index), class: "btn btn-default btn-xs" %></span>

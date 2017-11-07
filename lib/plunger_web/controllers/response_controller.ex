@@ -1,6 +1,6 @@
 defmodule PlungerWeb.ResponseController do
   use PlungerWeb, :controller
-  plug :authenticate_user when action in [:new, :create, :edit, :update, :delete, :upvote, :downvote]
+  #plug :authenticate_user when action in [:new, :create, :edit, :update, :delete, :upvote, :downvote]
   #plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
   alias Plunger.Responses
   alias Plunger.Comments

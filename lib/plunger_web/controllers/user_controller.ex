@@ -11,22 +11,22 @@ defmodule PlungerWeb.UserController do
     render(conn, "index.html", users: users)
   end
 
-  def new(conn, _params) do
-    changeset = Accounts.change_user(%User{})
-    render(conn, "new.html", changeset: changeset)
-  end
+  #def new(conn, _params) do
+  #  changeset = Accounts.change_user(%User{})
+  #  render(conn, "new.html", changeset: changeset)
+  #end
 
-  def create(conn, %{"user" => user_params}) do
-    case Accounts.create_user(user_params) do
-      {:ok, user} ->
-        conn
-        |> PlungerWeb.Auth.login(user)
-        |> put_flash(:info, "User created successfully.")
-        |> redirect(to: user_path(conn, :show, user))
-      {:error, %Ecto.Changeset{} = changeset} ->
-        render(conn, "new.html", changeset: changeset)
-    end
-  end
+  #def create(conn, %{"user" => user_params}) do
+  #  case Accounts.create_user(user_params) do
+  #    {:ok, user} ->
+  #      conn
+  #      |> PlungerWeb.Auth.login(user)
+  #      |> put_flash(:info, "User created successfully.")
+  #      |> redirect(to: user_path(conn, :show, user))
+  #    {:error, %Ecto.Changeset{} = changeset} ->
+  #      render(conn, "new.html", changeset: changeset)
+  #  end
+  #end
 
   def show(conn, %{"id" => id}) do
     current_user = Coherence.current_user(conn)
@@ -53,7 +53,7 @@ defmodule PlungerWeb.UserController do
   @doc """
   Create a new confirmation token and resend the email.
   """
-  @spec create(Plug.Conn.t, Map.t) :: Plug.Conn.t
+  @spec update_email(Plug.Conn.t, Map.t) :: Plug.Conn.t
   def update_email(conn, %{"update" => params}) do
     user = Coherence.Schemas.get_by_user email: params["current_email"]
     cond do
@@ -77,9 +77,6 @@ defmodule PlungerWeb.UserController do
             conn
             |> put_flash(:error, "Pick a different email.")
             |> render("edit_email.html", user: user, changeset: changeset)
-            #conn
-            #|> put_flash(:error, "Errors; see below")
-            #|> redirect(to: user_path(conn, :edit_email, user)) #, Coherence.current_user(conn)))
           end
     end
   end
@@ -108,18 +105,6 @@ defmodule PlungerWeb.UserController do
     end
   end
 
-  #def update_email(conn, params) do
-  #  user = Accounts.get_user!(params["id"])
-  #  case Accounts.update_user_email(user, params["user"]) do
-  #    {:ok, user} ->
-  #      conn
-  #      |> put_flash(:info, "Email updated; confirm it to reactivate your account.")
-  #      |> redirect(to: confirmation_path(conn, :create, user, params))
-  #    {:error, %Ecto.Changeset{} = changeset} ->
-  #      render(conn, "edit_email.html", user: user, changeset: changeset)
-  #  end
-  #end
-
   def promote(conn, %{"id" => id}) do
     promote_user = Accounts.get_user!(id)
     case Accounts.promote(promote_user) do
@@ -131,13 +116,6 @@ defmodule PlungerWeb.UserController do
         render(conn, "show.html", user: promote_user, changeset: changeset)
     end
   end
-
-  #defp unauthenticated(conn, _params) do
-  #  conn
-  #    |> put_flash(:error, "You must be logged in to access that page")
-  #    |> redirect(to: "/") #NavigationHistory.last_path(conn, 1))
-  #    |> halt()
-  #end
 
   def check_identity(conn, params) do
     user = Coherence.current_user(conn)
@@ -163,74 +141,5 @@ defmodule PlungerWeb.UserController do
   #      render(conn, "index.html", user: user, changeset: changeset)
   #  end
   #end
-
-  def confirm(conn, %{"id" => id}) do
-    case Accounts.get_user!(id) do
-      nil ->
-        conn
-        |> put_flash(:error, "User not found")
-        |> redirect(to: user_path(conn, :index))
-      user ->
-        case Controller.confirm! user do
-          {:error, changeset}  ->
-            conn
-            |> put_flash(:error, format_errors(changeset))
-          _ ->
-            put_flash(conn, :info, "User confirmed!")
-        end
-        |> redirect(to: user_path(conn, :show, user.id))
-      end
-  end
-
-  def lock(conn, %{"id" => id}) do
-    locked_at = DateTime.utc_now
-    |> Timex.shift(years: 10)
-
-    case Accounts.get_user!(id) do
-      nil ->
-        conn
-        |> put_flash(:error, "User not found")
-        |> redirect(to: user_path(conn, :index))
-      user ->
-        case Controller.lock! user, locked_at do
-          {:error, changeset}  ->
-            conn
-            |> put_flash(:error, format_errors(changeset))
-          _ ->
-            put_flash(conn, :info, "User locked!")
-        end
-        |> redirect(to: user_path(conn, :show, user.id))
-      end
-  end
-
-  def unlock(conn, %{"id" => id}) do
-    case Accounts.get_user!(id) do
-      nil ->
-        conn
-        |> put_flash(:error, "User not found")
-        |> redirect(to: user_path(conn, :index))
-      user ->
-        case Controller.unlock! user do
-          {:error, changeset}  ->
-            conn
-            |> put_flash(:error, format_errors(changeset))
-          _ ->
-            put_flash(conn, :info, "User unlocked!")
-          end
-          |> redirect(to: user_path(conn, :show, user.id))
-      end
-  end
-
-  defp format_errors(changeset) do
-    for error <- changeset.errors do
-      case error do
-        {:locked_at, {err, _}} -> err
-        {_field, {err, _}} when is_binary(err) or is_atom(err) ->
-          "#{err}"
-        other -> inspect other
-      end
-    end
-    |> Enum.join("<br \>\n")
-  end
 
 end

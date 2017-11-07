@@ -85,4 +85,13 @@ defmodule PlungerWeb.QuestionView do
     end
 
   end
+
+  def category_checked(categories, category) do
+    IO.inspect categories
+    cond do
+      categories == "all" -> true
+      Map.get(categories, Integer.to_string(category.id)) == "true" -> true
+      true -> false
+    end
+  end
 end

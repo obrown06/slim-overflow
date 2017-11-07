@@ -29,7 +29,7 @@ defmodule PlungerWeb do
       import Plug.Conn
       import PlungerWeb.Router.Helpers
       import PlungerWeb.Gettext
-      import PlungerWeb.Auth, only: [authenticate_user: 2]
+      #import PlungerWeb.Auth, only: [authenticate_user: 2]
       import Plunger.Categories, only: [load_categories: 2]
     end
   end
