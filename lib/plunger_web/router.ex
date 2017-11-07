@@ -12,7 +12,7 @@ defmodule PlungerWeb.Router do
     #plug PlungerWeb.Auth, repo: Plunger.Repo
     plug Coherence.Authentication.Session
     plug NavigationHistory.Tracker
-    plug :put_user_token
+    #plug :put_user_token
   end
 
   pipeline :protected do

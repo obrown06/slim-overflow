@@ -59,11 +59,11 @@ defmodule PlungerWeb.UserController do
     cond do
       user == nil or Coherence.current_user(conn).id != user.id ->
         conn
-        |> put_flash(:info, "The 'Current Email' field must match your own!")
+        |> put_flash(:error, "The 'Current Email' field must match your own!")
         |> redirect(to: user_path(conn, :edit_email, Coherence.current_user(conn))) #, Coherence.current_user(conn)))
       params["new_email"] != params["confirm_new_email"] ->
         conn
-        |> put_flash(:info, "New Email and Confirm New Email fields must match!")
+        |> put_flash(:error, "New Email and Confirm New Email fields must match!")
         |> redirect(to: user_path(conn, :edit_email, user)) #, Coherence.current_user(conn)))
       true ->
         case Accounts.update_user_email(user, params) do
@@ -74,7 +74,9 @@ defmodule PlungerWeb.UserController do
             |> put_flash(:info, "Confirmation email sent")
             |> redirect(to: user_path(conn, :show, updated_user))
           {:error, %Ecto.Changeset{} = changeset} ->
-            render(conn, "edit_email.html", user: user, changeset: changeset)
+            conn
+            |> put_flash(:error, "Pick a different email.")
+            |> render("edit_email.html", user: user, changeset: changeset)
             #conn
             #|> put_flash(:error, "Errors; see below")
             #|> redirect(to: user_path(conn, :edit_email, user)) #, Coherence.current_user(conn)))

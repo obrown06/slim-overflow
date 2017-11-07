@@ -4,6 +4,7 @@ defmodule Plunger.Accounts do
   """
 
   import Ecto.Query, warn: false
+  import Ecto.Changeset
   alias Plunger.Repo
 
   alias Plunger.Accounts.User
@@ -80,7 +81,7 @@ defmodule Plunger.Accounts do
       user
       |> Repo.preload(:categories)
       |> User.changeset(attrs)
-      |> Ecto.Changeset.put_assoc(:categories, categories, :required)
+      |> put_assoc(:categories, categories, :required)
       |> Repo.update
   end
 
@@ -92,8 +93,9 @@ defmodule Plunger.Accounts do
 
   def update_user_email(%User{} = user, attrs) do
     user
-      |> Ecto.Changeset.change(%{:email => attrs["new_email"], :confirmed_at => nil})
-      |> Ecto.Changeset.unique_constraint(:email)
+      |> change(%{:email => attrs["new_email"], :confirmed_at => nil})
+      |> unique_constraint(:email)
+      |> validate_format(:email, ~r/@/)
       |> Repo.update
   end
 
@@ -139,7 +141,7 @@ defmodule Plunger.Accounts do
 
   def promote(%User{} = user) do
     user
-    |> Ecto.Changeset.change(is_admin: true)
+    |> change(is_admin: true)
     |> Repo.update()
   end
 end

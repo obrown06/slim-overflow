@@ -18,8 +18,8 @@ defmodule PlungerWeb.Auth do
   def put_user_token(conn, _) do
     if current_user = Coherence.current_user(conn) do
       #IO.inspect current_user
-      token = Phoenix.Token.sign(conn, "user socket", current_user.id)
-      conn = assign(conn, :user_token, token)
+      user_id_token = Phoenix.Token.sign(conn, "user socket", current_user.id)
+      conn = assign(conn, :user_token, user_id_token)
     else
       IO.puts "USER NOT LOGGED IN"
       conn
