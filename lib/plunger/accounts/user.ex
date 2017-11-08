@@ -57,10 +57,6 @@ defmodule Plunger.Accounts.User do
     user
     |> cast(attrs, ~w(password password_confirmation reset_password_token reset_password_sent_at))
     |> validate_coherence_password_reset(attrs)
-    #|> changeset(attrs)
-    #|> cast(attrs, [:password])
-    #|> validate_length(:password, min: 6, max: 100)
-    #|> put_pass_hash()
   end
 
   #defp put_pass_hash(changeset) do

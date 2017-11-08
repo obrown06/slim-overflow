@@ -12,6 +12,14 @@ defmodule PlungerWeb.ResponseControllerTest do
     response
   end
 
+  def refresh_assigns(%Plug.Conn{} = conn) do
+    saved_assigns = conn.assigns
+    conn =
+      conn
+      |> recycle()
+      |> Map.put(:assigns, saved_assigns)
+  end
+
   setup %{conn: conn} = config do
     if username = config[:login_as] do
       user = insert_user(%{username: username})
@@ -46,7 +54,7 @@ defmodule PlungerWeb.ResponseControllerTest do
 
       assert %{id: id} = redirected_params(conn)
       assert redirected_to(conn) == question_path(conn, :show, question.id)
-
+      conn = refresh_assigns(conn)
       conn = get conn, question_path(conn, :show, question.id)
       assert html_response(conn, 200) =~ "some response description"
     end
@@ -68,6 +76,8 @@ defmodule PlungerWeb.ResponseControllerTest do
     @tag login_as: "nick"
     test "upvoting a response increments its vote count", %{conn: conn, question: question, response: response} do
       assert 0 == get_num_votes(response)
+      conn = get conn, question_path(conn, :show, question)
+      conn = refresh_assigns(conn)
       get conn, response_path(conn, :upvote, response), question_id: question.id
       assert 1 == get_num_votes(response)
     end
@@ -75,6 +85,8 @@ defmodule PlungerWeb.ResponseControllerTest do
     @tag login_as: "nick"
     test "upvoting a response after its response_votes :votes count is set to 1 has no effect", %{conn: conn, question: question, response: response} do
       assert 0 == get_num_votes(response)
+      conn = get conn, question_path(conn, :show, question)
+      conn = refresh_assigns(conn)
       conn = get conn, response_path(conn, :upvote, response), question_id: question.id
       assert 1 == get_num_votes(response)
       get conn, question_path(conn, :upvote, response), question_id: question.id
@@ -87,13 +99,17 @@ defmodule PlungerWeb.ResponseControllerTest do
     @tag login_as: "nick"
     test "downvoting a response decrements its vote count", %{conn: conn, question: question, response: response} do
       assert 0 == get_num_votes(response)
-      get conn, response_path(conn, :downvote, response), question_id: question.id
+      conn = get conn, question_path(conn, :show, question)
+      conn = refresh_assigns(conn)
+      conn = get conn, response_path(conn, :downvote, response), question_id: question.id
       assert -1 == get_num_votes(response)
     end
 
     @tag login_as: "nick"
     test "downvoting a response after its response_vote :votes count is set to -1 has no effect", %{conn: conn, question: question, response: response} do
       assert 0 == get_num_votes(response)
+      conn = get conn, question_path(conn, :show, question)
+      conn = refresh_assigns(conn)
       conn = get conn, response_path(conn, :downvote, response), question_id: question.id
       assert -1 == get_num_votes(response)
       get conn, response_path(conn, :downvote, response), question_id: question.id

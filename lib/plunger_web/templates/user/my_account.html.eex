@@ -40,7 +40,8 @@
 
 </ul>
 
-<span><%= link "Edit Account Information", to: user_path(@conn, :edit, @user) %></span>
+<span><%= link "Edit Profile Information", to: user_path(@conn, :edit, @user) %></span>
+<span><%= link "Change Password", to: user_path(@conn, :edit_password, @user) %></span>
 <span><%= link "Change Email", to: user_path(@conn, :edit_email, @user) %></span>
 
 <%= render "form_category_select.html", changeset: Plunger.Accounts.change_user(@user),

@@ -3,9 +3,9 @@ defmodule PlungerWeb.UserControllerTest do
 
   alias Plunger.Accounts
 
-  @create_attrs %{email: "some email", name: "some name", username: "some username"}
-  @update_attrs %{email: "some updated email", name: "some updated name", username: "some updated username"}
-  @invalid_attrs %{email: nil, name: nil, username: nil}
+  @create_attrs %{email: "some email", name: "some name"}
+  @update_attrs %{name: "some updated name"}
+  @invalid_attrs %{email: nil, name: nil}
 
   def fixture(:user) do
     {:ok, user} = Accounts.create_user(@create_attrs)
@@ -21,8 +21,8 @@ defmodule PlungerWeb.UserControllerTest do
   end
 
   setup %{conn: conn} = config do
-    if username = config[:login_as] do
-      user = insert_user(%{username: username})
+    if email = config[:login_as] do
+      user = insert_user(%{email: email})
       conn = assign(conn, :current_user, user)
       {:ok, conn: conn, user: user}
     else
@@ -31,7 +31,7 @@ defmodule PlungerWeb.UserControllerTest do
   end
 
   describe "index" do
-    @tag login_as: "nick"
+    @tag login_as: "test@test.com"
     test "lists all users", %{conn: conn, user: user} do
       #IO.puts conn.assigns.current_user
       #IO.puts conn.assigns
@@ -40,37 +40,37 @@ defmodule PlungerWeb.UserControllerTest do
     end
   end
 
-  describe "new user" do
-    @tag login_as: "nick"
-    test "renders form", %{conn: conn} do
-      conn = get conn, user_path(conn, :new)
-      assert html_response(conn, 200) =~ "New User"
-    end
-  end
+  #describe "new user" do
+  #  @tag login_as: "nick"
+  #  test "renders form", %{conn: conn} do
+  #    conn = get conn, user_path(conn, :new)
+  #    assert html_response(conn, 200) =~ "New User"
+  #  end
+  #end
 
-  describe "create user" do
-    @tag login_as: "nick"
-    test "redirects to My Account when data is valid", %{conn: conn} do
-      conn = post conn, user_path(conn, :create), user: @create_attrs
+  #describe "create user" do
+  #  @tag login_as: "nick"
+  #  test "redirects to My Account when data is valid", %{conn: conn} do
+  #    conn = post conn, user_path(conn, :create), user: @create_attrs
 
-      assert %{id: id} = redirected_params(conn)
-      assert redirected_to(conn) == user_path(conn, :show, id)
+  #    assert %{id: id} = redirected_params(conn)
+  #    assert redirected_to(conn) == user_path(conn, :show, id)
 
-      conn = get conn, user_path(conn, :show, id)
-      assert html_response(conn, 200) =~ "My Account"
-    end
+  #    conn = get conn, user_path(conn, :show, id)
+  #    assert html_response(conn, 200) =~ "My Account"
+  #  end
 
-    @tag login_as: "nick"
-    test "renders errors when data is invalid", %{conn: conn} do
-      conn = post conn, user_path(conn, :create), user: @invalid_attrs
-      assert html_response(conn, 200) =~ "New User"
-    end
-  end
+    #@tag login_as: "nick"
+    #test "renders errors when data is invalid", %{conn: conn} do
+  #    conn = post conn, user_path(conn, :create), user: @invalid_attrs
+    #  assert html_response(conn, 200) =~ "New User"
+    #end
+  #end
 
   describe "edit user" do
     #setup [:create_user]
 
-    @tag login_as: "nick"
+    @tag login_as: "test@test.com"
     test "renders form for editing chosen user", %{conn: conn, user: user} do
       conn = get conn, user_path(conn, :edit, user)
       assert html_response(conn, 200) =~ "Edit User"
@@ -80,23 +80,23 @@ defmodule PlungerWeb.UserControllerTest do
   describe "update user" do
     #setup [:create_user]
 
-    @tag login_as: "nick"
+    @tag login_as: "test@test.com"
     test "redirects when data is valid", %{conn: conn, user: user} do
       conn = put conn, user_path(conn, :update, user), user: @update_attrs
       assert redirected_to(conn) == user_path(conn, :show, user)
       conn = refresh_assigns(conn)
       conn = get conn, user_path(conn, :show, user)
-      assert html_response(conn, 200) =~ "some updated username"
+      assert html_response(conn, 200) =~ "some updated name"
     end
 
-    @tag login_as: "nick"
+    @tag login_as: "test@test.com"
     test "renders errors when data is invalid", %{conn: conn, user: user} do
       conn = put conn, user_path(conn, :update, user), user: @invalid_attrs
       assert html_response(conn, 200) =~ "Edit User"
     end
   end
 
-  @tag login_as: "nick"
+  @tag login_as: "test@test.com"
   test "requires user authentication on actions", %{conn: conn, user: user} do
     conn = recycle(conn)
     Enum.each([
@@ -109,7 +109,7 @@ defmodule PlungerWeb.UserControllerTest do
       end)
   end
 
-  @tag login_as: "nick"
+  @tag login_as: "test@test.com"
   test "authorizes actions against access by other users", %{conn: conn, user: user} do
 
     different_user = insert_user(%{username: "sneaky", email: "sneaky@test.com", name: "sneak"})

@@ -16,6 +16,7 @@ defmodule Plunger.TestHelpers do
     changes = Map.merge(%{name: "Test User",
     email: "test@test.com",
     password: "test123",
+    confirmed_at: Timex.now,
     }, attrs)
 
     {:ok, user} = Accounts.create_user(changes)

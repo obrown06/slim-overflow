@@ -13,6 +13,14 @@ defmodule PlungerWeb.QuestionControllerTest do
     question
   end
 
+  def refresh_assigns(%Plug.Conn{} = conn) do
+    saved_assigns = conn.assigns
+    conn =
+      conn
+      |> recycle()
+      |> Map.put(:assigns, saved_assigns)
+  end
+
   setup %{conn: conn} = config do
     if email = config[:login_as] do
       user = insert_user(%{email: email, password: "test123", confirmed_at: Timex.now})
@@ -46,10 +54,9 @@ defmodule PlungerWeb.QuestionControllerTest do
     test "redirects to show when data is valid", %{conn: conn, category: category} do
       valid_category_attrs = %{"categories" => [Integer.to_string(category.id)]}
       conn = post conn, question_path(conn, :create), question: @create_attrs |> Enum.into(valid_category_attrs)
-
       assert %{id: id} = redirected_params(conn)
       assert redirected_to(conn) == question_path(conn, :show, id)
-
+      conn = refresh_assigns(conn)
       conn = get conn, question_path(conn, :show, id)
       assert html_response(conn, 200) =~ "Show Question"
     end
@@ -86,7 +93,7 @@ defmodule PlungerWeb.QuestionControllerTest do
       conn = put conn, question_path(conn, :update, question), question: @update_attrs |> Enum.into(valid_category_attrs)
       assert redirected_to(conn) == question_path(conn, :show, question)
 
-      refute conn.assigns[:current_user] == nil
+      conn = refresh_assigns(conn)
       conn = get conn, question_path(conn, :show, question)
       assert html_response(conn, 200) =~ "some updated body"
     end
@@ -112,6 +119,7 @@ defmodule PlungerWeb.QuestionControllerTest do
     test "deletes chosen question", %{conn: conn, question: question} do
       conn = delete conn, question_path(conn, :delete, question)
       assert redirected_to(conn) == question_path(conn, :index)
+      conn = refresh_assigns(conn)
       assert_error_sent 404, fn ->
         get conn, question_path(conn, :show, question)
       end
@@ -128,8 +136,8 @@ defmodule PlungerWeb.QuestionControllerTest do
     @tag login_as: "test@test.com"
     test "upvoting a question increments its vote count", %{conn: conn, question: question, user: user} do
       assert 0 == get_num_votes(question)
-      #Questions.upvote_question!(question.id, user.id)
-      #assert 1 == get_num_votes(question)
+      conn = get conn, question_path(conn, :show, question)
+      conn = refresh_assigns(conn)
       conn = get conn, question_path(conn, :upvote, question)
       assert 1 == get_num_votes(question)
     end
@@ -137,7 +145,10 @@ defmodule PlungerWeb.QuestionControllerTest do
     @tag login_as: "test@test.com"
     test "upvoting a question after its question_votes :votes count is set to 1 has no effect", %{conn: conn, question: question, user: user} do
       assert 0 == get_num_votes(question)
+      conn = get conn, question_path(conn, :show, question)
+      conn = refresh_assigns(conn)
       conn = get conn, question_path(conn, :upvote, question)
+      conn = refresh_assigns(conn)
       assert 1 == get_num_votes(question)
       conn = get conn, question_path(conn, :upvote, question)
       assert 1 == get_num_votes(question)
@@ -149,6 +160,8 @@ defmodule PlungerWeb.QuestionControllerTest do
     @tag login_as: "test@test.com"
     test "downvoting a question decrements its vote count", %{conn: conn, question: question, user: user} do
       assert 0 == get_num_votes(question)
+      conn = get conn, question_path(conn, :show, question)
+      conn = refresh_assigns(conn)
       conn = get conn, question_path(conn, :downvote, question)
       assert -1 == get_num_votes(question)
     end
@@ -156,8 +169,11 @@ defmodule PlungerWeb.QuestionControllerTest do
     @tag login_as: "test@test.com"
     test "downvoting a question after its question_votes :votes count is set to -1 has no effect", %{conn: conn, question: question, user: user} do
       assert 0 == get_num_votes(question)
+      conn = get conn, question_path(conn, :show, question)
+      conn = refresh_assigns(conn)
       conn = get conn, question_path(conn, :downvote, question)
       assert -1 == get_num_votes(question)
+      conn = refresh_assigns(conn)
       conn = get conn, question_path(conn, :downvote, question)
       assert -1 == get_num_votes(question)
     end

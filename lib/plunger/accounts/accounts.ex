@@ -91,6 +91,13 @@ defmodule Plunger.Accounts do
       |> Repo.update
   end
 
+  def update_user_password(%User{} = user, attrs) do
+    password_attrs = %{"password" => Map.get(attrs, "new_password")}
+    user
+      |> User.changeset(password_attrs, :password)
+      |> Repo.update
+  end
+
   def update_user_email(%User{} = user, attrs) do
     user
       |> change(%{:email => attrs["new_email"], :confirmed_at => nil})

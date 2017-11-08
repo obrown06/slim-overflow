@@ -12,6 +12,14 @@ defmodule PlungerWeb.CommentControllerTest do
     comment
   end
 
+  def refresh_assigns(%Plug.Conn{} = conn) do
+    saved_assigns = conn.assigns
+    conn =
+      conn
+      |> recycle()
+      |> Map.put(:assigns, saved_assigns)
+  end
+
   setup %{conn: conn} = config do
     if email = config[:login_as] do
       user = insert_user(%{email: email, password: "test123"})
@@ -50,7 +58,7 @@ defmodule PlungerWeb.CommentControllerTest do
 
       assert %{id: id} = redirected_params(conn)
       assert redirected_to(conn) == question_path(conn, :show, question.id)
-
+      conn = refresh_assigns(conn)
       conn = get conn, question_path(conn, :show, question.id)
       assert html_response(conn, 200) =~ "some comment description"
     end
@@ -70,7 +78,7 @@ defmodule PlungerWeb.CommentControllerTest do
 
       assert %{id: id} = redirected_params(conn)
       assert redirected_to(conn) == question_path(conn, :show, question.id)
-
+      conn = refresh_assigns(conn)
       conn = get conn, question_path(conn, :show, question.id)
       assert html_response(conn, 200) =~ "some comment description"
     end
@@ -90,7 +98,7 @@ defmodule PlungerWeb.CommentControllerTest do
 
       assert %{id: id} = redirected_params(conn)
       assert redirected_to(conn) == question_path(conn, :show, question.id)
-
+      conn = refresh_assigns(conn)
       conn = get conn, question_path(conn, :show, question.id)
       assert html_response(conn, 200) =~ "some comment description"
     end
@@ -114,6 +122,8 @@ defmodule PlungerWeb.CommentControllerTest do
     @tag login_as: "test@test.com"
     test "upvoting a comment increments its vote count", %{conn: conn, question: question, comment_on_question: comment} do
       assert 0 == get_num_votes(comment)
+      conn = get conn, question_path(conn, :show, question)
+      conn = refresh_assigns(conn)
       get conn, comment_path(conn, :upvote, comment), question_id: question.id
       assert 1 == get_num_votes(comment)
     end
@@ -121,8 +131,11 @@ defmodule PlungerWeb.CommentControllerTest do
     @tag login_as: "test@test.com"
     test "upvoting a comment after its comment_votes :votes count is set to 1 has no effect", %{conn: conn, question: question, comment_on_question: comment} do
       assert 0 == get_num_votes(comment)
+      conn = get conn, question_path(conn, :show, question)
+      conn = refresh_assigns(conn)
       conn = get conn, comment_path(conn, :upvote, comment), question_id: question.id
       assert 1 == get_num_votes(comment)
+      conn = refresh_assigns(conn)
       get conn, comment_path(conn, :upvote, comment), question_id: question.id
       assert 1 == get_num_votes(comment)
     end
@@ -133,6 +146,8 @@ defmodule PlungerWeb.CommentControllerTest do
     @tag login_as: "test@test.com"
     test "downvoting a comment decrements its vote count", %{conn: conn, question: question, comment_on_question: comment} do
       assert 0 == get_num_votes(comment)
+      conn = get conn, question_path(conn, :show, question)
+      conn = refresh_assigns(conn)
       get conn, comment_path(conn, :downvote, comment), question_id: question.id
       assert -1 == get_num_votes(comment)
     end
@@ -140,8 +155,11 @@ defmodule PlungerWeb.CommentControllerTest do
     @tag login_as: "test@test.com"
     test "downvoting a comment after its comment_vote :votes count is set to -1 has no effect", %{conn: conn, question: question, comment_on_question: comment} do
       assert 0 == get_num_votes(comment)
+      conn = get conn, question_path(conn, :show, question)
+      conn = refresh_assigns(conn)
       conn = get conn, comment_path(conn, :downvote, comment), question_id: question.id
       assert -1 == get_num_votes(comment)
+      conn = refresh_assigns(conn)
       get conn, comment_path(conn, :downvote, comment), question_id: question.id
       assert -1 == get_num_votes(comment)
     end

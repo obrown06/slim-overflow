@@ -12,6 +12,14 @@ defmodule PlungerWeb.CategoryControllerTest do
     category
   end
 
+  def refresh_assigns(%Plug.Conn{} = conn) do
+    saved_assigns = conn.assigns
+    conn =
+      conn
+      |> recycle()
+      |> Map.put(:assigns, saved_assigns)
+  end
+
   setup %{conn: conn} = config do
     if email = config[:login_as] do
       user = insert_user(%{email: email, password: "test123"})
@@ -43,12 +51,11 @@ defmodule PlungerWeb.CategoryControllerTest do
     @tag login_as: "test@test.com"
     test "redirects to show when data is valid", %{conn: conn, user: user} do
       conn = post conn, category_path(conn, :create), category: @create_attrs
-
       assert %{id: id} = redirected_params(conn)
       assert redirected_to(conn) == category_path(conn, :show, id)
 
+      conn = refresh_assigns(conn)
       conn = get conn, category_path(conn, :show, id)
-      #IO.inspect html_response(conn, 200)
       assert html_response(conn, 200) =~ "Show Category"
     end
 
