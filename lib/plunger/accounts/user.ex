@@ -36,7 +36,7 @@ defmodule Plunger.Accounts.User do
   end
 
   @required_fields ~w(name email)
-  @optional_fields ~w()
+  @optional_fields ~w(is_admin)
 
   @required_file_fields ~w()
   @optional_file_fields ~w(avatar)
@@ -44,9 +44,9 @@ defmodule Plunger.Accounts.User do
   @doc false
   def changeset(%User{} = user, attrs) do
     user
-    |> cast(attrs, @required_fields ++ coherence_fields)
-    |> validate_required([:email])
+    |> cast(attrs, @required_fields ++ coherence_fields, @optional_fields)
     |> cast_attachments(attrs, @optional_file_fields)
+    |> validate_required([:email])
     |> validate_format(:email, ~r/@/)
     |> validate_coherence_assent(attrs)
     |> unique_constraint(:email)

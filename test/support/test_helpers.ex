@@ -24,6 +24,22 @@ defmodule Plunger.TestHelpers do
     user
   end
 
+  def insert_admin_user(attrs \\ %{}) do
+    changes = Map.merge(%{name: "Admin Test User",
+    email: "admin@admin.com",
+    password: "test123",
+    confirmed_at: Timex.now,
+    }, attrs)
+
+    {:ok, user} = Accounts.create_user(changes)
+
+    user
+    |> Ecto.Changeset.change(is_admin: true)
+    |> Repo.update
+
+    Accounts.get_user!(user.id)
+  end
+
   def insert_category(attrs \\ %{}) do
     changes = Map.merge(%{name: "Test Category",
     }, attrs)

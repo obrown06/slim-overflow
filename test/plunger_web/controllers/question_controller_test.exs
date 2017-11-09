@@ -83,6 +83,24 @@ defmodule PlungerWeb.QuestionControllerTest do
       conn = get conn, question_path(conn, :edit, question)
       assert html_response(conn, 200) =~ "Edit Question"
     end
+
+    @tag login_as: "test@test.com"
+    test "admins can edit question", %{conn: conn, question: question} do
+      nonadmin = insert_user(%{email: "nonadmin@nonadmin.com"})
+
+      conn = assign(conn, :current_user, nonadmin)
+      conn = get conn, question_path(conn, :edit, question)
+      assert html_response(conn, 302)
+      assert conn.halted
+
+      admin = insert_admin_user()
+      IO.inspect admin
+      conn = assign(conn, :current_user, admin)
+      conn = refresh_assigns(conn)
+      conn = get conn, question_path(conn, :edit, question)
+      assert html_response(conn, 200) =~ "Edit Question"
+    end
+
   end
 
   describe "update question" do

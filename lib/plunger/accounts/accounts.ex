@@ -53,12 +53,37 @@ defmodule Plunger.Accounts do
   """
   def create_user(attrs \\ %{}) do
     %User{}
-    |> User.changeset(attrs)
-    |> Repo.insert()
+      |> User.changeset(attrs)
+      |> Repo.insert()
+  end
+
+
+  @doc """
+  Updates a user's preferred categories.
+
+  ## Examples
+
+      iex> update_user_categories(user, %{field: new_value})
+      {:ok, %User{}}
+
+      iex> update_user_categories(user, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+
+  def update_user_categories(%User{} = user, %{"categories" => attrs}) do
+    categories = parse_categories(attrs)
+
+    changeset =
+      user
+      |> Repo.preload(:categories)
+      |> Ecto.Changeset.change()
+      |> put_assoc(:categories, categories, :required)
+      |> Repo.update
   end
 
   @doc """
-  Updates a user.
+  Updates a user's name and/or avatar fields.
 
   ## Examples
 
@@ -69,21 +94,6 @@ defmodule Plunger.Accounts do
       {:error, %Ecto.Changeset{}}
 
   """
-  def update_user_categories(%User{} = user, attrs) do
-    categories =
-      if Map.get(attrs, "categories") != nil do
-        parse_categories(attrs)
-      else
-        []
-      end
-
-    changeset =
-      user
-      |> Repo.preload(:categories)
-      |> User.changeset(attrs)
-      |> put_assoc(:categories, categories, :required)
-      |> Repo.update
-  end
 
   def update_user(%User{} = user, attrs) do
     user
@@ -91,16 +101,47 @@ defmodule Plunger.Accounts do
       |> Repo.update
   end
 
+  @doc """
+  Updates a user's password.
+
+  ## Examples
+
+      iex> update_user_password(user, %{field: new_value})
+      {:ok, %User{}}
+
+      iex> update_user_password(user, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+
   def update_user_password(%User{} = user, attrs) do
     password_attrs = %{"password" => Map.get(attrs, "new_password")}
-    user
+
+    changeset =
+      user
       |> User.changeset(password_attrs, :password)
+      |> validate_required(:password)
+      |> validate_length(:password, min: 4, max: 100)
       |> Repo.update
   end
 
+  @doc """
+  Updates a user's email address if the given address is not already taken and
+  sets the :confirmed_at field to nil.
+
+  ## Examples
+
+      iex> update_user_email(user, %{field: new_value})
+      {:ok, %User{}}
+
+      iex> update_user_email(user, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+
   def update_user_email(%User{} = user, attrs) do
     user
-      |> change(%{:email => attrs["new_email"], :confirmed_at => nil})
+      |> Ecto.Changeset.change(%{:email => attrs["new_email"], :confirmed_at => nil})
       |> unique_constraint(:email)
       |> validate_format(:email, ~r/@/)
       |> Repo.update
@@ -108,7 +149,6 @@ defmodule Plunger.Accounts do
 
   defp parse_categories(attrs) do
     attrs
-      |> Map.get("categories")
       |> Enum.filter(&(&1 != ""))
       |> Enum.map(fn(category_id) ->
         Categories.get_category!(String.to_integer(category_id))
@@ -146,7 +186,20 @@ defmodule Plunger.Accounts do
     |> User.changeset(%{})
   end
 
-  def promote(%User{} = user) do
+  @doc """
+  Promotes a user to admin status by setting the :is_admin field to true.
+
+  ## Examples
+
+      iex> promote_user(user)
+      {:ok, %User{}}
+
+      iex> promote_user(user)
+      {:error, %Ecto.Changeset{}}
+
+  """
+
+  def promote_user(%User{} = user) do
     user
     |> change(is_admin: true)
     |> Repo.update()

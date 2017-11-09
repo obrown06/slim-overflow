@@ -104,21 +104,34 @@ defmodule Plunger.Responses do
     response |> Response.changeset(%{})
   end
 
+  @doc """
+  Sets the :is_best field of the given 'response' to true; sets the :is_best field of all
+  other responses associated with the given question to false.
+  Returns {:ok, response} or an Ecto.Changeset with errors.
+
+  ## Examples
+
+      iex> promote_response(question, response)
+      {:ok, %Response{} = response}
+
+  """
+
   def promote_response(%Question{} = question, %Response{} = response) do
-    question = question |> Repo.preload(:responses)
+    previous_best_response = Repo.one(from r in Response, where: r.question_id == ^question.id and r.is_best == true)
 
-    old_best = Enum.filter(question.responses, fn(r) -> r.is_best == true end)
-
-    if old_best != [] do
-      old_best
-        |> List.first()
-        |> Ecto.Changeset.change(is_best: false)
-        |> Repo.update!()
+    if previous_best_response != nil do
+      demote_response(previous_best_response)
     end
 
     response
     |> Ecto.Changeset.change(is_best: true)
     |> Repo.update()
+  end
+
+  defp demote_response(%Response{} = response \\ nil) do
+    response
+      |> Ecto.Changeset.change(is_best: false)
+      |> Repo.update()
   end
 
   @doc """

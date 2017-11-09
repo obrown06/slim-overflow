@@ -120,6 +120,36 @@ defmodule Plunger.ResponsesTest do
       Responses.downvote_response!(response.id, user.id)
       assert -1 == get_num_votes(response)
     end
+
+    test "promote response promotes it to best response", %{response: response, question: question, user: user} do
+      assert response.is_best == false
+      Responses.promote_response(question, response)
+      response = Responses.get_response!(response.id)
+      assert response.is_best == true
+
+      question = Repo.preload(question, :responses)
+      best_response_list = Enum.filter(question.responses, fn(r) -> r.is_best == true end)
+      assert best_response_list = [response]
+    end
+
+    test "promoting response demotes previous best response", %{response: response, question: question, user: user} do
+      assert response.is_best == false
+      {:ok, response} = Responses.promote_response(question, response)
+      response = Responses.get_response!(response.id)
+      assert response.is_best == true
+
+      new_response = insert_response(user, question, %{"description" => "some other description"})
+      assert new_response.is_best == false
+      Responses.promote_response(question, new_response)
+      new_best_response = Responses.get_response!(new_response.id)
+      assert new_best_response.is_best == true
+      old_best_response = Responses.get_response!(response.id)
+      assert old_best_response.is_best == false
+
+      question = Repo.preload(question, :responses)
+      best_response_list = Enum.filter(question.responses, fn(r) -> r.is_best == true end)
+      assert best_response_list == [new_best_response]
+    end
   end
 
 end

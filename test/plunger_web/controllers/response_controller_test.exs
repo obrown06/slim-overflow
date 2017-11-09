@@ -1,7 +1,7 @@
 defmodule PlungerWeb.ResponseControllerTest do
   use PlungerWeb.ConnCase
 
-  alias Plunger.Posts
+  alias Plunger.Responses
 
   @create_attrs %{description: "some response description"}
   @update_attrs %{description: "some updated description"}
@@ -21,8 +21,8 @@ defmodule PlungerWeb.ResponseControllerTest do
   end
 
   setup %{conn: conn} = config do
-    if username = config[:login_as] do
-      user = insert_user(%{username: username})
+    if email = config[:login_as] do
+      user = insert_user(%{email: email})
       category = insert_category()
       question = insert_question(user, category)
       response = insert_response(user, question)
@@ -48,7 +48,7 @@ defmodule PlungerWeb.ResponseControllerTest do
   #end
 
   describe "create response" do
-    @tag login_as: "nick"
+    @tag login_as: "test@test.com"
     test "redirects to show when data is valid", %{conn: conn, question: question} do
       conn = post conn, response_path(conn, :create), response: @create_attrs, question_id: question.id
 
@@ -59,7 +59,7 @@ defmodule PlungerWeb.ResponseControllerTest do
       assert html_response(conn, 200) =~ "some response description"
     end
 
-    @tag login_as: "nick"
+    @tag login_as: "test@test.com"
     test "renders errors when data is invalid", %{conn: conn, question: question} do
       conn = post conn, response_path(conn, :create), response: @invalid_attrs, question_id: question.id
       assert html_response(conn, 200) =~ "Show Question"
@@ -68,12 +68,12 @@ defmodule PlungerWeb.ResponseControllerTest do
 
   describe "upvote response" do
 
-    @tag login_as: "nick"
+    @tag login_as: "test@test.com"
     test ":votes is initialized to zero", %{response: response} do
       assert 0 == get_num_votes(response)
     end
 
-    @tag login_as: "nick"
+    @tag login_as: "test@test.com"
     test "upvoting a response increments its vote count", %{conn: conn, question: question, response: response} do
       assert 0 == get_num_votes(response)
       conn = get conn, question_path(conn, :show, question)
@@ -82,7 +82,7 @@ defmodule PlungerWeb.ResponseControllerTest do
       assert 1 == get_num_votes(response)
     end
 
-    @tag login_as: "nick"
+    @tag login_as: "test@test.com"
     test "upvoting a response after its response_votes :votes count is set to 1 has no effect", %{conn: conn, question: question, response: response} do
       assert 0 == get_num_votes(response)
       conn = get conn, question_path(conn, :show, question)
@@ -96,7 +96,7 @@ defmodule PlungerWeb.ResponseControllerTest do
 
   describe "downvote response" do
 
-    @tag login_as: "nick"
+    @tag login_as: "test@test.com"
     test "downvoting a response decrements its vote count", %{conn: conn, question: question, response: response} do
       assert 0 == get_num_votes(response)
       conn = get conn, question_path(conn, :show, question)
@@ -105,7 +105,7 @@ defmodule PlungerWeb.ResponseControllerTest do
       assert -1 == get_num_votes(response)
     end
 
-    @tag login_as: "nick"
+    @tag login_as: "test@test.com"
     test "downvoting a response after its response_vote :votes count is set to -1 has no effect", %{conn: conn, question: question, response: response} do
       assert 0 == get_num_votes(response)
       conn = get conn, question_path(conn, :show, question)
@@ -117,7 +117,38 @@ defmodule PlungerWeb.ResponseControllerTest do
     end
   end
 
-  @tag login_as: "nick"
+  describe "promote response" do
+
+    @tag login_as: "test@test.com"
+    test "promoting a response marks it as a best response", %{conn: conn, question: question, response: response} do
+      assert response.is_best == false
+      conn = get conn, response_path(conn, :promote, response, question_id: question.id)
+      assert redirected_to(conn) == question_path(conn, :show, question.id)
+      response = Responses.get_response!(response.id)
+      assert response.is_best == true
+    end
+
+    @tag login_as: "test@test.com"
+    test "promoting a response demotes other responses", %{user: user, conn: conn, question: question, response: response} do
+      assert response.is_best == false
+      conn = get conn, response_path(conn, :promote, response, question_id: question.id)
+      assert redirected_to(conn) == question_path(conn, :show, question.id)
+      response = Responses.get_response!(response.id)
+      assert response.is_best == true
+
+      conn = refresh_assigns(conn)
+
+      new_best_response = insert_response(user, question, %{"description" => "new best response"})
+      conn = get conn, response_path(conn, :promote, new_best_response, question_id: question.id)
+      assert redirected_to(conn) == question_path(conn, :show, question.id)
+      new_best_response = Responses.get_response!(new_best_response.id)
+      old_best_response = Responses.get_response!(response.id)
+      assert new_best_response.is_best == true
+      assert old_best_response.is_best == false
+    end
+  end
+
+  @tag login_as: "test@test.com"
   test "requires user authentication on all actions", %{conn: conn, response: response, question: question} do
     conn = recycle(conn)
     Enum.each([

@@ -2,6 +2,7 @@ defmodule PlungerWeb.UserControllerTest do
   use PlungerWeb.ConnCase
 
   alias Plunger.Accounts
+  alias Plunger.Repo
 
   @create_attrs %{email: "some email", name: "some name"}
   @update_attrs %{name: "some updated name"}
@@ -112,7 +113,7 @@ defmodule PlungerWeb.UserControllerTest do
   @tag login_as: "test@test.com"
   test "authorizes actions against access by other users", %{conn: conn, user: user} do
 
-    different_user = insert_user(%{username: "sneaky", email: "sneaky@test.com", name: "sneak"})
+    different_user = insert_user(%{email: "sneaky@test.com", name: "sneak"})
     conn = get build_conn(), "/"
     conn = assign(conn, :current_user, different_user)
 
@@ -124,6 +125,171 @@ defmodule PlungerWeb.UserControllerTest do
     assert html_response(conn, 302)
     assert conn.halted
 
+  end
+
+  describe "promote user" do
+    @tag login_as: "test@test.com"
+    test "admins can promote other users to admins", %{conn: conn, user: user} do
+      assert user.is_admin == false
+
+      admin = insert_admin_user()
+
+      conn = assign(conn, :current_user, admin)
+      conn = refresh_assigns(conn)
+      conn = get conn, user_path(conn, :promote, user)
+      #IO.inspect conn
+      user = Accounts.get_user!(user.id)
+      assert redirected_to(conn) == user_path(conn, :show, user)
+      assert user.is_admin == true
+
+    end
+
+    @tag login_as: "test@test.com"
+    test "non-admins cannot promote other users to admins", %{conn: conn, user: user} do
+      assert user.is_admin == false
+
+      non_admin = insert_user(%{email: "nonadmin@nonadmin.com", name: "nonadmin"})
+      conn = assign(conn, :current_user, non_admin)
+      conn = refresh_assigns(conn)
+
+      conn = get conn, user_path(conn, :promote, user)
+      user = Accounts.get_user!(user.id)
+      assert redirected_to(conn) == user_path(conn, :index)
+      #assert conn.halted
+      assert user.is_admin == false
+
+    end
+  end
+
+  describe "edit user password" do
+    @tag login_as: "test@test.com"
+    test "renders form for editing chosen user", %{conn: conn, user: user} do
+      conn = get conn, user_path(conn, :edit_password, user)
+      assert html_response(conn, 200) =~ "Confirm new password"
+    end
+  end
+
+  describe "update user password" do
+
+    @valid_password_params %{"current_password" => "test123", "new_password" => "some updated password", "confirm_new_password" => "some updated password"}
+    @invalid_current_password_params %{"current_password" => "invalid current password", "new_password" => "some updated password", "confirm_new_password" => "some updated password"}
+    @non_matching_new_password_params %{"current_password" => "test123", "new_password" => "some updated password", "confirm_new_password" => "non-matching password"}
+    @invalid_new_password_params %{"current_password" => "test123", "new_password" => "bad", "confirm_new_password" => "bad"}
+
+    @tag login_as: "test@test.com"
+    test "updating password updates password", %{conn: conn, user: user} do
+      assert Comeonin.Bcrypt.checkpw("test123", user.password_hash)
+      conn = post conn, user_path(conn, :update_password, user), update: @valid_password_params
+      assert redirected_to(conn) == user_path(conn, :show, user)
+      user = Accounts.get_user!(user.id)
+      assert Comeonin.Bcrypt.checkpw("some updated password", user.password_hash)
+    end
+
+    @tag login_as: "test@test.com"
+    test "updating with incorrect current password fails to update", %{conn: conn, user: user} do
+      assert Comeonin.Bcrypt.checkpw("test123", user.password_hash)
+      conn = post conn, user_path(conn, :update_password, user), update: @invalid_current_password_params
+      assert redirected_to(conn) == user_path(conn, :edit_password, user)
+      assert Comeonin.Bcrypt.checkpw("test123", user.password_hash)
+    end
+
+    @tag login_as: "test@test.com"
+    test "updating with non-matching password fields fails to update", %{conn: conn, user: user} do
+      assert Comeonin.Bcrypt.checkpw("test123", user.password_hash)
+      conn = post conn, user_path(conn, :update_password, user), update: @non_matching_new_password_params
+      assert redirected_to(conn) == user_path(conn, :edit_password, user)
+      assert Comeonin.Bcrypt.checkpw("test123", user.password_hash)
+    end
+
+    @tag login_as: "test@test.com"
+    test "updating with invalid password fails to update", %{conn: conn, user: user} do
+      assert Comeonin.Bcrypt.checkpw("test123", user.password_hash)
+      conn = post conn, user_path(conn, :update_password, user), update: @invalid_new_password_params
+      assert html_response(conn, 200) =~ "Pick a different password"
+      assert Comeonin.Bcrypt.checkpw("test123", user.password_hash)
+    end
+
+  end
+
+  describe "edit user email" do
+    @tag login_as: "test@test.com"
+    test "renders form for editing chosen user", %{conn: conn, user: user} do
+      conn = get conn, user_path(conn, :edit_email, user)
+      assert html_response(conn, 200) =~ "Confirm new email"
+    end
+  end
+
+  describe "update user email" do
+
+    @valid_email_params %{"current_email" => "test@test.com", "new_email" => "new@email.com", "confirm_new_email" => "new@email.com"}
+    @invalid_current_email_params %{"current_email" => "invalid@invalid.com", "new_email" => "new@email.com", "confirm_new_email" => "new@email.com"}
+    @non_matching_new_email_params %{"current_email" => "test@test.com", "new_email" => "new@email.com", "confirm_new_email" => "non@matching.com"}
+    @invalid_new_email_params %{"current_email" => "test@test.com", "new_email" => "invalid", "confirm_new_email" => "invalid"}
+
+    @tag login_as: "test@test.com"
+    test "updating email updates email", %{conn: conn, user: user} do
+      assert user.email == "test@test.com"
+      conn = post conn, user_path(conn, :update_email, user), update: @valid_email_params
+      assert redirected_to(conn) == user_path(conn, :show, user)
+      user = Accounts.get_user!(user.id)
+      assert user.email == "new@email.com"
+    end
+
+    @tag login_as: "test@test.com"
+    test "updating with incorrect current email fails to update", %{conn: conn, user: user} do
+      assert user.email == "test@test.com"
+      conn = post conn, user_path(conn, :update_email, user), update: @invalid_current_email_params
+      assert redirected_to(conn) == user_path(conn, :edit_email, user)
+      assert user.email == "test@test.com"
+    end
+
+    @tag login_as: "test@test.com"
+    test "updating with non-matching email fields fails to update", %{conn: conn, user: user} do
+      assert user.email == "test@test.com"
+      conn = post conn, user_path(conn, :update_email, user), update: @non_matching_new_email_params
+      assert redirected_to(conn) == user_path(conn, :edit_email, user)
+      assert user.email == "test@test.com"
+    end
+
+    @tag login_as: "test@test.com"
+    test "updating with invalid email fails to update", %{conn: conn, user: user} do
+      assert user.email == "test@test.com"
+      conn = post conn, user_path(conn, :update_email, user), update: @invalid_new_email_params
+      assert html_response(conn, 200) =~ "Pick a different email"
+      assert user.email == "test@test.com"
+    end
+
+  end
+
+  describe "update user categories" do
+
+
+    @tag login_as: "test@test.com"
+    test "updating with valid categories updates", %{conn: conn, user: user} do
+      category_one = insert_category(%{name: "category_one"})
+      category_two = insert_category(%{name: "category_two"})
+      user = user |> Repo.preload(:categories)
+      assert user.categories == []
+
+      valid_category_input = %{"categories" => [Integer.to_string(category_one.id), Integer.to_string(category_two.id)]}
+      conn = put conn, user_path(conn, :update_categories, user), user: valid_category_input
+      assert redirected_to(conn) == user_path(conn, :show, user)
+      user = Accounts.get_user!(user.id) |> Repo.preload(:categories)
+      assert user.categories == [category_one, category_two]
+    end
+
+    @tag login_as: "test@test.com"
+    test "updating with invalid categories fails to update", %{conn: conn, user: user} do
+      category_one = insert_category(%{name: "category_one"})
+      category_two = insert_category(%{name: "category_two"})
+      user = user |> Repo.preload(:categories)
+      assert user.categories == []
+
+      invalid_category_input = %{"categories" => [Integer.to_string(category_one.id), "-1"]}
+      assert_raise(Ecto.NoResultsError, fn() -> put conn, user_path(conn, :update_categories, user), user: invalid_category_input end)
+      user = Accounts.get_user!(user.id) |> Repo.preload(:categories)
+      assert user.categories == []
+    end
   end
 
   #describe "delete user" do
