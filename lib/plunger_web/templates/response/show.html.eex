@@ -2,19 +2,19 @@
 
   <li>
     <strong>Response:</strong>
-    <%= @response.description %>
+    <%= description(@response) %>
   </li>
   <li>
     <strong>Posted at: </strong>
-    <%= get_date_time(@response) %>
+    <%= time_posted(@response) %>
   </li>
   <li>
     <strong>Posted by: </strong>
-    <%= get_name(@response) %>
+    <%= associated_user_name(@response) %>
   </li>
   <li>
     <strong>Votes: </strong>
-    <%= get_num_votes(@response) %>
+    <%= vote_count(@response) %>
   </li>
 
 </ul>

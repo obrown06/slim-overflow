@@ -204,4 +204,13 @@ defmodule Plunger.Accounts do
     |> change(is_admin: true)
     |> Repo.update()
   end
+
+  @doc """
+  Returns the name field of the given user struct.
+
+  """
+
+  def user_name(%User{} = user) do
+    user.name
+  end
 end

@@ -6,15 +6,15 @@
   </li>
   <li>
     <strong>Posted at: </strong>
-    <%= get_date_time(@comment) %>
+    <%= time_posted(@comment) %>
   </li>
   <li>
     <strong>Posted by: </strong>
-    <%= get_name(@comment) %>
+    <%= associated_user_name(@comment) %>
   </li>
   <li>
     <strong>Votes: </strong>
-    <%= get_num_votes(@comment) %>
+    <%= vote_count(@comment) %>
   </li>
 
 </ul>

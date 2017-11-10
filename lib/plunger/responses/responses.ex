@@ -1,9 +1,11 @@
 defmodule Plunger.Responses do
   alias Plunger.Responses.Response
   alias Plunger.Repo
+  alias Plunger.Accounts
   alias Plunger.Accounts.User
   alias Plunger.Questions.Question
   alias Plunger.Responses.ResponseVote
+  alias Plunger.Comments
   import Ecto.Query, warn: false
 
   @doc """
@@ -117,7 +119,7 @@ defmodule Plunger.Responses do
   """
 
   def promote_response(%Question{} = question, %Response{} = response) do
-    previous_best_response = Repo.one(from r in Response, where: r.question_id == ^question.id and r.is_best == true)
+    previous_best_response = best_response(question)
 
     if previous_best_response != nil do
       demote_response(previous_best_response)
@@ -213,4 +215,48 @@ defmodule Plunger.Responses do
       |> Ecto.Changeset.put_assoc(:response, response, :required)
       |> Repo.insert!()
   end
+
+  # Returns the inserted_at field of the given response
+
+  def time_posted(%Response{} = response) do
+    response.inserted_at
+  end
+
+  # Returns the user associated with the given response
+
+  def associated_user(%Response{} = response) do
+    Accounts.get_user!(response.user_id)
+  end
+
+  # Returns the sum of all of the votes for and against a response.
+
+  def vote_count(%Response{} = response) do
+    sum = Repo.aggregate((from rv in ResponseVote, where: rv.response_id == ^response.id), :sum, :votes)
+    case sum do
+      nil -> 0
+      _ -> sum
+    end
+  end
+
+  # Returns a response associated with the given question with 'is_best' == true
+  # If none found, returns nil
+
+  def best_response(%Question{} = question) do
+    Repo.one(from r in Response, where: r.question_id == ^question.id and r.is_best == true )
+  end
+
+  # Returns the set of time-ordered responses associated with the given question
+
+  def list_responses(%Question{} = question) do
+    (from r in Response, where: r.question_id == ^question.id,
+     select: r, order_by: r.inserted_at)
+        |> Repo.all
+  end
+
+  # Returns the description field of the given response
+
+  def description(%Response{} = response) do
+    response.description
+  end
+
 end

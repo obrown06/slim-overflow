@@ -8,17 +8,17 @@
 
   <li>
     <strong>Title:</strong>
-    <%= @question.title %>
+    <%= title(@question) %>
   </li>
 
   <li>
     <strong>Body:</strong>
-    <%= as_html(@question.body) %>
+    <%= body(@question) %>
   </li>
 
   <li>
     <strong>Votes:</strong>
-    <%= get_num_votes(@question) %>
+    <%= vote_count(@question) %>
   </li>
 
   <li>
@@ -28,12 +28,12 @@
 
   <li>
     <strong>Posted at:</strong>
-    <%= get_date_time(@question) %>
+    <%= time_posted(@question) %>
   </li>
 
   <li>
     <strong>Posted by:</strong>
-    <%= get_name(@question) %>
+    <%= associated_user_name(@question) %>
   </li>
 
 </ul>
@@ -52,7 +52,7 @@
 
 <div class="comments">
  <h2>Comments</h2>
- <%= for comment <- PlungerWeb.CommentView.get_nested_comments(@question) do %>
+ <%= for comment <- PlungerWeb.QuestionView.list_comments(@question) do %>
    <%= render PlungerWeb.CommentView, "show.html", comment: comment %>
 
    <%= link "Upvote Comment", to: comment_path(@conn, :upvote, comment, question_id: @question.id)%></span>
@@ -70,7 +70,7 @@
 
 <div class="responses">
  <h2>Responses</h2>
- <%= for response <- PlungerWeb.ResponseView.get_responses(@question) do %>
+ <%= for response <- list_responses(@question) do %>
    <%= render PlungerWeb.ResponseView, "show.html", response: response %>
 
    <%= if response.is_best == true do %>
@@ -89,7 +89,7 @@
      action: comment_path(@conn, :create, parent_type: "response", question_id: @question.id, response_id: response.id)
    %>
 
-   <%= for comment <- PlungerWeb.CommentView.get_nested_comments(response) do %>
+   <%= for comment <- PlungerWeb.ResponseView.list_comments(response) do %>
       <%= render PlungerWeb.CommentView, "show.html", comment: comment %>
 
       <%= link "Upvote Comment", to: comment_path(@conn, :upvote, comment, question_id: @question.id)%></span>

@@ -6,52 +6,28 @@ defmodule PlungerWeb.ResponseView do
   alias Plunger.Questions.Question
   alias Plunger.Responses.ResponseVote
   alias Plunger.Repo
+  alias Plunger.Comments
   import Ecto.Query, only: [from: 2]
 
-  def get_username(%Response{} = response) do
-    user = Accounts.get_user!(response.user_id)
-    user.username
+  def associated_user_name(%Response{} = response) do
+    user = Responses.associated_user(response)
+    Accounts.user_name(user)
   end
 
-  def get_name(%Response{} = response) do
-    user = Accounts.get_user!(response.user_id)
-    user.name
+  def time_posted(%Response{} = response) do
+    Responses.time_posted(response)
   end
 
-  def get_date_time(%Response{} = response) do
-    response.inserted_at
+  def vote_count(%Response{} = response) do
+    Responses.vote_count(response)
   end
 
-
-  def get_responses(%Question{} = question) do
-    responses = (from r in Response,
-              where: r.question_id == ^question.id,
-              select: r)
-      |> order_by_time_posted
-      |> Repo.all
-
-    question = question |> Repo.preload(:responses)
-    best = Enum.filter(question.responses, fn(r) -> r.is_best == true end)
-
-    if [best] != [] do
-      rest = responses |> Enum.filter(fn(response) -> [response] != best end)
-      best ++ rest
-    else
-      responses
-    end
+  def description(%Response{} = response) do
+    Responses.description(response)
   end
 
-  def order_by_time_posted(query) do
-    from t in query,
-      order_by: t.inserted_at
-  end
-
-  def get_num_votes(%Response{} = response) do
-    sum = Repo.aggregate((from rv in ResponseVote, where: rv.response_id == ^response.id), :sum, :votes)
-    case sum do
-      nil -> 0
-      _ -> sum
-    end
+  def list_comments(%Response{} = response) do
+    Comments.list_comments(response)
   end
 
 end

@@ -34,7 +34,7 @@ defmodule Plunger.Responses.Response do
     response
         |> Repo.preload(:comments) # maybe include a custom query here to preserve some order
         |> Map.update!(:comments, fn(list) ->
-            Enum.map(list, fn(c) -> c |> Comment.load_parents(limit - 1) |> Comment.load_children(limit-1) end)
+            Enum.map(list, fn(c) -> c |> Comment.load_parents(limit - 1) |> Comment.load_children(limit - 1) end)
            end)
   end
 end

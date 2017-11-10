@@ -5,6 +5,9 @@ defmodule Plunger.Comments do
   alias Plunger.Comments.CommentVote
   alias Plunger.Responses
   alias Plunger.Questions
+  alias Plunger.Accounts
+  alias Plunger.Responses.Response
+  alias Plunger.Questions.Question
   import Ecto.Query
 
   @doc """
@@ -204,4 +207,55 @@ defmodule Plunger.Comments do
       |> Ecto.Changeset.put_assoc(:comment, comment, :required)
       |> Repo.insert!()
   end
+
+  # Returns the user associated with the given comment
+
+  def associated_user(%Comment{} = comment) do
+    Accounts.get_user!(comment.user_id)
+  end
+
+  # Returns the sum of all of the votes for and against a comment.
+
+  def vote_count(%Comment{} = comment) do
+    sum = Repo.aggregate((from cv in CommentVote, where: cv.comment_id == ^comment.id), :sum, :votes)
+    case sum do
+      nil -> 0
+      _ -> sum
+    end
+  end
+
+  # Returns the inserted_at field of the given comment
+
+  def time_posted(%Comment{} = comment) do
+    comment.inserted_at
+  end
+
+  # Returns a list of all comments associated with the given comment
+
+  def list_comments(%Comment{} = comment) do
+    comment_list = comment |> Map.get(:comments)
+    #|> Enum.sort_by(&time_posted(&1))
+    |> Enum.reduce([], fn(comment, acc) -> [comment] ++ list_comments(comment) ++ acc end)
+  end
+
+  # Returns a list of all comments associated with the given response
+
+  def list_comments(%Response{} = response) do
+    response
+      |> Response.load_comments()
+      |> Map.get(:comments)
+      #|> Enum.sort_by(&time_posted(&1))
+      |> Enum.reduce([], fn(comment, acc) -> [comment] ++ list_comments(comment) ++ acc end)
+  end
+
+  # Returns a list of all comments associated with the given question
+
+  def list_comments(%Question{} = question) do
+    question
+      |> Question.load_comments()
+      |> Map.get(:comments)
+      #|> Enum.sort_by(&time_posted(&1))
+      |> Enum.reduce([], fn(comment, acc) -> [comment] ++ list_comments(comment) ++ acc end)
+  end
+
 end

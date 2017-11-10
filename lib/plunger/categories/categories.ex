@@ -35,6 +35,29 @@ defmodule Plunger.Categories do
   end
 
   @doc """
+  Returns a list of all categories whose ids are marked
+  as "true" in the given list.
+
+  Input is of the form %{"1" => "true", "2" => "true", "3" => "true", "4" => "true"}
+
+  ## Examples
+
+      iex> list_categories(list)
+      [%Category{}, ...]
+
+  """
+  def list_categories(boolean_list) do
+    boolean_list
+    |> Enum.filter(fn(elem) -> elem != "" end)
+    |> Enum.reduce([], fn({category_id, value}, acc) ->
+        if value == "true" do
+          acc ++ [category_id |> String.to_integer() |> get_category!()]
+        else
+          acc
+        end end)
+  end
+
+  @doc """
   Gets a single category.
 
   Raises `Ecto.NoResultsError` if the Category does not exist.
@@ -113,5 +136,23 @@ defmodule Plunger.Categories do
   """
   def change_category(%Category{} = category) do
     Category.changeset(category, %{})
+  end
+
+  @doc """
+  Returns the name field of the given category.
+
+  """
+
+  def name(%Category{} = category) do
+    category.name
+  end
+
+  @doc """
+  Returns the id field of the given category.
+
+  """
+
+  def id(%Category{} = category) do
+    category.id
   end
 end

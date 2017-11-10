@@ -3,6 +3,7 @@ defmodule PlungerWeb.QuestionView do
   alias Plunger.Repo
   alias Plunger.Questions.Question
   alias Plunger.Accounts
+  alias Plunger.Responses
   alias Plunger.Responses.Response
   alias Plunger.Categories
   alias Plunger.Categories.Category
@@ -10,26 +11,38 @@ defmodule PlungerWeb.QuestionView do
   alias Plunger.Questions.QuestionVote
   alias Plunger.Questions.QuestionView
   alias Plunger.Questions
+  alias Plunger.Comments
   import Ecto.Query, only: [from: 2]
 
-  def get_categories(%Question{} = question) do
-      question
-      |> Ecto.assoc(:categories)
-      |> Repo.all
-  end
-
   def list_categories(%Question{} = question) do
-    get_categories(question)
-    |> Enum.map(fn(category) -> category.name end)
-    |> Enum.join(", ")
+    Questions.get_categories(question)
+      |> Enum.map(fn(category) -> Categories.name(category) end)
+      |> Enum.join(", ")
   end
 
   def list_categories() do
     Categories.list_categories()
   end
 
-  def get_date_time(%Question{} = question) do
-    question.inserted_at
+  def time_posted(%Question{} = question) do
+    Questions.time_posted(question)
+  end
+
+  def title(%Question{} = question) do
+    Questions.title(question)
+  end
+
+  def body(%Question{} = question) do
+    Questions.body(question) |> as_html()
+  end
+
+  def vote_count(%Question{} = question) do
+    Questions.vote_count(question)
+  end
+
+  def associated_user_name(%Question{} = question) do
+    user = Questions.associated_user(question)
+    Accounts.user_name(user)
   end
 
   def as_html(text) do
@@ -41,57 +54,44 @@ defmodule PlungerWeb.QuestionView do
   def sort(questions, sort_by) do
     case sort_by do
       nil -> questions
-      "votes" -> Enum.sort_by(questions, &get_num_votes(&1)) |> Enum.reverse()
+      "votes" -> Enum.sort_by(questions, &vote_count(&1)) |> Enum.reverse()
       "responses" -> Enum.sort_by(questions, fn(question) ->
-        length(Repo.all(from r in Response, where: r.question_id == ^question.id)) end) |> Enum.reverse()
-      "date" -> Enum.sort_by(questions, fn(question) -> question.inserted_at end) |> Enum.reverse()
+        Responses.list_responses(question) |> length() end)
+          |> Enum.reverse()
+      "date" -> Enum.sort_by(questions, fn(question) ->
+        time_posted(question) end)
+          |> Enum.reverse()
       "views" -> Enum.sort_by(questions, fn(question) ->
-        length(Repo.all(from qv in QuestionView, where: qv.question_id == ^question.id)) end) |> Enum.reverse()
+        Questions.list_question_views(question) |> length() end)
+          |> Enum.reverse()
       _ -> raise "This shouldn't happen"
     end
   end
 
-  #def get_username(%Question{} = question) do
-  #  user = Accounts.get_user!(question.user_id)
-  #  user.username
-  #end
 
-  def get_name(%Question{} = question) do
-    user = Accounts.get_user!(question.user_id)
-    user.name
-  end
-
-  def get_num_votes(%Question{} = question) do
-    sum = Repo.aggregate((from qv in QuestionVote, where: qv.question_id == ^question.id), :sum, :votes)
-    case sum do
-      nil -> 0
-      _ -> sum
-    end
-  end
-
-  def get_questions(categories) do
-    case categories do
-      "all" -> Questions.list_questions()
-      boolean_list ->
-        boolean_list
-        |> Enum.filter(fn(elem) -> elem != "" end)
-        |> Enum.reduce([], fn({category_id, value}, acc) ->
-            if value == "true" do
-              questions = category_id |> String.to_integer() |> Categories.get_category!() |> Questions.list_questions()
-              acc ++ questions
-            else
-              acc
-            end end)
-    end
-
-  end
-
-  def category_checked(categories, category) do
-    IO.inspect categories
+  def category_selected(category_selects, category) do
+    id = Categories.id(category)
     cond do
-      categories == "all" -> true
-      Map.get(categories, Integer.to_string(category.id)) == "true" -> true
+      category_selects == nil -> true
+      Map.get(category_selects, Integer.to_string(id)) == "true" -> true
       true -> false
     end
+ end
+
+  def list_responses(%Question{} = question) do
+    best_response = Responses.best_response(question)
+    responses = Responses.list_responses(question)
+
+    responses = responses |> Enum.filter(fn(response) -> response != best_response end)
+
+    if best_response != nil do
+      responses = [best_response | responses]
+    end
+
+    responses
+  end
+
+  def list_comments(%Question{} = question) do
+    Comments.list_comments(question)
   end
 end

@@ -3,8 +3,10 @@ defmodule Plunger.Questions do
   alias Plunger.Repo
   alias Plunger.Categories.Category
   alias Plunger.Categories
+  alias Plunger.Accounts
   alias Plunger.Questions.Question
   alias Plunger.Responses.Response
+  alias Plunger.Comments
   import Ecto.Query, warn: false
 
 
@@ -312,6 +314,54 @@ defmodule Plunger.Questions do
       |> Ecto.Changeset.change()
       |> Ecto.Changeset.put_assoc(:question, question, :required)
       |> Repo.insert!()
+  end
+
+  # Returns a list all categories associated with the given question.
+
+  def get_categories(%Question{} = question) do
+    question
+    |> Ecto.assoc(:categories)
+    |> Repo.all
+  end
+
+  # Returns the time the question was posted -- aka the 'inserted_at'
+  # field of the given struct
+
+  def time_posted(%Question{} = question) do
+    question.inserted_at
+  end
+
+  # Returns the 'title' field of the given question struct
+
+  def title(%Question{} = question) do
+    question.title
+  end
+
+  # Returns the 'body' field of the given question struct
+
+  def body(%Question{} = question) do
+    question.body
+  end
+
+  # Returns the sum of all of the votes for and against a question.
+
+  def vote_count(%Question{} = question) do
+    sum = Repo.aggregate((from qv in QuestionVote, where: qv.question_id == ^question.id), :sum, :votes)
+    case sum do
+      nil -> 0
+      _ -> sum
+    end
+  end
+
+  # Returns the user associated with the given question
+
+  def associated_user(%Question{} = question) do
+    Accounts.get_user!(question.user_id)
+  end
+
+  # Returns the set of question views associated with the given question
+  def list_question_views(%Question{} = question) do
+    (from qv in QuestionView, where: qv.question_id == ^question.id) |> Repo.all
   end
 
 end
