@@ -213,4 +213,22 @@ defmodule Plunger.Accounts do
   def user_name(%User{} = user) do
     user.name
   end
+
+  @doc """
+  Returns the boolean is_admin field of the given user struct.
+
+  """
+
+  def is_admin(%User{} = user) do
+    user.is_admin
+  end
+
+  @doc """
+  Returns the id field of the given user struct.
+
+  """
+
+  def id(%User{} = user) do
+    user.id
+  end
 end

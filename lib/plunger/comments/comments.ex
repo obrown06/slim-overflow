@@ -235,7 +235,7 @@ defmodule Plunger.Comments do
   def list_comments(%Comment{} = comment) do
     comment_list = comment |> Map.get(:comments)
     #|> Enum.sort_by(&time_posted(&1))
-    |> Enum.reduce([], fn(comment, acc) -> [comment] ++ list_comments(comment) ++ acc end)
+    |> Enum.reduce([], fn(comment, acc) -> [comment] ++ acc end)
   end
 
   # Returns a list of all comments associated with the given response
@@ -245,7 +245,7 @@ defmodule Plunger.Comments do
       |> Response.load_comments()
       |> Map.get(:comments)
       #|> Enum.sort_by(&time_posted(&1))
-      |> Enum.reduce([], fn(comment, acc) -> [comment] ++ list_comments(comment) ++ acc end)
+      |> Enum.reduce([], fn(comment, acc) -> [comment] ++ acc end)
   end
 
   # Returns a list of all comments associated with the given question
@@ -255,7 +255,7 @@ defmodule Plunger.Comments do
       |> Question.load_comments()
       |> Map.get(:comments)
       #|> Enum.sort_by(&time_posted(&1))
-      |> Enum.reduce([], fn(comment, acc) -> [comment] ++ list_comments(comment) ++ acc end)
+      |> Enum.reduce([], fn(comment, acc) -> [comment] ++ acc end)
   end
 
 end

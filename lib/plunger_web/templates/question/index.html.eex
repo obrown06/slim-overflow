@@ -58,10 +58,10 @@
         <span><%= link "Upvote Question", to: question_path(@conn, :upvote, question), class: "btn btn-default btn-xs"%></span>
         <span><%= link "Downvote Question", to: question_path(@conn, :downvote, question), class: "btn btn-default btn-xs"%></span>
         <span><%= link "Show", to: question_path(@conn, :show, question), class: "btn btn-default btn-xs" %></span>
-        <%= if current_user(@conn).is_admin or current_user(@conn).id == question.user_id do %>
+        <%= if Accounts.is_admin(current_user(@conn)) or Accounts.id(current_user(@conn)) == Accounts.id(Questions.associated_user(question)) do %>
           <span><%= link "Edit", to: question_path(@conn, :edit, question), class: "btn btn-default btn-xs" %></span>
         <% end %>
-        <%= if current_user(@conn).id == question.user_id do %>
+        <%= if Accounts.id(current_user(@conn)) == Accounts.id(Questions.associated_user(question)) do %>
           <span><%= link "Delete", to: question_path(@conn, :delete, question), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
         <% end %>
       </td>

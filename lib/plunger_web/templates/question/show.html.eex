@@ -53,14 +53,7 @@
 <div class="comments">
  <h2>Comments</h2>
  <%= for comment <- PlungerWeb.QuestionView.list_comments(@question) do %>
-   <%= render PlungerWeb.CommentView, "show.html", comment: comment %>
-
-   <%= link "Upvote Comment", to: comment_path(@conn, :upvote, comment, question_id: @question.id)%></span>
-   <%= link "Downvote Comment", to: comment_path(@conn, :downvote, comment, question_id: @question.id)%></span>
-
-   <%= render PlungerWeb.CommentView, "form.html", conn: @conn, question: @question,
-     comment_changeset: @comment_changeset, action: comment_path(@conn, :create, parent_type: "comment", question_id: @question.id, comment_id: comment.id)
-   %>
+   <%= render PlungerWeb.CommentView, "show.html", comment_changeset: @comment_changeset, conn: @conn, comment: comment, question: @question %>
  <% end %>
 </div>
 
@@ -71,35 +64,7 @@
 <div class="responses">
  <h2>Responses</h2>
  <%= for response <- list_responses(@question) do %>
-   <%= render PlungerWeb.ResponseView, "show.html", response: response %>
-
-   <%= if response.is_best == true do %>
-        <h5>Best Response!</h5>
-   <% end %>
-   <%= link "Upvote Response", to: response_path(@conn, :upvote, response, question_id: @question.id)%></span>
-   <%= link "Downvote Response", to: response_path(@conn, :downvote, response, question_id: @question.id)%></span>
-
-   <%= if @question.user_id == current_user(@conn).id do %>
-
-   <%= link "Mark Response as Best Answer", to: response_path(@conn, :promote, response, question_id: @question.id)%></span>
-   <% end %>
-
-   <%= render PlungerWeb.CommentView, "form.html", conn: @conn,
-     comment_changeset: @comment_changeset,
-     action: comment_path(@conn, :create, parent_type: "response", question_id: @question.id, response_id: response.id)
-   %>
-
-   <%= for comment <- PlungerWeb.ResponseView.list_comments(response) do %>
-      <%= render PlungerWeb.CommentView, "show.html", comment: comment %>
-
-      <%= link "Upvote Comment", to: comment_path(@conn, :upvote, comment, question_id: @question.id)%></span>
-      <%= link "Downvote Comment", to: comment_path(@conn, :downvote, comment, question_id: @question.id)%></span>
-
-      <%= render PlungerWeb.CommentView, "form.html", conn: @conn, question: @question,
-        comment_changeset: @comment_changeset, action: comment_path(@conn, :create, parent_type: "comment", question_id: @question.id, comment_id: comment.id)
-      %>
-   <% end %>
-
+   <%= render PlungerWeb.ResponseView, "show.html", conn: @conn, comment_changeset: @comment_changeset, response: response, question: @question %>
  <% end %>
 </div>
 

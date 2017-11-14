@@ -17,4 +17,13 @@
     <%= vote_count(@comment) %>
   </li>
 
+  <%= link "Upvote Comment", to: comment_path(@conn, :upvote, @comment, question_id: @question.id)%></span>
+  <%= link "Downvote Comment", to: comment_path(@conn, :downvote, @comment, question_id: @question.id)%></span>
+
+  <%= for comment <- PlungerWeb.CommentView.list_comments(@comment) do %>
+    <%= render PlungerWeb.CommentView, "show.html", comment_changeset: @comment_changeset, conn: @conn, comment: comment, question: @question  %>
+  <% end %>
+
+  <%= render PlungerWeb.CommentView, "form.html", conn: @conn, question: @question,
+    comment_changeset: @comment_changeset, action: comment_path(@conn, :create, parent_type: "comment", question_id: @question.id, comment_id: @comment.id) %>
 </ul>

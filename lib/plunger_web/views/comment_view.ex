@@ -57,4 +57,8 @@ defmodule PlungerWeb.CommentView do
     Comments.vote_count(comment)
   end
 
+  def list_comments(%Comment{} = comment) do
+    Comments.list_comments(comment)
+  end
+
 end
