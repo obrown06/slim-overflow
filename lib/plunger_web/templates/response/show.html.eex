@@ -1,40 +1,96 @@
-<ul>
+<html>
 
-  <li>
-    <strong>Response:</strong>
-    <%= description(@response) %>
-  </li>
-  <li>
-    <strong>Posted at: </strong>
-    <%= time_posted(@response) %>
-  </li>
-  <li>
-    <strong>Posted by: </strong>
-    <%= associated_user_name(@response) %>
-  </li>
-  <li>
-    <strong>Votes: </strong>
-    <%= vote_count(@response) %>
-  </li>
+<head>
+</head>
 
-  <%= if @response.is_best == true do %>
-       <h5>Best Response!</h5>
-  <% end %>
-  <%= link "Upvote Response", to: response_path(@conn, :upvote, @response, question_id: @question.id)%></span>
-  <%= link "Downvote Response", to: response_path(@conn, :downvote, @response, question_id: @question.id)%></span>
+<body>
 
-  <%= if @question.user_id == current_user(@conn).id do %>
+  <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+  <script type="text/javascript">
+      $(document).ready(function(){
+        $(".upvoteResponse").click(function() {
+          //var responseId;
+          //responseId = $(this).attr("id")
+          $.ajax({
+              url: "<%= response_path(@conn, :downvote, @response) %>" //"/responses/" + responseId + "/upvote",
+              type: "GET",
+              dataType: "json",
+              success: function(data){
+                  if (data.upvote_successful === true)
+                  {
+                    var count = parseInt($('#' + data.id).text());
+                    $('#' + data.id).text(count + 1)
+                  }
+              },
+              error: function(error){
+                   console.log("Error:");
+                   console.log(error);
+              }
+          });
+        });
 
-  <%= link "Mark Response as Best Answer", to: response_path(@conn, :promote, @response, question_id: @question.id)%></span>
-  <% end %>
+        $(".downvoteResponse").click(function() {
+          var responseId;
+          //responseId = $(this).attr("id")
+          alert("schmeh")
+          $.ajax({
+              url: "<%= response_path(@conn, :downvote, @response) %>" //"/responses/" + responseId + "/downvote",
+              type: "GET",
+              dataType: "json",
+              success: function(data){
+                  if (data.downvote_successful === true)
+                  {
+                    var count = parseInt($('#' + data.id).text());
+                    $('#' + data.id).text(count - 1)
+                  }
+              },
+              error: function(error){
+                   console.log("Error:");
+                   console.log(error);
+              }
+          });
+        });
+      });
+  </script>
 
-  <%= for comment <- PlungerWeb.ResponseView.list_comments(@response) do %>
-     <%= render PlungerWeb.CommentView, "show.html", comment: comment, conn: @conn, question: @question, comment_changeset: @comment_changeset %>
-  <% end %>
+<h5> <%= description(@response) %> </h5>
 
-  <%= render PlungerWeb.CommentView, "form.html", conn: @conn,
-    comment_changeset: @comment_changeset,
-    action: comment_path(@conn, :create, parent_type: "response", question_id: @question.id, response_id: @response.id)
-  %>
+<button class = "upvoteResponse" type="button">Upvote Response</button>
+<button class = "downvoteResponse" type="button">Downvote Response</button>
+<div class = "response-vote-count" id="<%= @response.id %>">
+  <%= vote_count(@response) %>
+</div>
 
-</ul>
+<div class="user-tag">
+  <div class = "user-img">
+    <img src="<%= PlungerWeb.Avatar.url({user(@response).avatar, user(@response)}) %>" width="50" height="50"/>
+  </div>
+  <div class = "user-time-posted">
+    asked <%= time_posted(@response) %>
+  </div>
+  <div class = "user-name">
+    <%= link user_name(@response), to: user_path(@conn, :show, user(@response)) %>
+  </div>
+</div>
+
+<%= if @response.is_best == true do %>
+     <h5>Best Response!</h5>
+<% end %>
+<%= link "Upvote Response", to: response_path(@conn, :upvote, @response, question_id: @question.id)%></span>
+<%= link "Downvote Response", to: response_path(@conn, :downvote, @response, question_id: @question.id)%></span>
+
+<%= if @question.user_id == current_user(@conn).id do %>
+
+<%= link "Mark Response as Best Answer", to: response_path(@conn, :promote, @response, question_id: @question.id)%></span>
+<% end %>
+
+<%= for comment <- PlungerWeb.ResponseView.list_comments(@response) do %>
+   <%= render PlungerWeb.CommentView, "show.html", comment: comment, conn: @conn, question: @question, comment_changeset: @comment_changeset %>
+<% end %>
+
+<%= render PlungerWeb.CommentView, "form.html", conn: @conn,
+  comment_changeset: @comment_changeset,
+  action: comment_path(@conn, :create, parent_type: "response", question_id: @question.id, response_id: @response.id)
+%>
+</body>
+</html>

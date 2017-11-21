@@ -1,42 +1,80 @@
-<h2>Show Question</h2>
+<html>
+<head>
 
+</head>
 
-<%= link "Upvote Question", to: question_path(@conn, :upvote, @question)%></span>
-<%= link "Downvote Question", to: question_path(@conn, :downvote, @question)%></span>
+<body>
+  <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+  <script type="text/javascript">
+      $(document).ready(function(){
+        $("#upvoteQuestion").click(function() {
+          $.ajax({
+              url: "<%= question_path(@conn, :upvote, @question) %>",
+              type: "GET",
+              dataType: "json",
+              success: function(data){
+                  if (data.upvote_successful === true)
+                  {
+                    var count = parseInt($('#question-vote-count').text());
+                    $('#question-vote-count').text(count + 1)
+                  }
+              },
+              error: function(error){
+                   console.log("Error:");
+                   console.log(error);
+              }
+          });
+        });
 
-<ul>
+        $("#downvoteQuestion").click(function() {
+          $.ajax({
+              url: "<%= question_path(@conn, :downvote, @question) %>",
+              type: "GET",
+              dataType: "json",
+              success: function(data){
+                  if (data.downvote_successful === true)
+                  {
+                    var count = parseInt($('#question-vote-count').text());
+                    $('#question-vote-count').text(count - 1)
+                  }
+              },
+              error: function(error){
+                   console.log("Error:");
+                   console.log(error);
+              }
+          });
+        });
+      });
+  </script>
 
-  <li>
-    <strong>Title:</strong>
-    <%= title(@question) %>
-  </li>
+<h2> <%= title(@question) %> </h2>
+<button id="upvoteQuestion" type="button">Upvote Question</button>
+<button id="downvoteQuestion" type="button">Downvote Question</button>
 
-  <li>
-    <strong>Body:</strong>
-    <%= body(@question) %>
-  </li>
+<div id="question-vote-count">
+  <%= vote_count(@question) %>
+</div>
+<hr>
 
-  <li>
-    <strong>Votes:</strong>
-    <%= vote_count(@question) %>
-  </li>
+<h5> <%= body(@question) %> </h5>
 
-  <li>
-    <strong>Categories:</strong>
-    <%= list_categories(@question) %>
-  </li>
+<%= for category <- list_categories(@question) do %>
+  <div class="category-tag">
+     <%= link Categories.name(category), to: category_path(@conn, :show, category) %>
+  </div>
+<% end %>
 
-  <li>
-    <strong>Posted at:</strong>
-    <%= time_posted(@question) %>
-  </li>
-
-  <li>
-    <strong>Posted by:</strong>
-    <%= associated_user_name(@question) %>
-  </li>
-
-</ul>
+<div class="user-tag">
+  <div class = "user-img">
+    <img src="<%= PlungerWeb.Avatar.url({user(@question).avatar, user(@question)}) %>" width="50" height="50"/>
+  </div>
+  <div class = "user-time-posted">
+    asked <%= time_posted(@question) %>
+  </div>
+  <div class = "user-name">
+    <%= link user_name(@question), to: user_path(@conn, :show, user(@question)) %>
+  </div>
+</div>
 
 
 <%= if current_user(@conn).is_admin or current_user(@conn).id == @question.user_id do %>
@@ -64,6 +102,7 @@
 <div class="responses">
  <h2>Responses</h2>
  <%= for response <- list_responses(@question) do %>
+   <hr>
    <%= render PlungerWeb.ResponseView, "show.html", conn: @conn, comment_changeset: @comment_changeset, response: response, question: @question %>
  <% end %>
 </div>
@@ -72,29 +111,6 @@
   response_changeset: @response_changeset, action: response_path(@conn, :create, question_id: @question.id)
 %>
 
-<div class="col-sm-7">
-    <%= content_tag :div, id: "question",
-          data: [id: @question.id] do %>
-    <% end %>
-</div>
+<%= render PlungerWeb.ChannelView, "show.html", question: @question %>
 
-<div class="col-sm-5">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Chat</h3>
-      </div>
-      <div id="msg-container" class="panel-body questions">
-
-      </div>
-      <div class="panel-footer">
-        <textarea id="msg-input"
-                  rows="3"
-                  class="form-control"
-                  placeholder="Chat..."></textarea>
-        <button id="msg-submit" class="btn btn-primary form-control"
-type="submit">
-          Post
-        </button>
-      </div>
-    </div>
-  </div>
+</body>

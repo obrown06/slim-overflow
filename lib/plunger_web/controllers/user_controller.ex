@@ -32,6 +32,7 @@ defmodule PlungerWeb.UserController do
   def show(conn, %{"id" => id}) do
     current_user = Coherence.current_user(conn)
     user = Accounts.get_user!(id)
+    IO.inspect(user)
     if user.id == current_user.id do
       render(conn, "my_account.html", user: user)
     else

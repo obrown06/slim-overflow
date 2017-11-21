@@ -231,4 +231,13 @@ defmodule Plunger.Accounts do
   def id(%User{} = user) do
     user.id
   end
+
+  @doc """
+  Returns the avatar field of the given user struct.
+
+  """
+
+  def avatar(%User{} = user) do
+    user.avatar
+  end
 end

@@ -233,29 +233,31 @@ defmodule Plunger.Comments do
   # Returns a list of all comments associated with the given comment
 
   def list_comments(%Comment{} = comment) do
-    comment_list = comment |> Map.get(:comments)
-    #|> Enum.sort_by(&time_posted(&1))
-    |> Enum.reduce([], fn(comment, acc) -> [comment] ++ acc end)
+    comment = comment |> Repo.preload(:comments)
+    comment.comments
   end
 
   # Returns a list of all comments associated with the given response
 
   def list_comments(%Response{} = response) do
-    response
-      |> Response.load_comments()
-      |> Map.get(:comments)
-      #|> Enum.sort_by(&time_posted(&1))
-      |> Enum.reduce([], fn(comment, acc) -> [comment] ++ acc end)
+    response = response |> Repo.preload(:comments)
+    response.comments
   end
 
   # Returns a list of all comments associated with the given question
 
   def list_comments(%Question{} = question) do
-    question
-      |> Question.load_comments()
-      |> Map.get(:comments)
-      #|> Enum.sort_by(&time_posted(&1))
-      |> Enum.reduce([], fn(comment, acc) -> [comment] ++ acc end)
+    question = question |> Repo.preload(:comments)
+    question.comments
+  end
+
+  # Returns the set of comments associated with the given user
+
+  def user_comments(%User{} = user) do
+    query = (from c in Comment,
+              where: c.user_id == ^user.id,
+              select: c)
+      |> Repo.all
   end
 
 end

@@ -24,6 +24,7 @@
 
 <% end %>
 
+
 <span><%= link "Sort: Votes", to: question_path(@conn, :index, sort: "votes", category_selects: @category_selects), class: "btn btn-default btn-xs"%></span>
 <span><%= link "Sort: Responses", to: question_path(@conn, :index, sort: "responses", category_selects: @category_selects), class: "btn btn-default btn-xs"%></span>
 <span><%= link "Sort: Unique User Views", to: question_path(@conn, :index, sort: "views", category_selects: @category_selects), class: "btn btn-default btn-xs"%></span>
@@ -48,8 +49,8 @@
     <tr>
       <td><%= title(question) %></td>
       <td><%= body(question) %></td>
-      <td><%= list_categories(question) %></td>
-      <td><%= associated_user_name(question) %></td>
+      <td><%= #list_categories(question) %></td>
+      <td><%= user_name(question) %></td>
       <td><%= time_posted(question) %></td>
       <td><%= vote_count(question) %></td>
 

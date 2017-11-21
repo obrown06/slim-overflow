@@ -21,9 +21,13 @@ defmodule PlungerWeb.QuestionController do
     category_selects = Map.get(params, "category_selects")
     sort = Map.get(params, "sort")
 
+    if category_selects == nil do
+      category_selects = "all"
+    end
+
     categories =
       case category_selects do
-        nil -> Categories.list_categories()
+        "all" -> Categories.list_categories()
         selects -> Categories.list_categories(selects)
       end
 
@@ -53,15 +57,14 @@ defmodule PlungerWeb.QuestionController do
   end
 
   def upvote(conn, %{"id" => id}, user) do
-    Questions.upvote_question!(id, user.id)
-    question = Questions.get_question!(id)
-    conn |> redirect(to: NavigationHistory.last_path(conn, 1)) #question_path(conn, :show, question))
+    upvote_successful = Questions.upvote_question(id, user.id)
+    #question = Questions.get_question!(id)
+    conn |> json %{ upvote_successful: upvote_successful } #redirect(to: NavigationHistory.last_path(conn, 1)) #question_path(conn, :show, question))
   end
 
   def downvote(conn, %{"id" => id}, user) do
-    Questions.downvote_question!(id, user.id)
-    question = Questions.get_question!(id)
-    conn |> redirect(to: NavigationHistory.last_path(conn, 1)) #question_path(conn, :show, question))
+    downvote_successful = Questions.downvote_question(id, user.id)
+    conn |> json %{ downvote_successful: downvote_successful }#question_path(conn, :show, question))
   end
 
   def show(conn, %{"id" => id}, user) do

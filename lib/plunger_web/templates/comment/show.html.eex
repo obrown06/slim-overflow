@@ -1,29 +1,26 @@
-<ul>
 
-  <li>
-    <strong>Comment:</strong>
-    <%= @comment.description %>
-  </li>
-  <li>
-    <strong>Posted at: </strong>
-    <%= time_posted(@comment) %>
-  </li>
-  <li>
-    <strong>Posted by: </strong>
-    <%= associated_user_name(@comment) %>
-  </li>
-  <li>
-    <strong>Votes: </strong>
-    <%= vote_count(@comment) %>
-  </li>
+<h5> <%= @comment.description %> </h5>
+<strong>Votes: </strong>
+<%= vote_count(@comment) %>
 
-  <%= link "Upvote Comment", to: comment_path(@conn, :upvote, @comment, question_id: @question.id)%></span>
-  <%= link "Downvote Comment", to: comment_path(@conn, :downvote, @comment, question_id: @question.id)%></span>
+<div class="user-tag">
+  <div class = "user-img">
+    <img src="<%= PlungerWeb.Avatar.url({user(@comment).avatar, user(@comment)}) %>" width="50" height="50"/>
+  </div>
+  <div class = "user-time-posted">
+    asked <%= time_posted(@comment) %>
+  </div>
+  <div class = "user-name">
+    <%= link user_name(@comment), to: user_path(@conn, :show, user(@comment)) %>
+  </div>
+</div>
 
-  <%= for comment <- PlungerWeb.CommentView.list_comments(@comment) do %>
-    <%= render PlungerWeb.CommentView, "show.html", comment_changeset: @comment_changeset, conn: @conn, comment: comment, question: @question  %>
-  <% end %>
+<%= link "Upvote Comment", to: comment_path(@conn, :upvote, @comment, question_id: @question.id)%></span>
+<%= link "Downvote Comment", to: comment_path(@conn, :downvote, @comment, question_id: @question.id)%></span>
 
-  <%= render PlungerWeb.CommentView, "form.html", conn: @conn, question: @question,
-    comment_changeset: @comment_changeset, action: comment_path(@conn, :create, parent_type: "comment", question_id: @question.id, comment_id: @comment.id) %>
-</ul>
+<%= for comment <- PlungerWeb.CommentView.list_comments(@comment) do %>
+  <%= render PlungerWeb.CommentView, "show.html", comment_changeset: @comment_changeset, conn: @conn, comment: comment, question: @question  %>
+<% end %>
+
+<%= render PlungerWeb.CommentView, "form.html", conn: @conn, question: @question,
+  comment_changeset: @comment_changeset, action: comment_path(@conn, :create, parent_type: "comment", question_id: @question.id, comment_id: @comment.id) %>

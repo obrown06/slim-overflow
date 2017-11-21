@@ -7,6 +7,7 @@ defmodule Plunger.Questions do
   alias Plunger.Questions.Question
   alias Plunger.Responses.Response
   alias Plunger.Comments
+  alias Plunger.Accounts.User
   import Ecto.Query, warn: false
 
 
@@ -204,18 +205,23 @@ defmodule Plunger.Questions do
 
   If the field does exist: increments it for values of '-1' and '0' and does nothing for a value of '1'.
 
+  Returns true if question_vote was successfully incremented, false otherwise.
+
   """
 
-  def upvote_question!(question_id, user_id) do
+  def upvote_question(question_id, user_id) do
     question_vote = get_question_vote(question_id, user_id)
 
     cond do
-      question_vote == nil -> create_question_upvote!(question_id, user_id)
+      question_vote == nil ->
+        create_question_upvote!(question_id, user_id)
+        true
       question_vote.votes < 1 ->
         question_vote
-        |> Ecto.Changeset.change(votes: question_vote.votes + 1)
-        |> Repo.update!()
-      true -> question_vote
+          |> Ecto.Changeset.change(votes: question_vote.votes + 1)
+          |> Repo.update!()
+        true
+      true -> false
     end
   end
 
@@ -225,17 +231,22 @@ defmodule Plunger.Questions do
 
   If the field does exist: decrements it for values of '0' and '1' and does nothing for a value of '-1'.
 
+  Returns true if question_vote was successfully decremented, false otherwise.
+
   """
 
-  def downvote_question!(question_id, user_id) do
+  def downvote_question(question_id, user_id) do
     question_vote = get_question_vote(question_id, user_id)
     cond do
-      question_vote == nil -> create_question_downvote!(question_id, user_id)
+      question_vote == nil ->
+        create_question_downvote!(question_id, user_id)
+        true
       question_vote.votes > -1 ->
         question_vote
-        |> Ecto.Changeset.change(votes: question_vote.votes - 1)
-        |> Repo.update!()
-      true -> question_vote
+          |> Ecto.Changeset.change(votes: question_vote.votes - 1)
+          |> Repo.update!()
+        true
+      true -> false
     end
   end
 
@@ -360,8 +371,18 @@ defmodule Plunger.Questions do
   end
 
   # Returns the set of question views associated with the given question
+
   def list_question_views(%Question{} = question) do
     (from qv in QuestionView, where: qv.question_id == ^question.id) |> Repo.all
+  end
+
+  # Returns the set of questions associated with the given user
+
+  def user_questions(%User{} = user) do
+    query = (from q in Question,
+              where: q.user_id == ^user.id,
+              select: q)
+      |> Repo.all
   end
 
 end

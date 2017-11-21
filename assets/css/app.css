@@ -1,1 +1,23 @@
 /* This file is for your main application css. */
+
+.category-tag {
+  background-color: #E0EAF1;
+  color: #479FE0;
+  padding: 4px;
+  display: inline;
+  margin: 3px;
+}
+
+.user-tag {
+  height: 50px;
+  float: right;
+  background-color: #EEEEEE;
+}
+
+.user-time-posted {
+  display: inline;
+}
+
+.user-img {
+  float: left;
+}

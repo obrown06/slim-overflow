@@ -137,22 +137,28 @@ defmodule Plunger.Responses do
   end
 
   @doc """
-  Decrements the :votes field in the ResponseVote table associated with the given response_id and user_id.
+  Increments the :votes field in the ResponseVote table associated with the given response_id and user_id.
   If the field doesn't exist, creates and inserts it with a :votes value of '1'.
 
-  If the field does exist: increments it for values of '0' and '-1' and does nothing for a value of '1'.
+  If the field does exist: increments it for values of '-1' and '0' and does nothing for a value of '1'.
+
+  Returns true if response_vote was successfully incremented, false otherwise.
 
   """
-  def upvote_response!(response_id, user_id) do
+
+  def upvote_response(response_id, user_id) do
     response_vote = get_response_vote(response_id, user_id)
 
     cond do
-      response_vote == nil -> create_response_upvote!(response_id, user_id)
+      response_vote == nil ->
+        create_response_upvote!(response_id, user_id)
+        true
       response_vote.votes < 1 ->
         response_vote
-        |> Ecto.Changeset.change(votes: response_vote.votes + 1)
-        |> Repo.update!()
-      true -> response_vote
+          |> Ecto.Changeset.change(votes: response_vote.votes + 1)
+          |> Repo.update!()
+        true
+      true -> false
     end
   end
 
@@ -162,17 +168,22 @@ defmodule Plunger.Responses do
 
   If the field does exist: decrements it for values of '0' and '1' and does nothing for a value of '-1'.
 
+  Returns true if response_vote was successfully decremented, false otherwise.
+
   """
 
-  def downvote_response!(response_id, user_id) do
+  def downvote_response(response_id, user_id) do
     response_vote = get_response_vote(response_id, user_id)
     cond do
-      response_vote == nil -> create_response_downvote!(response_id, user_id)
+      response_vote == nil ->
+        create_response_downvote!(response_id, user_id)
+        true
       response_vote.votes > -1 ->
         response_vote
-        |> Ecto.Changeset.change(votes: response_vote.votes - 1)
-        |> Repo.update!()
-      true -> response_vote
+          |> Ecto.Changeset.change(votes: response_vote.votes - 1)
+          |> Repo.update!()
+        true
+      true -> false
     end
   end
 
@@ -257,6 +268,15 @@ defmodule Plunger.Responses do
 
   def description(%Response{} = response) do
     response.description
+  end
+
+  # Returns the set of responses associated with the given user
+
+  def user_responses(%User{} = user) do
+    query = (from r in Response,
+              where: r.user_id == ^user.id,
+              select: r)
+      |> Repo.all
   end
 
 end

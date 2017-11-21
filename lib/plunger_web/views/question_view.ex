@@ -16,8 +16,8 @@ defmodule PlungerWeb.QuestionView do
 
   def list_categories(%Question{} = question) do
     Questions.get_categories(question)
-      |> Enum.map(fn(category) -> Categories.name(category) end)
-      |> Enum.join(", ")
+      #|> Enum.map(fn(category) -> Categories.name(category) end)
+      #|> Enum.join(", ")
   end
 
   def list_categories() do
@@ -25,7 +25,7 @@ defmodule PlungerWeb.QuestionView do
   end
 
   def time_posted(%Question{} = question) do
-    Questions.time_posted(question)
+    Questions.time_posted(question) |> PlungerWeb.ViewHelpers.get_time_posted()
   end
 
   def title(%Question{} = question) do
@@ -40,9 +40,18 @@ defmodule PlungerWeb.QuestionView do
     Questions.vote_count(question)
   end
 
-  def associated_user_name(%Question{} = question) do
+  def user_name(%Question{} = question) do
     user = Questions.associated_user(question)
     Accounts.user_name(user)
+  end
+
+  def user_avatar(%Question{} = question) do
+    Questions.associated_user(question)
+    |> Accounts.avatar()
+  end
+
+  def user(%Question{} = question) do
+    Questions.associated_user(question)
   end
 
   def as_html(text) do
@@ -68,11 +77,10 @@ defmodule PlungerWeb.QuestionView do
     end
   end
 
-
   def category_selected(category_selects, category) do
     id = Categories.id(category)
     cond do
-      category_selects == nil -> true
+      category_selects == "all" -> true
       Map.get(category_selects, Integer.to_string(id)) == "true" -> true
       true -> false
     end

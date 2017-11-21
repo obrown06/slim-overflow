@@ -61,4 +61,13 @@ defmodule PlungerWeb.CommentView do
     Comments.list_comments(comment)
   end
 
+  def user(%Comment{} = comment) do
+    Comments.associated_user(comment)
+  end
+
+  def user_name(%Comment{} = comment) do
+    user = Comments.associated_user(comment)
+    Accounts.user_name(user)
+  end
+
 end

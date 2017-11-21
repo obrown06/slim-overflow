@@ -17,15 +17,17 @@ defmodule PlungerWeb.ResponseController do
   #  render(conn, "new.html", changeset: changeset, question_id: question_id)
   #end
 
-  def action(conn, params) do
-    question =
-      conn.params["question_id"]
-      |> Questions.get_question!
-    apply(__MODULE__, action_name(conn),
-      [conn, conn.params, Coherence.current_user(conn), question])
-  end
+  #def action(conn, params) do
+  #  question =
+  #    conn.params["question_id"]
+  #    |> Questions.get_question!
+  #  apply(__MODULE__, action_name(conn),
+  #    [conn, conn.params, Coherence.current_user(conn), question])
+  #end
 
-  def create(conn, %{"response" => response_params}, user, question) do
+  def create(conn, %{"response" => response_params}) do
+    user = Coherence.current_user(conn)
+    question = conn.params["question_id"] |> Questions.get_question!()
     case Responses.create_response(user, question, response_params) do
       {:ok, _} ->
         conn
@@ -38,7 +40,9 @@ defmodule PlungerWeb.ResponseController do
     end
   end
 
-  def promote(conn, %{"id" => id}, user, question) do
+  def promote(conn, %{"id" => id}) do
+    user = Coherence.current_user(conn)
+    question = conn.params["question_id"] |> Questions.get_question!()
     response = Responses.get_response!(id)
     case Responses.promote_response(question, response) do
       {:ok, response} ->
@@ -54,14 +58,16 @@ defmodule PlungerWeb.ResponseController do
     end
   end
 
-  def upvote(conn, %{"id" => id}, user, question) do
-    Responses.upvote_response!(id, user.id)
-    conn |> redirect(to: NavigationHistory.last_path(conn, 1))
+  def upvote(conn, %{"id" => id}) do
+    user = Coherence.current_user(conn)
+    upvote_successful = Responses.upvote_response(id, user.id)
+    conn |> json %{ upvote_successful: upvote_successful, id: id }
   end
 
-  def downvote(conn, %{"id" => id}, user, question) do
-    Responses.downvote_response!(id, user.id)
-    conn |> redirect(to: NavigationHistory.last_path(conn, 1))
+  def downvote(conn, %{"id" => id}) do
+    user = Coherence.current_user(conn)
+    downvote_successful = Responses.downvote_response(id, user.id)
+    conn |> json %{ downvote_successful: downvote_successful, id: id }
   end
 
   #defp unauthenticated(conn, _params) do

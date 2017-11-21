@@ -30,4 +30,13 @@ defmodule PlungerWeb.ResponseView do
     Comments.list_comments(response)
   end
 
+  def user(%Response{} = response) do
+    Responses.associated_user(response)
+  end
+
+  def user_name(%Response{} = question) do
+    user = Responses.associated_user(question)
+    Accounts.user_name(user)
+  end
+
 end

@@ -27,14 +27,4 @@ defmodule Plunger.Responses.Response do
     |> cast(attrs, [:description])
     |> validate_required([:description])
   end
-
-  def load_comments(response), do: load_comments(response, @recursion_limit)
-
-  def load_comments(%Response{comments: %Ecto.Association.NotLoaded{}} = response, limit) do
-    response
-        |> Repo.preload(:comments) # maybe include a custom query here to preserve some order
-        |> Map.update!(:comments, fn(list) ->
-            Enum.map(list, fn(c) -> c |> Comment.load_parents(limit - 1) |> Comment.load_children(limit - 1) end)
-           end)
-  end
 end

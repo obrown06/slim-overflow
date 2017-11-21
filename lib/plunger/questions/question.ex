@@ -33,14 +33,4 @@ defmodule Plunger.Questions.Question do
     |> validate_required([:title, :body])
     |> assoc_constraint(:user)
   end
-
- def load_comments(question), do: load_comments(question, @recursion_limit)
-
- def load_comments(%Question{comments: %Ecto.Association.NotLoaded{}} = question, limit) do
-   question
-     |> Repo.preload(:comments)
-     |> Map.update!(:comments, fn(list) ->
-         Enum.map(list, fn(c) -> c |> Comment.load_parents(limit - 1) |> Comment.load_children(limit-1) end)
-        end)
-  end
 end

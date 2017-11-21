@@ -3,6 +3,7 @@ defmodule Plunger.Accounts.User do
   use Coherence.Schema
   use CoherenceAssent.Schema
   use Arc.Ecto.Schema
+  alias PlungerWeb.Avatar
   import Ecto.Changeset
   alias Plunger.Accounts.User
 
@@ -50,6 +51,7 @@ defmodule Plunger.Accounts.User do
     |> validate_format(:email, ~r/@/)
     |> validate_coherence_assent(attrs)
     |> unique_constraint(:email)
+    |> put_default_profile_image()
     #|> unique_constraint(:username)
   end
 
@@ -57,6 +59,14 @@ defmodule Plunger.Accounts.User do
     user
     |> cast(attrs, ~w(password password_confirmation reset_password_token reset_password_sent_at))
     |> validate_coherence_password_reset(attrs)
+  end
+
+  defp put_default_profile_image(%Ecto.Changeset{} = changeset) do
+    case changeset do
+      %Ecto.Changeset{valid?: true, data: %{avatar: nil, email: email}} ->
+        put_change(changeset, :avatar, %{file_name: "no_profile_image.gif", updated_at: Ecto.DateTime.utc})
+      _ -> changeset
+    end
   end
 
   #defp put_pass_hash(changeset) do
