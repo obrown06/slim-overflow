@@ -279,4 +279,10 @@ defmodule Plunger.Responses do
       |> Repo.all
   end
 
+  # Returns the id of the given response
+
+  def id(%Response{} = response) do
+    response.id
+  end
+
 end

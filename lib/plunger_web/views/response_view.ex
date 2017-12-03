@@ -34,9 +34,13 @@ defmodule PlungerWeb.ResponseView do
     Responses.associated_user(response)
   end
 
-  def user_name(%Response{} = question) do
-    user = Responses.associated_user(question)
+  def user_name(%Response{} = response) do
+    user = Responses.associated_user(response)
     Accounts.user_name(user)
+  end
+
+  def id(%Response{} = response) do
+    Responses.id(response)
   end
 
 end

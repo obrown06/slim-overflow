@@ -139,12 +139,15 @@ defmodule Plunger.Comments do
     comment_vote = get_comment_vote(comment_id, user_id)
 
     cond do
-      comment_vote == nil -> create_comment_upvote!(comment_id, user_id)
+      comment_vote == nil ->
+        create_comment_upvote!(comment_id, user_id)
+        true
       comment_vote.votes < 1 ->
         comment_vote
-        |> Ecto.Changeset.change(votes: comment_vote.votes + 1)
-        |> Repo.update!()
-      true -> comment_vote
+          |> Ecto.Changeset.change(votes: comment_vote.votes + 1)
+          |> Repo.update!()
+        true
+      true -> false
     end
   end
 
@@ -159,12 +162,15 @@ defmodule Plunger.Comments do
   def downvote_comment!(comment_id, user_id) do
     comment_vote = get_comment_vote(comment_id, user_id)
     cond do
-      comment_vote == nil -> create_comment_downvote!(comment_id, user_id)
+      comment_vote == nil ->
+        create_comment_downvote!(comment_id, user_id)
+        true
       comment_vote.votes > -1 ->
         comment_vote
-        |> Ecto.Changeset.change(votes: comment_vote.votes - 1)
-        |> Repo.update!()
-      true -> comment_vote
+          |> Ecto.Changeset.change(votes: comment_vote.votes - 1)
+          |> Repo.update!()
+        true
+      true -> false
     end
   end
 
@@ -258,6 +264,12 @@ defmodule Plunger.Comments do
               where: c.user_id == ^user.id,
               select: c)
       |> Repo.all
+  end
+
+  # Returns the id of the given comment
+
+  def id(%Comment{} = comment) do
+    comment.id
   end
 
 end

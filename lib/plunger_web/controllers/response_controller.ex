@@ -61,13 +61,13 @@ defmodule PlungerWeb.ResponseController do
   def upvote(conn, %{"id" => id}) do
     user = Coherence.current_user(conn)
     upvote_successful = Responses.upvote_response(id, user.id)
-    conn |> json %{ upvote_successful: upvote_successful, id: id }
+    conn |> json %{ upvote_successful: upvote_successful}
   end
 
   def downvote(conn, %{"id" => id}) do
     user = Coherence.current_user(conn)
     downvote_successful = Responses.downvote_response(id, user.id)
-    conn |> json %{ downvote_successful: downvote_successful, id: id }
+    conn |> json %{ downvote_successful: downvote_successful}
   end
 
   #defp unauthenticated(conn, _params) do

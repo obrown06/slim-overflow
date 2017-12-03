@@ -17,11 +17,15 @@ defmodule PlungerWeb.CommentView do
   end
 
   def time_posted(%Comment{} = comment) do
-    Comments.time_posted(comment)
+    Comments.time_posted(comment) |> PlungerWeb.ViewHelpers.get_time_posted()
   end
 
   def list_comments(%Comment{} = comment) do
     Comments.list_comments(comment)
+  end
+
+  def id(%Comment{} = comment) do
+    Comments.id(comment)
   end
 
   #def get_comments(%Comment{} = comment) do

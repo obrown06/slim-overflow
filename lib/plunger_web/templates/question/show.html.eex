@@ -1,13 +1,13 @@
 <html>
 <head>
-
+  <link rel="stylesheet" href="<%= static_path(@conn, "/css/question.css") %>">
 </head>
 
 <body>
   <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
   <script type="text/javascript">
       $(document).ready(function(){
-        $("#upvoteQuestion").click(function() {
+        $("#upvote-question").click(function() {
           $.ajax({
               url: "<%= question_path(@conn, :upvote, @question) %>",
               type: "GET",
@@ -26,7 +26,7 @@
           });
         });
 
-        $("#downvoteQuestion").click(function() {
+        $("#downvote-question").click(function() {
           $.ajax({
               url: "<%= question_path(@conn, :downvote, @question) %>",
               type: "GET",
@@ -47,52 +47,62 @@
       });
   </script>
 
-<h2> <%= title(@question) %> </h2>
-<button id="upvoteQuestion" type="button">Upvote Question</button>
-<button id="downvoteQuestion" type="button">Downvote Question</button>
+<div class="question">
+  <div class ="title">
+    <h2> <%= title(@question) %> </h2>
+  </div>
 
-<div id="question-vote-count">
-  <%= vote_count(@question) %>
+  <hr>
+
+  <div class="question-body">
+
+    <div class="voting-block">
+      <div class="upvote" id="upvote-question"></div>
+      <div class="vote-count" id="question-vote-count">
+        <%= vote_count(@question) %>
+      </div>
+      <div class="downvote" id="downvote-question"></div>
+    </div>
+
+    <div class="body">
+      <%= body(@question) %>
+    </div>
+
+    <div class="category-tags">
+      <%= for category <- list_categories(@question) do %>
+        <div class="category-tag">
+          <%= link Categories.name(category), to: category_path(@conn, :show, category) %>
+        </div>
+      <% end %>
+    </div>
+
+    <%= if current_user(@conn).is_admin or current_user(@conn).id == @question.user_id do %>
+      <div class="question-edit-link">
+        <a href="<%= question_path(@conn, :edit, @question) %>">edit</a>
+      </div>
+    <% end %>
+
+    <div class="user-tag">
+      <div class = "user-time-posted">
+        asked <%= time_posted(@question) %>
+      </div>
+      <div class = "user-img">
+        <img src="<%= PlungerWeb.Avatar.url({user(@question).avatar, user(@question)}) %>" width="50" height="50"/>
+      </div>
+      <div class = "user-name">
+        <%= link user_name(@question), to: user_path(@conn, :show, user(@question)) %>
+      </div>
+    </div>
+
+  </div>
+
 </div>
-<hr>
-
-<h5> <%= body(@question) %> </h5>
-
-<%= for category <- list_categories(@question) do %>
-  <div class="category-tag">
-     <%= link Categories.name(category), to: category_path(@conn, :show, category) %>
-  </div>
-<% end %>
-
-<div class="user-tag">
-  <div class = "user-img">
-    <img src="<%= PlungerWeb.Avatar.url({user(@question).avatar, user(@question)}) %>" width="50" height="50"/>
-  </div>
-  <div class = "user-time-posted">
-    asked <%= time_posted(@question) %>
-  </div>
-  <div class = "user-name">
-    <%= link user_name(@question), to: user_path(@conn, :show, user(@question)) %>
-  </div>
-</div>
-
-
-<%= if current_user(@conn).is_admin or current_user(@conn).id == @question.user_id do %>
-  <span><%= link "Edit", to: question_path(@conn, :edit, @question), class: "btn btn-default btn-xs" %></span>
-<% end %>
-
-<span><%= link "Question List", to: question_path(@conn, :index) %></span>
-
-<!--
-<div id="messages"></div>
-<input id="chat-input" type="text"></input>
--->
 
 <div class="comments">
- <h2>Comments</h2>
- <%= for comment <- PlungerWeb.QuestionView.list_comments(@question) do %>
-   <%= render PlungerWeb.CommentView, "show.html", comment_changeset: @comment_changeset, conn: @conn, comment: comment, question: @question %>
- <% end %>
+  <%= for comment <- PlungerWeb.QuestionView.list_comments(@question) do %>
+    <%= render PlungerWeb.CommentView, "show.html", comment_changeset: @comment_changeset, conn: @conn, comment: comment, question: @question %>
+  <% end %>
+
 </div>
 
 <%= render PlungerWeb.CommentView, "form.html", conn: @conn, question: @question,

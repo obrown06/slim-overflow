@@ -8,18 +8,19 @@
   <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
   <script type="text/javascript">
       $(document).ready(function(){
-        $(".upvoteResponse").click(function() {
-          //var responseId;
-          //responseId = $(this).attr("id")
+        $("#upvote-response").attr("id", "upvote-response" + "<%= id(@response) %>")
+        $("#downvote-response").attr("id", "downvote-response" + "<%= id(@response) %>")
+        $("#response-vote-count").attr("id", "response-vote-count" + "<%= id(@response) %>")
+        $("#upvote-response" + "<%= id(@response) %>").click(function() {
           $.ajax({
-              url: "<%= response_path(@conn, :downvote, @response) %>" //"/responses/" + responseId + "/upvote",
+              url: "<%= response_path(@conn, :upvote, @response, question_id: @question.id) %>",
               type: "GET",
               dataType: "json",
               success: function(data){
                   if (data.upvote_successful === true)
                   {
-                    var count = parseInt($('#' + data.id).text());
-                    $('#' + data.id).text(count + 1)
+                    var count = parseInt($('#response-vote-count' + "<%= id(@response) %>").text());
+                    $('#response-vote-count' + "<%= id(@response) %>").text(count + 1)
                   }
               },
               error: function(error){
@@ -29,19 +30,16 @@
           });
         });
 
-        $(".downvoteResponse").click(function() {
-          var responseId;
-          //responseId = $(this).attr("id")
-          alert("schmeh")
+        $("#downvote-response" + "<%= id(@response) %>").click(function() {
           $.ajax({
-              url: "<%= response_path(@conn, :downvote, @response) %>" //"/responses/" + responseId + "/downvote",
+              url: "<%= response_path(@conn, :downvote, @response, question_id: @question.id) %>",
               type: "GET",
               dataType: "json",
               success: function(data){
                   if (data.downvote_successful === true)
                   {
-                    var count = parseInt($('#' + data.id).text());
-                    $('#' + data.id).text(count - 1)
+                    var count = parseInt($('#response-vote-count' + "<%= id(@response) %>").text());
+                    $('#response-vote-count' + "<%= id(@response) %>").text(count - 1)
                   }
               },
               error: function(error){
@@ -55,18 +53,20 @@
 
 <h5> <%= description(@response) %> </h5>
 
-<button class = "upvoteResponse" type="button">Upvote Response</button>
-<button class = "downvoteResponse" type="button">Downvote Response</button>
-<div class = "response-vote-count" id="<%= @response.id %>">
-  <%= vote_count(@response) %>
+<div class="voting-block">
+  <div class="upvote" id="upvote-response"></div>
+  <div class="vote-count" id="response-vote-count">
+    <%= vote_count(@response) %>
+  </div>
+  <div class="downvote" id="downvote-response"></div>
 </div>
 
-<div class="user-tag">
+<div class="user-tag user-response-tag">
   <div class = "user-img">
     <img src="<%= PlungerWeb.Avatar.url({user(@response).avatar, user(@response)}) %>" width="50" height="50"/>
   </div>
   <div class = "user-time-posted">
-    asked <%= time_posted(@response) %>
+    answered <%= time_posted(@response) %>
   </div>
   <div class = "user-name">
     <%= link user_name(@response), to: user_path(@conn, :show, user(@response)) %>

@@ -1,22 +1,64 @@
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+      $("#upvote-comment").attr("id", "upvote-comment" + "<%= id(@comment) %>")
+      $("#downvote-comment").attr("id", "downvote-comment" + "<%= id(@comment) %>")
+      $("#comment-vote-count").attr("id", "comment-vote-count" + "<%= id(@comment) %>")
+      $("#upvote-comment" + "<%= id(@comment) %>").click(function() {
+        $.ajax({
+            url: "<%= comment_path(@conn, :upvote, @comment, question_id: @question.id) %>",
+            type: "GET",
+            dataType: "json",
+            success: function(data){
+                if (data.upvote_successful === true)
+                {
+                  var count = parseInt($('#comment-vote-count' + "<%= id(@comment) %>").text());
+                  $('#comment-vote-count' + "<%= id(@comment) %>").text(count + 1)
+                }
+            },
+            error: function(error){
+                 console.log("Error:");
+                 console.log(error);
+            }
+        });
+      });
 
-<h5> <%= @comment.description %> </h5>
-<strong>Votes: </strong>
-<%= vote_count(@comment) %>
+      $("#downvote-comment" + "<%= id(@comment) %>").click(function() {
+        $.ajax({
+            url: "<%= comment_path(@conn, :downvote, @comment, question_id: @question.id) %>",
+            type: "GET",
+            dataType: "json",
+            success: function(data){
+                if (data.downvote_successful === true)
+                {
+                  var count = parseInt($('#comment-vote-count' + "<%= id(@comment) %>").text());
+                  $('#comment-vote-count' + "<%= id(@comment) %>").text(count - 1)
+                }
+            },
+            error: function(error){
+                 console.log("Error:");
+                 console.log(error);
+            }
+        });
+      });
+    });
+</script>
 
-<div class="user-tag">
-  <div class = "user-img">
-    <img src="<%= PlungerWeb.Avatar.url({user(@comment).avatar, user(@comment)}) %>" width="50" height="50"/>
+<hr>
+<div class="voting-block">
+  <div class="upvote" id="upvote-comment"></div>
+  <div class="vote-count" id="comment-vote-count">
+    <%= vote_count(@comment) %>
   </div>
-  <div class = "user-time-posted">
-    asked <%= time_posted(@comment) %>
-  </div>
-  <div class = "user-name">
-    <%= link user_name(@comment), to: user_path(@conn, :show, user(@comment)) %>
-  </div>
+  <div class="downvote" id="downvote-comment"></div>
 </div>
 
-<%= link "Upvote Comment", to: comment_path(@conn, :upvote, @comment, question_id: @question.id)%></span>
-<%= link "Downvote Comment", to: comment_path(@conn, :downvote, @comment, question_id: @question.id)%></span>
+<div class="body">
+  <%= @comment.description <> " - " %>
+  <%= link user_name(@comment), to: user_path(@conn, :show, user(@comment)) %>
+  <%= time_posted(@comment) %>
+  <%= id(@comment) %>
+</div>
 
 <%= for comment <- PlungerWeb.CommentView.list_comments(@comment) do %>
   <%= render PlungerWeb.CommentView, "show.html", comment_changeset: @comment_changeset, conn: @conn, comment: comment, question: @question  %>

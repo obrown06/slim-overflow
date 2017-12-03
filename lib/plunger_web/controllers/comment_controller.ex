@@ -49,13 +49,14 @@ defmodule PlungerWeb.CommentController do
   end
 
   def upvote(conn, %{"id" => id}, user, question) do
-    Comments.upvote_comment!(id, user.id)
-    conn |> redirect(to: NavigationHistory.last_path(conn, 1))
+    upvote_successful = Comments.upvote_comment!(id, user.id)
+    #question = Questions.get_question!(id)
+    conn |> json %{ upvote_successful: upvote_successful } #redirect(to: NavigationHistory.last_path(conn, 1)) #question_path(conn, :show, question))
   end
 
   def downvote(conn, %{"id" => id}, user, question) do
-    Comments.downvote_comment!(id, user.id)
-    conn |> redirect(to: NavigationHistory.last_path(conn, 1))
+    downvote_successful = Comments.downvote_comment!(id, user.id)
+    conn |> json %{ downvote_successful: downvote_successful }#question_path(conn, :show, question))
   end
 
   #defp unauthenticated(conn, _params) do
