@@ -1,9 +1,30 @@
+<html>
+
+<head>
+  <link rel="stylesheet" href="/assets/css/response.css">
+</head>
+
+<body>
+
 <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function(){
-      $("#upvote-comment").attr("id", "upvote-comment" + "<%= id(@comment) %>")
-      $("#downvote-comment").attr("id", "downvote-comment" + "<%= id(@comment) %>")
-      $("#comment-vote-count").attr("id", "comment-vote-count" + "<%= id(@comment) %>")
+      $("#upvote-comment").attr("id", "upvote-comment" + "<%= id(@comment) %>");
+      $("#downvote-comment").attr("id", "downvote-comment" + "<%= id(@comment) %>");
+      $("#comment-vote-count").attr("id", "comment-vote-count" + "<%= id(@comment) %>");
+      $("#comment-on-comment").attr("id", "comment-on-comment" + "<%= id(@comment) %>");
+      $("#comment-on-comment-form").attr("id", "comment-on-comment-form" + "<%= id(@comment) %>");
+      $("#comment-on-comment-form" + "<%= id(@comment) %>").hide();
+      var comment_button = $("#comment-on-comment" + "<%= id(@comment) %>");
+      comment_button.hover(function(){
+        $(this).css({"text-decoration": "underline"})
+        $(this).css({"color": "#24527B"})
+      })
+      comment_button.css({'background': 'none'})
+      comment_button.css({'border': 'none'})
+      comment_button.css({'left': '40px'})
+      comment_button.css({'color': '#357AB8'})
+
       $("#upvote-comment" + "<%= id(@comment) %>").click(function() {
         $.ajax({
             url: "<%= comment_path(@conn, :upvote, @comment, question_id: @question.id) %>",
@@ -41,28 +62,42 @@
             }
         });
       });
+
+      $("#comment-on-comment" + "<%= id(@comment) %>").click(function() {
+        $('#comment-on-comment-form' + "<%= id(@comment) %>").show();
+      });
     });
 </script>
 
 <hr>
-<div class="voting-block">
-  <div class="upvote" id="upvote-comment"></div>
-  <div class="vote-count" id="comment-vote-count">
-    <%= vote_count(@comment) %>
+<div class="comment">
+  <div class="voting-block-comment">
+    <div class="upvote-comment" id="upvote-comment"></div>
+    <div class="vote-count-comment" id="comment-vote-count">
+      <%= vote_count(@comment) %>
+    </div>
+    <div class="downvote-comment" id="downvote-comment"></div>
   </div>
-  <div class="downvote" id="downvote-comment"></div>
+
+  <div class="comment-body">
+    <%= @comment.description <> " - " %>
+    <%= link user_name(@comment), to: user_path(@conn, :show, user(@comment)) %>
+    <%= time_posted(@comment) %>
+    <button id="comment-on-comment">
+      reply
+    </button>
+  </div>
+
 </div>
 
-<div class="body">
-  <%= @comment.description <> " - " %>
-  <%= link user_name(@comment), to: user_path(@conn, :show, user(@comment)) %>
-  <%= time_posted(@comment) %>
-  <%= id(@comment) %>
+<div id="comment-on-comment-form">
+  <%= render PlungerWeb.CommentView, "form.html", conn: @conn, question: @question,
+    comment_changeset: @comment_changeset, action: comment_path(@conn, :create, parent_type: "comment", question_id: @question.id, comment_id: @comment.id) %>
 </div>
 
 <%= for comment <- PlungerWeb.CommentView.list_comments(@comment) do %>
   <%= render PlungerWeb.CommentView, "show.html", comment_changeset: @comment_changeset, conn: @conn, comment: comment, question: @question  %>
 <% end %>
 
-<%= render PlungerWeb.CommentView, "form.html", conn: @conn, question: @question,
-  comment_changeset: @comment_changeset, action: comment_path(@conn, :create, parent_type: "comment", question_id: @question.id, comment_id: @comment.id) %>
+</body>
+</html>

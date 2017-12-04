@@ -44,83 +44,101 @@
               }
           });
         });
+
+        $("#comment-on-question").click(function() {
+          $('#comment-on-question-form').show();
+        });
       });
   </script>
 
-<div class="question">
-  <div class ="title">
-    <h2> <%= title(@question) %> </h2>
-  </div>
-
-  <hr>
-
-  <div class="question-body">
-
-    <div class="voting-block">
-      <div class="upvote" id="upvote-question"></div>
-      <div class="vote-count" id="question-vote-count">
-        <%= vote_count(@question) %>
+  <div class="main-window">
+    <div class="question">
+      <div class ="title">
+        <h2> <%= title(@question) %> </h2>
       </div>
-      <div class="downvote" id="downvote-question"></div>
-    </div>
 
-    <div class="body">
-      <%= body(@question) %>
-    </div>
+      <hr>
 
-    <div class="category-tags">
-      <%= for category <- list_categories(@question) do %>
-        <div class="category-tag">
-          <%= link Categories.name(category), to: category_path(@conn, :show, category) %>
+      <div class="question-body">
+
+        <div class="voting-block">
+          <div class="upvote" id="upvote-question"></div>
+          <div class="vote-count" id="question-vote-count">
+            <%= vote_count(@question) %>
+          </div>
+          <div class="downvote" id="downvote-question"></div>
         </div>
+
+        <div class="body">
+          <%= body(@question) %>
+        </div>
+
+        <div class="category-tags">
+          <%= for category <- list_categories(@question) do %>
+            <div class="category-tag">
+              <%= link Categories.name(category), to: category_path(@conn, :show, category) %>
+            </div>
+          <% end %>
+        </div>
+
+        <%= if current_user(@conn).is_admin or current_user(@conn).id == @question.user_id do %>
+          <div class="question-edit-link">
+            <a href="<%= question_path(@conn, :edit, @question) %>">edit</a>
+          </div>
+        <% end %>
+
+        <button id="comment-on-question">
+          add a comment
+        </button>
+
+        <div class="question-user-tag">
+          <div class = "user-time-posted">
+            asked <%= time_posted(@question) %>
+          </div>
+          <div class = "user-img">
+            <img src="<%= PlungerWeb.Avatar.url({user(@question).avatar, user(@question)}) %>" width="50" height="50"/>
+          </div>
+          <div class = "user-name">
+            <%= link user_name(@question), to: user_path(@conn, :show, user(@question)) %>
+          </div>
+        </div>
+
+      </div>
+
+      <div id="comment-on-question-form">
+        <%= render PlungerWeb.CommentView, "form.html", conn: @conn, question: @question,
+        comment_changeset: @comment_changeset, action: comment_path(@conn, :create, parent_type: "question", question_id: @question.id)
+        %>
+      </div>
+
+    </div>
+
+    <div class="comments">
+      <%= for comment <- PlungerWeb.QuestionView.list_comments(@question) do %>
+        <%= render PlungerWeb.CommentView, "show.html", comment_changeset: @comment_changeset, conn: @conn, comment: comment, question: @question %>
+      <% end %>
+    </div>
+    <br>
+    <div class="responses">
+      <%= if num_responses(@question) > 0 do %>
+        <h4> <%= num_responses(@question)%> <%= response_header(@question) %></h4>
+        <%= for response <- list_responses(@question) do %>
+          <hr>
+          <%= render PlungerWeb.ResponseView, "show.html", conn: @conn, comment_changeset: @comment_changeset, response: response, question: @question %>
+        <% end %>
       <% end %>
     </div>
 
-    <%= if current_user(@conn).is_admin or current_user(@conn).id == @question.user_id do %>
-      <div class="question-edit-link">
-        <a href="<%= question_path(@conn, :edit, @question) %>">edit</a>
-      </div>
-    <% end %>
-
-    <div class="user-tag">
-      <div class = "user-time-posted">
-        asked <%= time_posted(@question) %>
-      </div>
-      <div class = "user-img">
-        <img src="<%= PlungerWeb.Avatar.url({user(@question).avatar, user(@question)}) %>" width="50" height="50"/>
-      </div>
-      <div class = "user-name">
-        <%= link user_name(@question), to: user_path(@conn, :show, user(@question)) %>
-      </div>
+    <div class = "response-form">
+      <%= render PlungerWeb.ResponseView, "form.html", conn: @conn,
+      response_changeset: @response_changeset, action: response_path(@conn, :create, question_id: @question.id)
+      %>
     </div>
 
   </div>
 
-</div>
-
-<div class="comments">
-  <%= for comment <- PlungerWeb.QuestionView.list_comments(@question) do %>
-    <%= render PlungerWeb.CommentView, "show.html", comment_changeset: @comment_changeset, conn: @conn, comment: comment, question: @question %>
-  <% end %>
-
-</div>
-
-<%= render PlungerWeb.CommentView, "form.html", conn: @conn, question: @question,
-  comment_changeset: @comment_changeset, action: comment_path(@conn, :create, parent_type: "question", question_id: @question.id)
-%>
-
-<div class="responses">
- <h2>Responses</h2>
- <%= for response <- list_responses(@question) do %>
-   <hr>
-   <%= render PlungerWeb.ResponseView, "show.html", conn: @conn, comment_changeset: @comment_changeset, response: response, question: @question %>
- <% end %>
-</div>
-
-<%= render PlungerWeb.ResponseView, "form.html", conn: @conn,
-  response_changeset: @response_changeset, action: response_path(@conn, :create, question_id: @question.id)
-%>
-
-<%= render PlungerWeb.ChannelView, "show.html", question: @question %>
+  <div class="chat-window">
+    <%= render PlungerWeb.ChannelView, "show.html", question: @question %>
+  </div>
 
 </body>

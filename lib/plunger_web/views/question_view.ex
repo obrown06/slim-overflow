@@ -84,7 +84,19 @@ defmodule PlungerWeb.QuestionView do
       Map.get(category_selects, Integer.to_string(id)) == "true" -> true
       true -> false
     end
- end
+  end
+
+  def num_responses(%Question{} = question) do
+    Questions.num_responses(question)
+  end
+
+  def response_header(%Question{} = question) do
+    if num_responses(question) > 1 do
+      "Responses"
+    else
+      "Response"
+    end
+  end
 
   def list_responses(%Question{} = question) do
     best_response = Responses.best_response(question)

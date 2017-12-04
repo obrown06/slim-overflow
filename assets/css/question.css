@@ -21,6 +21,10 @@
   background-position: 0 0px;
 }
 
+#comment-on-question-form {
+  display: none;
+}
+
 .vote-count {
   width: 40px;
   height: 18px;
@@ -41,6 +45,10 @@
 .voting-block {
   display: inline-block;
   height: 100%;
+}
+
+.chat-window {
+  position: fixed;
 }
 
 .question-body {
@@ -71,7 +79,20 @@
   display: inline-block;
 }
 
-.user-tag {
+button#comment-on-question {
+  background: none;
+  border: none;
+  left: 40px;
+  color: #357AB8;
+  position: relative;
+}
+
+button#comment-on-question:hover {
+  text-decoration:underline;
+  color: #24527B;
+}
+
+.question-user-tag {
   display: inline-block;
   height: 90px;
   width: 210px;
@@ -97,4 +118,12 @@
   left: 10px;
   position: relative;
   display: inline-block;
+}
+
+.main-window {
+  display: inline-block;
+}
+
+.chat-window {
+
 }

@@ -1,0 +1,96 @@
+.upvote {
+  overflow: hidden;
+  width: 40px;
+  height: 25px;
+  cursor: pointer;
+  background: url('http://i.stack.imgur.com/iqN2k.png');
+  background-position: 0 -25px;
+}
+
+.downvote{
+  background : url('http://i.imgur.com/DdDtGWS.png');
+  overflow: hidden;
+  width: 40px;
+  height: 25px;
+  cursor: pointer;
+  background-position: 0 0px;
+}
+
+.mark-response-button:hover {
+  background-color: #EDF1F2;
+}
+
+.vote-count {
+  width: 40px;
+  height: 18px;
+  text-align: center;
+  vertical-align: middle;
+  color: grey;
+  font-size: medium;
+}
+
+.response {
+  margin-bottom: 110px;
+  position: relative;
+}
+
+.body-left {
+  display: inline-block;
+  vertical-align: top;
+  float: left;
+  width: 45px;
+  margin-bottom: 10px;
+  height: auto%;
+}
+
+.best-response-check {
+  width: 40px;
+  height: 18px;
+  text-align: center;
+  float: top;
+}
+
+.body-right {
+  vertical-align: top;
+  width: 650px;
+  overflow-wrap: break-word;
+  margin-bottom: 10px;
+}
+
+.voting-block {
+  display: inline-block;
+}
+
+.body-right {
+  margin-bottom: 50px;
+  height: 100%;
+}
+
+
+.response-user-tag {
+  display: inline-block;
+  height: 90px;
+  width: 210px;
+  float: right;
+  background-color: #EDF1F2;
+}
+
+.user-time-posted {
+  left: 10px;
+  position: relative;
+  font-size: small;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.user-name {
+  display: inline-block;
+  left: 15px;
+  position: relative;
+}
+
+.user-img {
+  left: 10px;
+  position: relative;
+  display: inline-block;
+}

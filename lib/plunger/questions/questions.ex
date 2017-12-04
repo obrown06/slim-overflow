@@ -385,4 +385,11 @@ defmodule Plunger.Questions do
       |> Repo.all
   end
 
+  # Returns the set of questions associated with the given user
+
+  def num_responses(%Question{} = question) do
+    question = Repo.preload(question, :responses)
+    length(question.responses)
+  end
+
 end
