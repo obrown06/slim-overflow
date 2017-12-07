@@ -36,13 +36,22 @@ defmodule PlungerWeb.QuestionView do
     Questions.body(question) |> as_html()
   end
 
+  def truncated_body(%Question{} = question) do
+    if String.length(Questions.body(question)) > 165 do
+      body = Questions.body(question) |> String.slice(0, 165)
+      body <>"..."
+    else
+      Questions.body(question)
+    end
+  end
+
   def vote_count(%Question{} = question) do
     Questions.vote_count(question)
   end
 
   def user_name(%Question{} = question) do
     user = Questions.associated_user(question)
-    Accounts.user_name(user)
+    Accounts.name(user)
   end
 
   def user_avatar(%Question{} = question) do
@@ -60,6 +69,10 @@ defmodule PlungerWeb.QuestionView do
     |> raw()
   end
 
+  def num_views(question) do
+    Questions.list_question_views(question) |> length()
+  end
+
   def sort(questions, sort_by) do
     case sort_by do
       nil -> questions
@@ -71,7 +84,7 @@ defmodule PlungerWeb.QuestionView do
         time_posted(question) end)
           |> Enum.reverse()
       "views" -> Enum.sort_by(questions, fn(question) ->
-        Questions.list_question_views(question) |> length() end)
+        num_views(question) end)
           |> Enum.reverse()
       _ -> raise "This shouldn't happen"
     end
@@ -114,4 +127,5 @@ defmodule PlungerWeb.QuestionView do
   def list_comments(%Question{} = question) do
     Comments.list_comments(question)
   end
+
 end

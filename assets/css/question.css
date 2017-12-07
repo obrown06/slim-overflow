@@ -47,10 +47,6 @@
   height: 100%;
 }
 
-.chat-window {
-  position: fixed;
-}
-
 .question-body {
   margin-bottom: 50px;
   height: 100%;
@@ -77,6 +73,17 @@
   color: grey;
   position: relative;
   display: inline-block;
+}
+
+.question-delete-link {
+  left: 20px;
+  color: #BB2A09;
+  position:relative;
+  display: inline-block;
+}
+
+.question-delete-link:hover {
+  color: #942208;
 }
 
 button#comment-on-question {

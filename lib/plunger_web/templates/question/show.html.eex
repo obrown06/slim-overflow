@@ -91,6 +91,12 @@
           add a comment
         </button>
 
+        <%= if Accounts.id(current_user(@conn)) == Accounts.id(Questions.associated_user(@question)) do %>
+          <div class="question-delete-link">
+            <%= link "delete", to: question_path(@conn, :delete, @question), method: :delete, data: [confirm: "Are you sure?"], class: "question-delete-link" %>
+          </div>
+        <% end %>
+
         <div class="question-user-tag">
           <div class = "user-time-posted">
             asked <%= time_posted(@question) %>

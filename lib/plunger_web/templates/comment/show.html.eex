@@ -81,7 +81,7 @@
 
   <div class="comment-body">
     <%= @comment.description <> " - " %>
-    <%= link user_name(@comment), to: user_path(@conn, :show, user(@comment)) %>
+    <%= link associated_user_name(@comment), to: user_path(@conn, :show, user(@comment)) %>
     <%= time_posted(@comment) %>
     <button id="comment-on-comment">
       reply

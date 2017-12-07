@@ -4,9 +4,12 @@ defmodule PlungerWeb.UserView do
   alias Plunger.Questions
   alias Plunger.Comments
   alias Plunger.Responses
+  alias Plunger.Accounts
   alias Plunger.Questions.Question
   alias Plunger.Responses.Response
   alias Plunger.Comments.Comment
+  alias Plunger.Categories
+  alias Plunger.Categories.Category
   alias Plunger.Accounts.User
   alias PlungerWeb.CommentView
   import Ecto.Query, only: [from: 2]
@@ -34,6 +37,18 @@ defmodule PlungerWeb.UserView do
                           num_posts = post |> Comments.list_comments |> length()
                           acc + num_posts end)
 
+  end
+
+  def name(%User{} = user) do
+    Accounts.name(user)
+  end
+
+  def flagged_categories(%User{} = user) do
+    Accounts.flagged_categories(user)
+  end
+
+  def name(%Category{} = category) do
+    Categories.name(category)
   end
 
 end

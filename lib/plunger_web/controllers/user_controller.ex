@@ -46,18 +46,6 @@ defmodule PlungerWeb.UserController do
     render(conn, "edit.html", user: user, changeset: changeset)
   end
 
-  def edit_email(conn, %{"id" => id}) do
-    user = Accounts.get_user!(id)
-    #changeset = Accounts.change_user(user)
-    render(conn, "edit_email.html", user: user)
-  end
-
-  def edit_password(conn, %{"id" => id}) do
-    user = Accounts.get_user!(id)
-    #changeset = Accounts.change_user(user)
-    render(conn, "edit_password.html", user: user)
-  end
-
   @doc """
   Create a new confirmation token and resend the email.
   """

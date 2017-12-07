@@ -1,6 +1,49 @@
-<h2>Edit User</h2>
+<html>
+<head></head>
 
-<%= render "form.html", user: @user, conn: @conn, changeset: @changeset,
+<body>
+  <div id="edit-profile-info">
+    <div class="header">
+      <h2>Update Account Information</h2>
+    </div>
+    <div class="edit-form">
+      <%= render "form_account_info.html", user: @user, conn: @conn, changeset: @changeset,
                         action: user_path(@conn, :update, @user)%>
+    </div>
+  </div>
 
-<span><%= link "Back", to: user_path(@conn, :index) %></span>
+  <div id="edit-email">
+    <div class="header">
+      <h2>Update Email</h2>
+    </div>
+    <div class="edit-form">
+      <%= render "form_email.html", user: @user, conn: @conn,
+                        action: user_path(@conn, :update_email, @user)%>
+    </div>
+  </div>
+
+  <div id="edit-password">
+    <div class="header">
+      <h2>Update Password</h2>
+    </div>
+    <div class="edit-form">
+      <%= render "form_password.html", user: @user, conn: @conn,
+                        action: user_path(@conn, :update_password, @user)%>
+    </div>
+  </div>
+
+  <div id="edit-category-interests">
+    <div class="header">
+      <h2>Update Category Interests</h2>
+    </div>
+    <div class="edit-form">
+      <%= render "form_category_select.html", changeset: @changeset,
+          action: user_path(@conn, :update_categories, @user), categories: Plunger.Categories.list_categories() %>
+    </div>
+  </div>
+
+</body>
+
+<span><%= link "Back", to: user_path(@conn, :show, @user) %></span>
+
+</html>

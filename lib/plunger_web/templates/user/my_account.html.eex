@@ -1,48 +1,82 @@
-<h2>My Account</h2>
+<html>
+  <head>
+    <link rel="stylesheet" href="<%= static_path(@conn, "/css/my_account.css") %>">
+  </head>
 
-<%= if @user.avatar == nil do %>
-  <img src="/uploads/no_profile_image.gif" width=200 height=200/>
-<%= else %>
-  <img src="<%= PlungerWeb.Avatar.url({@user.avatar, @user}) %>" width="200" height="200"/><td>
-<% end %>
+  <body>
+    <div class="title">
+      <h2> My Account </h2>
+    </div>
+    <div class="top-block">
+      <div class ="profile-image">
+        <%= if @user.avatar == nil do %>
+          <img src="/uploads/no_profile_image.gif" width=200 height=200/>
+          <%= else %>
+          <img src="<%= PlungerWeb.Avatar.url({@user.avatar, @user}) %>" width="200" height="200"/><td>
+        <% end %>
+      </div>
 
-<ul>
+      <div class="account-info">
+        <div class="user-info">
+          <strong>Email:</strong>
+          <%= @user.email %>
+        </div>
 
-  <li>
-    <strong>Email:</strong>
-    <%= @user.email %>
-  </li>
+        <div class="user-info">
+          <strong>Name:</strong>
+          <%= @user.name %>
+        </div>
 
-  <li>
-    <strong>Name:</strong>
-    <%= @user.name %>
-  </li>
+        <div class="user-info">
+          <strong>Categories: </strong>
+          <%= for category <- flagged_categories(@user) do %>
+            <%= link name(category), to: category_path(@conn, :show, category) %>
+          <% end %>
+        </div>
 
-  <li>
-    <strong>Number of Questions Posted: </strong>
-    <%= length(posted_questions(@user)) %>
-  </li>
+        <div class="update-link">
+          <a class ="btn pill" href="<%= user_path(@conn, :edit, @user) %>">Update</a>
+        </div>
 
-  <li>
-    <strong>Number of Responses Posted: </strong>
-    <%= length(posted_responses(@user)) %>
-  </li>
+      </div>
+    </div>
 
-  <li>
-    <strong>Number of Comments Posted: </strong>
-    <%= length(posted_comments(@user)) %>
-  </li>
+    <div class="info-panes">
+      <div class="activity-info">
+        <div class="circle yellow">
+          <%= length(posted_questions(@user)) %>
+        </div>
+        <div class="info-title">
+          Questions Posted
+        </div>
+      </div>
 
-  <li>
-    <strong>Number of Comments Received: </strong>
-    <%= num_received_comments(@user) %>
-  </li>
+      <div class="activity-info">
+        <div class="circle pink">
+          <%= length(posted_responses(@user)) %>
+        </div>
+        <div class="info-title">
+          Responses Posted
+        </div>
+      </div>
 
-</ul>
+      <div class="activity-info">
+        <div class="circle cyan">
+          <%= length(posted_comments(@user)) %>
+        </div>
+        <div class="info-title">
+          Comments Posted
+        </div>
+      </div>
 
-<span><%= link "Edit Profile Information", to: user_path(@conn, :edit, @user) %></span>
-<span><%= link "Change Password", to: user_path(@conn, :edit_password, @user) %></span>
-<span><%= link "Change Email", to: user_path(@conn, :edit_email, @user) %></span>
-
-<%= render "form_category_select.html", changeset: Plunger.Accounts.change_user(@user),
-    action: user_path(@conn, :update_categories, @user), categories: Plunger.Categories.list_categories() %>
+      <div class="activity-info">
+        <div class="circle red">
+          <%= num_received_comments(@user) %>
+        </div>
+        <div class="info-title">
+          Comments Received
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

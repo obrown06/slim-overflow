@@ -13,7 +13,7 @@ defmodule PlungerWeb.CommentView do
 
   def associated_user_name(%Comment{} = comment) do
     user = Comments.associated_user(comment)
-    Accounts.user_name(user)
+    Accounts.name(user)
   end
 
   def time_posted(%Comment{} = comment) do

@@ -50,8 +50,6 @@ defmodule PlungerWeb.Router do
     pipe_through :protected
 
     resources "/users", UserController, only: [:index, :show, :edit, :update]
-    get "/users/:id/edit_email", UserController, :edit_email
-    get "/users/:id/edit_password", UserController, :edit_password
     post "/users/:id/update_email", UserController, :update_email
     post "/users/:id/update_password", UserController, :update_password
     put "/users/:id/update_categories", UserController, :update_categories

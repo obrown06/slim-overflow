@@ -210,7 +210,7 @@ defmodule Plunger.Accounts do
 
   """
 
-  def user_name(%User{} = user) do
+  def name(%User{} = user) do
     user.name
   end
 
@@ -239,5 +239,15 @@ defmodule Plunger.Accounts do
 
   def avatar(%User{} = user) do
     user.avatar
+  end
+
+  @doc """
+  Returns the avatar field of the given user struct.
+
+  """
+
+  def flagged_categories(%User{} = user) do
+    user = user |> Repo.preload(:categories)
+    user.categories
   end
 end

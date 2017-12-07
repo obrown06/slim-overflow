@@ -1,7 +1,5 @@
 <%= form_for @changeset, @action, fn f -> %>
 
-  <h3>Identify Your Interests</h2>
-
   <div class="form-group">
     <%= selected_categories =
           if Map.has_key?(f.data, :categories) do
