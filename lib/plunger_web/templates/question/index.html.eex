@@ -1,13 +1,13 @@
 <html>
   <head>
-    <link rel="stylesheet" href="<%= static_path(@conn, "/css/question.css") %>">
+    <link rel="stylesheet" href="<%= static_path(@conn, "/css/question-index.css") %>">
   </head>
   <body>
     <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function(){
 
-          if ("<%= @sort %>" != "nil") {
+          if ("<%= @sort %>" != null) {
             $("#" + "<%= @sort %>").css('border-top', 'solid');
             $("#" + "<%= @sort %>").css('border-right', 'solid');
             $("#" + "<%= @sort %>").css('border-left', 'solid');
@@ -15,56 +15,49 @@
           }
         });
 
-
-
     </script>
 
-    <div class="index-title">
-      All Questions
-    </div>
-    <div class="index-category-filters">
+    <a class="new-question-button" href="<%= question_path(@conn, :new) %>">
+      Ask Question
+    </a>
 
-      <%= form_tag(question_path(@conn, :index), [method: :get]) do %>
+    <div class="index-header">
 
-        <h3>Filter by Category</h2>
-
-          <%= for category <- list_categories() do %>
-
-            <%= category.name %>
-            <%= if category_selected(@category_selects, category) do %>
-            <%= checkbox(:category_selects, Categories.id(category), checked: "checked") %>
-            <%= else %>
-            <%= checkbox(:category_selects, Categories.id(category)) %>
-            <%  end %>
-
-          <% end %>
-
-          <div class="form-group">
-            <%= submit "Filter", class: "btn btn-primary" %>
-          </div>
-
+      <div class="index-page-title">
+        <%= if @selected_category != "all" do %>
+          Tagged Questions
+        <% else %>
+          All Questions
         <% end %>
-    </div>
+      </div>
 
-    <div class="index-sorts">
-      <a class="index-sort" id="votes" href = "<%= question_path(@conn, :index, sort: "votes", category_selects: @category_selects) %>">
-        votes
-      </a>
-      <a class="index-sort" id="responses" href = "<%= question_path(@conn, :index, sort: "responses", category_selects: @category_selects) %>">
-        responses
-      </a>
-      <a class="index-sort" id="views" href = "<%= question_path(@conn, :index, sort: "views", category_selects: @category_selects) %>">
-        views
-      </a>
-      <a class="index-sort" id="date" href = "<%= question_path(@conn, :index, sort: "date", category_selects: @category_selects) %>">
-        newest
-      </a>
+      <div class="index-sorts">
+        <a class="index-sort" id="votes" href = "<%= question_path(@conn, :index, sort: "votes", selected_category: @selected_category) %>">
+          votes
+        </a>
+        <a class="index-sort" id="responses" href = "<%= question_path(@conn, :index, sort: "responses", selected_category: @selected_category) %>">
+          responses
+        </a>
+        <a class="index-sort" id="views" href = "<%= question_path(@conn, :index, sort: "views", selected_category: @selected_category) %>">
+          views
+        </a>
+        <a class="index-sort" id="date" href = "<%= question_path(@conn, :index, sort: "date", selected_category: @selected_category) %>">
+          newest
+        </a>
+      </div>
+      <div class="bottom-line">
+        <hr>
+      </div>
     </div>
-
     <div class="index-question-list">
+
+      <%= if @selected_category != "all" do %>
+        <%= render PlungerWeb.CategoryView, "index_header.html", category: Categories.get_category!(String.to_integer(@selected_category)),
+          conn: @conn %>
+      <% end %>
+
       <%= for question <- sort(@questions, @sort) do %>
         <div class="index-question">
-          <hr>
           <div class="index-left-block">
 
             <div class="index-votes">
@@ -101,74 +94,38 @@
             <a class="index-title" href = "<%= question_path(@conn, :show, question) %>">
               <%= title(question) %>
             </a>
+
             <div class="index-body">
               <%= truncated_body(question) %>
             </div>
+
             <div class="index-category-tags">
               <%= for category <- list_categories(question) do %>
                 <div class="category-tag">
-                  <%= link Categories.name(category), to: category_path(@conn, :show, category) %>
+                  <%= link Categories.name(category), to: question_path(@conn, :index, selected_category: category) %>
                 </div>
               <% end %>
             </div>
 
-            <div class="question-user-tag">
-              <div class = "user-time-posted">
-                asked <%= time_posted(question) %>
-              </div>
-              <div class = "user-img">
-                <img src="<%= PlungerWeb.Avatar.url({user(question).avatar, user(question)}) %>" width="50" height="50"/>
-              </div>
-              <div class = "user-name">
-                <%= link user_name(question), to: user_path(@conn, :show, user(question)) %>
+            <div class="index-user-tag-container">
+              <div class="index-question-user-tag">
+                <div class = "index-user-time-posted">
+                  asked <%= time_posted(question) %>
+                </div>
+                <div class = "index-user-img">
+                  <img src="<%= PlungerWeb.Avatar.url({user(question).avatar, user(question)}) %>" width="50" height="50"/>
+                </div>
+                <div class = "index-user-name">
+                  <%= link user_name(question), to: user_path(@conn, :show, user(question)) %>
+                </div>
               </div>
             </div>
 
         </div>
+        <hr>
+        </div>
       <% end %>
+
     </div>
-
-
-<table class="table" class="tablesorter">
-  <thead>
-    <tr>
-      <th>Title</th>
-      <th>Body</th>
-      <th>Categories</th>
-      <th>User</th>
-      <th>DateTime Posted</th>
-      <th>Votes</th>
-
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-<%= for question <- sort(@questions, @sort) do %>
-    <tr>
-      <td><%= title(question) %></td>
-      <td><%= body(question) %></td>
-      <td><%= #list_categories(question) %></td>
-      <td><%= user_name(question) %></td>
-      <td><%= time_posted(question) %></td>
-      <td><%= vote_count(question) %></td>
-
-
-      <td class="text-right">
-        <span><%= link "Upvote Question", to: question_path(@conn, :upvote, question), class: "btn btn-default btn-xs"%></span>
-        <span><%= link "Downvote Question", to: question_path(@conn, :downvote, question), class: "btn btn-default btn-xs"%></span>
-        <span><%= link "Show", to: question_path(@conn, :show, question), class: "btn btn-default btn-xs" %></span>
-        <%= if Accounts.is_admin(current_user(@conn)) or Accounts.id(current_user(@conn)) == Accounts.id(Questions.associated_user(question)) do %>
-          <span><%= link "Edit", to: question_path(@conn, :edit, question), class: "btn btn-default btn-xs" %></span>
-        <% end %>
-        <%= if Accounts.id(current_user(@conn)) == Accounts.id(Questions.associated_user(question)) do %>
-          <span><%= link "Delete", to: question_path(@conn, :delete, question), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
-        <% end %>
-      </td>
-    </tr>
-<% end %>
-  </tbody>
-</table>
-
-<span><%= link "New Question", to: question_path(@conn, :new) %></span>
 
 </html>

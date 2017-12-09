@@ -148,6 +148,15 @@ defmodule Plunger.Categories do
   end
 
   @doc """
+  Returns the description field of the given category.
+
+  """
+
+  def description(%Category{} = category) do
+    category.description
+  end
+
+  @doc """
   Returns the id field of the given category.
 
   """

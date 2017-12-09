@@ -39,6 +39,27 @@
   font-size: large;
   display: block;
   margin-left: 10px;
+  display: inline-block;
+}
+
+.index-page-title {
+  height: 60px;
+  font-size: large;
+  margin-left: 10px;
+  display: inline-block;
+  line-height: 60px;
+}
+
+.index-sort {
+  padding-right: 10px;
+  padding-left: 10px;
+  height: 60px;
+  line-height: 30px;
+  color: grey;
+}
+
+.index-sorts {
+  float: right;
 }
 
 .index-body {
@@ -56,18 +77,49 @@
   margin-bottom: 10px;
 }
 
-.index-sort {
-  padding-right: 10px;
-  padding-left: 10px;
-  margin-bottom: -20px;
-  float: right;
-  height: 60px;
-  line-height: 30px;
-  color: grey;
+.new-question-button {
+  margin-bottom: 10px;
 }
 
 .index-sort:hover {
   text-decoration: none;
   color: grey;
   background-color: #F3F5F7;
+}
+
+.index-user-tag-container {
+  height: 90px;
+}
+
+.bottom-line {
+  margin-top: -23px;
+  border: solid;
+}
+
+.index-question-user-tag {
+  display: inline-block;
+  height: 90px;
+  width: 210px;
+  float: right;
+  background-color: #E0EAF2;
+}
+
+.index-user-time-posted {
+  left: 10px;
+  position: relative;
+  font-size: small;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.index-user-name {
+  display: inline-block;
+  left: 15px;
+  position: relative;
+}
+
+.index-user-img {
+  left: 10px;
+  position: relative;
+  display: inline-block;
 }

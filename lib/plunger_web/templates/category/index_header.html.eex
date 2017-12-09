@@ -1,0 +1,22 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="<%= static_path(@conn, "/css/category.css") %>">
+  </head>
+
+  <body>
+    <div class="index-category-header">
+      <div id="title">
+        <%= "[" <> name(@category) <> "]" %>
+      </div>
+
+      <div id="description">
+        <%= description(@category) %>
+      </div>
+
+      <a id="show-category-link" href = "<%= category_path(@conn, :show, @category) %>">
+        learn more...
+      </a>
+    </div>
+  </body>
+
+</html>

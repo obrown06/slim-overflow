@@ -75,7 +75,7 @@ defmodule PlungerWeb.QuestionView do
 
   def sort(questions, sort_by) do
     case sort_by do
-      nil -> questions
+      "nil" -> questions
       "votes" -> Enum.sort_by(questions, &vote_count(&1)) |> Enum.reverse()
       "responses" -> Enum.sort_by(questions, fn(question) ->
         Responses.list_responses(question) |> length() end)

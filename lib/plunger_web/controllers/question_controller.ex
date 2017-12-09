@@ -18,17 +18,21 @@ defmodule PlungerWeb.QuestionController do
   end
 
   def index(conn, params, user) do
-    category_selects = Map.get(params, "category_selects")
+    selected_category = Map.get(params, "selected_category")
     sort = Map.get(params, "sort")
 
-    if category_selects == nil do
-      category_selects = "all"
+    if selected_category == nil do
+      selected_category = "all"
+    end
+
+    if sort == nil do
+      sort = "nil"
     end
 
     categories =
-      case category_selects do
+      case selected_category do
         "all" -> Categories.list_categories()
-        selects -> Categories.list_categories(selects)
+        _ -> [Categories.get_category!(String.to_integer(selected_category))]
       end
 
     questions =
@@ -36,7 +40,7 @@ defmodule PlungerWeb.QuestionController do
       |> Enum.reduce([], fn(category, acc) -> acc ++ Questions.list_questions(category) end)
       |> Enum.uniq()
 
-    render(conn, "index.html", questions: questions, category_selects: category_selects, sort: sort)
+    render(conn, "index.html", questions: questions, selected_category: selected_category, sort: sort)
   end
 
   def new(conn, _params, _user) do

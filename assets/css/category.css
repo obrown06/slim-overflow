@@ -1,0 +1,24 @@
+#title {
+  font-size: medium;
+  color: grey;
+}
+
+.index-category-header {
+  border: solid;
+  border-width: medium;
+  border-color: lightgrey;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  padding: 5px;
+  height: 110px;
+}
+
+#description {
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+
+#show-category-link {
+  vertical-align: bottom;
+  text-align: bottom;
+}
