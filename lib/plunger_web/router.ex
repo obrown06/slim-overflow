@@ -55,7 +55,7 @@ defmodule PlungerWeb.Router do
     put "/users/:id/update_categories", UserController, :update_categories
     get "/users/:id/promote", UserController, :promote
 
-    resources "/categories", CategoryController, only: [:index, :new, :create, :show]
+    resources "/categories", CategoryController, only: [:index, :new, :create, :show, :edit, :update]
 
     get "/questions/:id/upvote", QuestionController, :upvote
     get "/questions/:id/downvote", QuestionController, :downvote

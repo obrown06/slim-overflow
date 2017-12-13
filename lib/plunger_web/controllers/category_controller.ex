@@ -1,6 +1,5 @@
 defmodule PlungerWeb.CategoryController do
   use PlungerWeb, :controller
-
   alias Plunger.Categories
   alias Plunger.Categories.Category
   alias Plunger.Questions
@@ -27,9 +26,10 @@ defmodule PlungerWeb.CategoryController do
   end
 
   def show(conn, %{"id" => id}) do
+    user = Coherence.current_user(conn)
     category = Categories.get_category!(id)
-    questions = Questions.list_questions(category)
-    render(conn, "show.html", category: category, questions: questions)
+    Categories.view_category!(id, user.id)
+    render(conn, "show.html", category: category)
   end
 
   def edit(conn, %{"id" => id}) do

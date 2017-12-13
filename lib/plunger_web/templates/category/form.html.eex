@@ -12,9 +12,15 @@
   </div>
 
   <div class="form-group">
-    <%= label f, :description, class: "control-label" %>
-    <%= text_input f, :description, class: "form-control" %>
-    <%= error_tag f, :description %>
+    <%= label f, :summary, class: "control-label" %>
+    <%= textarea f, :summary, class: "form-control", rows: "10", cols: "50"%>
+    <%= error_tag f, :summary %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :long_summary, class: "control-label" %>
+    <%= textarea f, :long_summary, class: "form-control", rows: "20", cols: "50" %>
+    <%= error_tag f, :long_summary %>
   </div>
 
   <div class="form-group">

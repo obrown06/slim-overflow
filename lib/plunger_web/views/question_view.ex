@@ -25,7 +25,7 @@ defmodule PlungerWeb.QuestionView do
   end
 
   def time_posted(%Question{} = question) do
-    Questions.time_posted(question) |> PlungerWeb.ViewHelpers.get_time_posted()
+    Questions.time_posted(question) |> PlungerWeb.ViewHelpers.format_time()
   end
 
   def title(%Question{} = question) do

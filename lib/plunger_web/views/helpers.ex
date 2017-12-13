@@ -8,7 +8,7 @@ defmodule PlungerWeb.ViewHelpers do
     9 => "Sep", 10 => "Oct", 11 => "Nov", 12 => "Dec"
   }
 
-  def get_time_posted(date_time) do
+  def format_time(date_time) do
     month = Map.get(@months, date_time.month)
     day = Integer.to_string(date_time.day)
     year = "'" <> Integer.to_string(rem(date_time.year, 2000))

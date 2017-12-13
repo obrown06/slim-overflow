@@ -6,7 +6,8 @@ defmodule Plunger.Categories.Category do
 
   schema "categories" do
     field :name, :string
-    field :description, :string
+    field :summary, :string
+    field :long_summary, :string
     many_to_many :questions, Plunger.Questions.Question, join_through: "questions_categories", on_delete: :delete_all, on_replace: :delete
     many_to_many :users, Plunger.Accounts.User, join_through: "categories_users", on_delete: :delete_all, on_replace: :delete
 
@@ -16,8 +17,8 @@ defmodule Plunger.Categories.Category do
   @doc false
   def changeset(%Category{} = category, attrs) do
     category
-    |> cast(attrs, [:name, :description])
-    |> validate_required([:name])
+    |> cast(attrs, [:name, :summary, :long_summary])
+    |> validate_required([:name, :summary])
     |> unique_constraint(:name)
   end
 end

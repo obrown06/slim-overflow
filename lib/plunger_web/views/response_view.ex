@@ -15,7 +15,7 @@ defmodule PlungerWeb.ResponseView do
   end
 
   def time_posted(%Response{} = response) do
-    Responses.time_posted(response) |> PlungerWeb.ViewHelpers.get_time_posted()
+    Responses.time_posted(response) |> PlungerWeb.ViewHelpers.format_time()
   end
 
   def vote_count(%Response{} = response) do

@@ -7,19 +7,40 @@
     <script type="text/javascript">
         $(document).ready(function(){
 
-          if ("<%= @sort %>" != null) {
-            $("#" + "<%= @sort %>").css('border-top', 'solid');
-            $("#" + "<%= @sort %>").css('border-right', 'solid');
-            $("#" + "<%= @sort %>").css('border-left', 'solid');
-            $("#" + "<%= @sort %>").css('border-width', 'thin');
+          if ("<%= @sort %>" != "nil") {
+            $("#" + "<%= @sort %>").css('border-top', 'solid #F69B55');
+            $("#" + "<%= @sort %>").css('border-right', 'solid #EEEEEE');
+            $("#" + "<%= @sort %>").css('border-left', 'solid #EEEEEE');
+            $("#" + "<%= @sort %>").css('border-bottom', 'solid white');
+            $("#" + "<%= @sort %>").css('border-width', '2px 1px 1px 1px');
+
+            $(".index-sort").hover(function() {
+              $(this).css('height', '57px');
+            })
+
+            $("#" + "<%= @sort %>").hover(function() {
+              $(this).css('border-top', 'solid #F69B55');
+              $(this).css('border-right', 'solid #EEEEEE');
+              $(this).css('border-left', 'solid #EEEEEE');
+              $(this).css('border-bottom', 'solid white');
+              $(this).css('border-width', '2px 1px 1px 1px');
+              $(this).css('height', '58px');
+              $(this).css('margin-right', '5px');
+              $(this).css('margin-left', '0px');
+              $(this).css('margin-top', '0px');
+            })
+
+
           }
+
         });
 
     </script>
-
-    <a class="new-question-button" href="<%= question_path(@conn, :new) %>">
-      Ask Question
-    </a>
+    <div class="new-question-container">
+      <a class="blue-button" href="<%= question_path(@conn, :new) %>">
+        Ask Question
+      </a>
+    </div>
 
     <div class="index-header">
 

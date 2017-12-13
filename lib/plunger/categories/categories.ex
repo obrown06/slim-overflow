@@ -148,12 +148,21 @@ defmodule Plunger.Categories do
   end
 
   @doc """
-  Returns the description field of the given category.
+  Returns the summary field of the given category.
 
   """
 
-  def description(%Category{} = category) do
-    category.description
+  def summary(%Category{} = category) do
+    category.summary
+  end
+
+  @doc """
+  Returns the long_summary field of the given category.
+
+  """
+
+  def long_summary(%Category{} = category) do
+    category.long_summary
   end
 
   @doc """
@@ -164,4 +173,59 @@ defmodule Plunger.Categories do
   def id(%Category{} = category) do
     category.id
   end
+
+
+  alias Plunger.Categories.CategoryView
+
+  @doc """
+    Creates a category_view for the given category and user if one does not exist already.
+  """
+
+  def view_category!(category_id, user_id) do
+    category_view = get_category_view(category_id, user_id)
+
+    case category_view do
+      nil -> create_category_view!(category_id, user_id)
+      _ -> category_view
+    end
+  end
+
+  #Retrieves a CategoryView associated with the given 'category_id' and 'user_id'.
+  #If no CategoryView is found, returns nil.
+
+  defp get_category_view(category_id, user_id) do
+    Repo.one(from cv in CategoryView, where: cv.category_id == ^category_id and cv.user_id == ^user_id)
+  end
+
+  def create_category_view!(category_id, user_id) do
+    user = Plunger.Accounts.get_user!(user_id)
+    category = get_category!(category_id)
+
+    user
+      |> Ecto.build_assoc(:category_views)
+      |> CategoryView.changeset()
+      |> Ecto.Changeset.change()
+      |> Ecto.Changeset.put_assoc(:category, category, :required)
+      |> Repo.insert!()
+  end
+
+
+  # Returns the set of category views associated with the given category
+
+  def list_category_views(%Category{} = category) do
+    (from cv in CategoryView, where: cv.category_id == ^category.id) |> Repo.all
+  end
+
+  # Returns the set of category views associated with the given category
+
+  def time_posted(%Category{} = category) do
+    category.inserted_at
+  end
+
+  # Returns the set of category views associated with the given category
+
+  def time_updated(%Category{} = category) do
+    category.updated_at
+  end
+
 end

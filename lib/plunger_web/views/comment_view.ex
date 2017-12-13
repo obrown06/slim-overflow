@@ -17,7 +17,7 @@ defmodule PlungerWeb.CommentView do
   end
 
   def time_posted(%Comment{} = comment) do
-    Comments.time_posted(comment) |> PlungerWeb.ViewHelpers.get_time_posted()
+    Comments.time_posted(comment) |> PlungerWeb.ViewHelpers.format_time()
   end
 
   def list_comments(%Comment{} = comment) do

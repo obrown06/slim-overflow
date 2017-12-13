@@ -1,41 +1,103 @@
-<h2>Show Category</h2>
+<html>
+  <head>
+    <link rel="stylesheet" href="<%= static_path(@conn, "/css/question-index.css") %>">
+  </head>
+  <body>
 
-<ul>
+    <div class="category-header">
 
-  <li>
-    <strong>Name:</strong>
-    <%= @category.name %>
-  </li>
+      <div class="category-page-title">
+        Tag Info
+      </div>
 
-</ul>
+      <div class="category-sorts">
+        <a class="category-info-sort" id="info" href = "<%= category_path(@conn, :show, @category) %>">
+          info
+        </a>
+        <a class="category-sort" id="votes" href = "<%= question_path(@conn, :index, sort: "votes") %>">
+          votes
+        </a>
+        <a class="category-sort" id="responses" href = "<%= question_path(@conn, :index, sort: "responses") %>">
+          responses
+        </a>
+        <a class="category-sort" id="views" href = "<%= question_path(@conn, :index, sort: "views") %>">
+          views
+        </a>
+        <a class="category-sort" id="date" href = "<%= question_path(@conn, :index, sort: "date") %>">
+          newest
+        </a>
+      </div>
+      <div class="bottom-line">
+        <hr>
+      </div>
+    </div>
+    <div class="category-about">
 
-<span><%= link "Back", to: category_path(@conn, :index) %></span>
+      <div class="category-header">
+        <div class="about">
+          About
+        </div>
+        <div class="category-about-tag">
+          <%= link Categories.name(@category), to: question_path(@conn, :index, selected_category: @category) %>
+        </div>
 
-<h2>Questions</h2>
+        <a href="<%= category_path(@conn, :edit, @category) %>" class="blue-button">
+          Edit Category
+        </a>
+      </div>
 
-<table class="table">
-  <thead>
-    <tr>
-      <th>Title</th>
-      <th>Body</th>
-      <th>Categories</th>
 
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-<%= for question <- @questions do %>
-    <tr>
-      <td><%= question.title %></td>
-      <td><%= question.body %></td>
-      <td><%= QuestionView.list_categories(question) %></td>
+      <div class="category-summary">
 
-      <td class="text-right">
-        <span><%= link "Show", to: question_path(@conn, :show, question), class: "btn btn-default btn-xs" %></span>
-        <span><%= link "Edit", to: question_path(@conn, :edit, question), class: "btn btn-default btn-xs" %></span>
-        <span><%= link "Delete", to: question_path(@conn, :delete, question), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
-      </td>
-    </tr>
-<% end %>
-  </tbody>
-</table>
+        <div id="title">
+          <%= "[" <> name(@category) <> "]" %>
+        </div>
+
+        <div id="summary">
+          <%= summary(@category) %>
+        </div>
+
+        <div class="category-stats">
+          <div id="stats">
+            Stats
+          </div>
+
+          <div class="category-stat">
+            <div class="category-stat-type">
+              created
+            </div>
+            <div class = "category-stat-info">
+              <%= time_posted(@category) %>
+            </div>
+          </div>
+
+          <div class="category-stat">
+            <div class="category-stat-type">
+              viewed
+            </div>
+            <div class = "category-stat-info">
+              <%= num_category_views(@category) %>
+            </div>
+          </div>
+
+          <div class="category-stat">
+            <div class="category-stat-type">
+              active
+            </div>
+            <div class = "category-stat-info">
+              <%= time_updated(@category) %>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="category-long-summary">
+        <%= long_summary(@category) %>
+      </div>
+
+    </div>
+  </body>
+
+</html>
