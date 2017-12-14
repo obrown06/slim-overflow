@@ -15,7 +15,7 @@ defmodule PlungerWeb.UserView do
   import Ecto.Query, only: [from: 2]
 
   def posted_questions(%User{} = user) do
-    Questions.user_questions(user);
+    Questions.user_questions(user)
   end
 
   def posted_responses(%User{} = user) do
@@ -50,5 +50,31 @@ defmodule PlungerWeb.UserView do
   def name(%Category{} = category) do
     Categories.name(category)
   end
+
+  def sort_and_partition(categories, sort_by, num_elems_per_line) do
+    categories
+      |> sort(sort_by)
+      |> Enum.chunk_every(3)
+  end
+
+  def is_admin(%User{} = user) do
+    Accounts.is_admin(user)
+  end
+
+  def sort(users, sort_by) do
+    case sort_by do
+      "activity" ->
+        Enum.sort_by(users, fn(user) ->
+        length(posted_questions(user) ++
+        posted_responses(user) ++ posted_comments(user))
+      end) |> Enum.reverse()
+      "date" -> Enum.sort_by(users, &Accounts.time_registered()/1, &PlungerWeb.ViewHelpers.naive_date_time_compare()/2) |> Enum.reverse()
+      "name" -> Enum.sort_by(users, fn(user) ->
+        name(user) end)
+      "admins" -> Enum.filter(users, fn(user) -> is_admin(user) end)
+      _ -> raise "This shouldn't happen"
+    end
+  end
+
 
 end

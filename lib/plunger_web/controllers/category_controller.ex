@@ -4,9 +4,15 @@ defmodule PlungerWeb.CategoryController do
   alias Plunger.Categories.Category
   alias Plunger.Questions
 
-  def index(conn, _params) do
+  def index(conn, params) do
+    sort = Map.get(params, "sort")
+
+    if sort == nil do
+      sort = "questions"
+    end
+
     categories = Categories.list_categories()
-    render(conn, "index.html", categories: categories)
+    render(conn, "index.html", categories: categories, sort: sort)
   end
 
   def new(conn, _params) do

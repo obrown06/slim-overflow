@@ -14,16 +14,16 @@
         <a class="category-info-sort" id="info" href = "<%= category_path(@conn, :show, @category) %>">
           info
         </a>
-        <a class="category-sort" id="votes" href = "<%= question_path(@conn, :index, sort: "votes") %>">
+        <a class="category-sort" id="votes" href = "<%= question_path(@conn, :index, sort: "votes", selected_category: @category) %>">
           votes
         </a>
-        <a class="category-sort" id="responses" href = "<%= question_path(@conn, :index, sort: "responses") %>">
+        <a class="category-sort" id="responses" href = "<%= question_path(@conn, :index, sort: "responses", selected_category: @category) %>">
           responses
         </a>
-        <a class="category-sort" id="views" href = "<%= question_path(@conn, :index, sort: "views") %>">
+        <a class="category-sort" id="views" href = "<%= question_path(@conn, :index, sort: "views", selected_category: @category) %>">
           views
         </a>
-        <a class="category-sort" id="date" href = "<%= question_path(@conn, :index, sort: "date") %>">
+        <a class="category-sort" id="date" href = "<%= question_path(@conn, :index, sort: "date", selected_category: @category) %>">
           newest
         </a>
       </div>
@@ -37,7 +37,7 @@
         <div class="about">
           About
         </div>
-        <div class="category-about-tag">
+        <div class="category-tag">
           <%= link Categories.name(@category), to: question_path(@conn, :index, selected_category: @category) %>
         </div>
 

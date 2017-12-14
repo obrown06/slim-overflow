@@ -250,4 +250,13 @@ defmodule Plunger.Accounts do
     user = user |> Repo.preload(:categories)
     user.categories
   end
+
+  @doc """
+  Returns the inserted_at field of the given user struct.
+
+  """
+
+  def time_registered(%User{} = user) do
+    user.inserted_at
+  end
 end

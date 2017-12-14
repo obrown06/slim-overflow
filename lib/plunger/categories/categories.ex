@@ -228,4 +228,9 @@ defmodule Plunger.Categories do
     category.updated_at
   end
 
+  def associated_questions(%Category{} = category) do
+    category = category |> Repo.preload(:questions)
+    category.questions
+  end
+
 end

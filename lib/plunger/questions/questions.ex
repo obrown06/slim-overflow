@@ -392,4 +392,18 @@ defmodule Plunger.Questions do
     length(question.responses)
   end
 
+  # Returns true if question is less than one day old; false otherwise
+
+  def is_under_one_day_old(%Question{} = question) do
+    Time.diff(Time.utc_now(),question.inserted_at) < 86400
+  end
+
+  # Returns true if question is less than one day old; false otherwise
+
+  def is_under_one_week_old(%Question{} = question) do
+    Time.diff(Time.utc_now(),question.inserted_at) < 604800
+  end
+
+
+
 end

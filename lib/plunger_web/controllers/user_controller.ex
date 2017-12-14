@@ -7,9 +7,26 @@ defmodule PlungerWeb.UserController do
   alias Plunger.Accounts
   alias Plunger.Accounts.User
 
-  def index(conn, _params) do
+  def index(conn, params) do
+    sort = Map.get(params, "sort")
+
+    if sort == nil do
+      sort = "activity"
+    end
+
     users = Accounts.list_users()
-    render(conn, "index.html", users: users)
+    render(conn, "index.html", users: users, sort: sort)
+  end
+
+  def index(conn, params) do
+    sort = Map.get(params, "sort")
+
+    if sort == nil do
+      sort = "questions"
+    end
+
+    categories = Categories.list_categories()
+    render(conn, "index.html", categories: categories, sort: sort)
   end
 
   #def new(conn, _params) do

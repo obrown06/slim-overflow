@@ -6,7 +6,6 @@
     <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function(){
-
           if ("<%= @sort %>" != "nil") {
             $("#" + "<%= @sort %>").css('border-top', 'solid #F69B55');
             $("#" + "<%= @sort %>").css('border-right', 'solid #EEEEEE');
@@ -29,8 +28,6 @@
               $(this).css('margin-left', '0px');
               $(this).css('margin-top', '0px');
             })
-
-
           }
 
         });

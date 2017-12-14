@@ -17,4 +17,13 @@ defmodule PlungerWeb.ViewHelpers do
 
     month <> " " <> day <> " " <> year <> " at " <> hour <> ":" <> minute
   end
+
+  def naive_date_time_compare(time1, time2) do
+    case NaiveDateTime.compare(time1, time2) do
+      :lt -> true
+      :eq -> true
+      :gt -> false
+      _ -> raise "This shouldn't happen"
+    end
+  end
 end

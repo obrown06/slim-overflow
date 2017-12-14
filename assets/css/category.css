@@ -62,7 +62,6 @@
 .category-page-title {
   height: 60px;
   font-size: large;
-  margin-left: 10px;
   display: inline-block;
   line-height: 60px;
 }
@@ -75,6 +74,36 @@
   height: 58px;
   line-height: 55px;
   color: grey;
+}
+
+.category-info-sort {
+  border-top: solid #F69B55;
+  border-right: solid #EEEEEE;
+  border-left: solid #EEEEEE;
+  border-bottom: solid white;
+  border-width: 2px 1px 1px 1px;
+  padding-right: 8px;
+  padding-left: 8px;
+  margin-right: 5px;
+  display: inline-block;
+  height: 58px;
+  line-height: 55px;
+  color: grey;
+}
+
+.category-info-sort:hover {
+  border-top: solid #F69B55;
+  border-left: solid #EEEEEE;
+  border-right: solid #EEEEEE;
+  border-bottom: solid white;
+  border-width: 2px 1px 1px 1px;
+  margin-right: 5px;
+  margin-left: 0px;
+  margin-top: 0px;
+  height: 58px;
+  text-decoration: none;
+  color: grey;
+  background-color: #F3F5F7;
 }
 
 .category-sorts {
@@ -136,4 +165,45 @@
 	background-color:#0688fa;
   text-decoration: none;
   color:#ffffff;
+}
+
+.category-index-tag {
+  height: 140px;
+  width: 227px;
+  margin-right: 10px;
+}
+
+.category-index-tag-header {
+  height: 20px;
+  margin-top: 13px;
+}
+
+.new-category-container {
+  width: 100%;
+  height: 60px;
+}
+
+.category-question-count {
+  display: inline-block;
+  color: grey;
+}
+
+.category-index-list {
+  margin-top: -10px;
+}
+
+.category-index-tag-body {
+  margin-top: 10px;
+  font-size: 10pt;
+  height: 120px;
+  margin-bottom: -31px;
+}
+
+.category-truncated-summary {
+  color: #858C92;
+  height: 60px;
+}
+
+.category-tag-posting-stats {
+  margin-top: 3px;
 }

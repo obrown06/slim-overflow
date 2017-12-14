@@ -1,24 +1,92 @@
-<h2>Listing Categories</h2>
+<html>
+  <head>
+    <link rel="stylesheet" href="<%= static_path(@conn, "/css/category.css") %>">
+  </head>
+  <body>
+    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+          $("#" + "<%= @sort %>").css('border-top', 'solid #F69B55');
+          $("#" + "<%= @sort %>").css('border-right', 'solid #EEEEEE');
+          $("#" + "<%= @sort %>").css('border-left', 'solid #EEEEEE');
+          $("#" + "<%= @sort %>").css('border-bottom', 'solid white');
+          $("#" + "<%= @sort %>").css('border-width', '2px 1px 1px 1px');
 
-<table class="table">
-  <thead>
-    <tr>
-      <th>Name</th>
+          $(".index-sort").hover(function() {
+            $(this).css('height', '57px');
+          })
 
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-<%= for category <- @categories do %>
-    <tr>
-      <td><%= category.name %></td>
+          $("#" + "<%= @sort %>").hover(function() {
+            $(this).css('border-top', 'solid #F69B55');
+            $(this).css('border-right', 'solid #EEEEEE');
+            $(this).css('border-left', 'solid #EEEEEE');
+            $(this).css('border-bottom', 'solid white');
+            $(this).css('border-width', '2px 1px 1px 1px');
+            $(this).css('height', '58px');
+            $(this).css('margin-right', '5px');
+            $(this).css('margin-left', '0px');
+            $(this).css('margin-top', '0px');
+          })
 
-      <td class="text-right">
-        <span><%= link "Show", to: category_path(@conn, :show, category), class: "btn btn-default btn-xs" %></span>
-      </td>
-    </tr>
-<% end %>
-  </tbody>
-</table>
+      });
 
-<span><%= link "New Category", to: category_path(@conn, :new) %></span>
+    </script>
+
+    <div class="new-category-container">
+      <a class="blue-button" href="<%= category_path(@conn, :new) %>">
+        Create Category
+      </a>
+    </div>
+
+    <div class="category-index-header">
+
+      <div class="category-page-title">
+        Categories
+      </div>
+
+      <div class="index-sorts">
+        <a class="index-sort" id="questions" href = "<%= category_path(@conn, :index, sort: "questions") %>">
+          popular
+        </a>
+        <a class="index-sort" id="name" href = "<%= category_path(@conn, :index, sort: "name") %>">
+          name
+        </a>
+        <a class="index-sort" id="date" href = "<%= category_path(@conn, :index, sort: "date") %>">
+          new
+        </a>
+      </div>
+
+      <div class="bottom-line">
+        <hr>
+      </div>
+    </div>
+
+    <div class="category-index-list">
+      <table>
+      <%= for category_triple <- sort_and_partition(@categories, @sort, 3) do %>
+        <tr class="category-index-row">
+          <%= for category <- category_triple do %>
+            <td class="category-index-tag">
+              <div class="category-index-tag-header">
+                <a class="category-tag" href="<%= question_path(@conn, :index, selected_category: category) %>">
+                  <%= Categories.name(category) %>
+                </a>
+                <div class="category-question-count">
+                  x <%= num_questions(category) %>
+                </div>
+              </div>
+              <div class="category-index-tag-body">
+                <div class="category-truncated-summary">
+                  <%= truncated_summary(category) %>
+                </div>
+                <div class="category-tag-posting-stats">
+                  <%= past_day_questions(category) %> asked today, <%= past_week_questions(category) %> this week
+                </div>
+              </div>
+            <td>
+          <%= end %>
+        </tr>
+      <% end %>
+    </table>
+    </body>
+</html>

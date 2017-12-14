@@ -69,6 +69,28 @@ body, form, ul, table {
   /* Space out the masthead */
   .header {
     margin-bottom: 30px;
+    background-color: #FAFAFB;
+    display: inline-block;
+    width: 100%;
+  }
+
+  .header-block-right {
+    float: right;
+  }
+
+  .header-block {
+    display: inline-block;
+    height: 80px;
+    padding-left: 10px;
+    padding-right: 10px;
+    color: #535A5F;
+    line-height: 80px;
+  }
+
+  .header-block:hover {
+    background-color: #EFF0F1;
+    text-decoration: none;
+    color: #242729;
   }
   /* Remove the bottom border on the jumbotron for visual effect */
   .jumbotron {
