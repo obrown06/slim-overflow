@@ -209,12 +209,14 @@ defmodule Plunger.Questions do
 
   """
 
-  def upvote_question(question_id, user_id) do
-    question_vote = get_question_vote(question_id, user_id)
+  def upvote_question(%Question{} = question, %User{} = user) do
+    question_vote = get_question_vote(question, user)
+    posting_user = associated_user(question)
 
     cond do
+      Accounts.id(user) == Accounts.id(posting_user) -> false
       question_vote == nil ->
-        create_question_upvote!(question_id, user_id)
+        create_question_upvote!(question, user)
         true
       question_vote.votes < 1 ->
         question_vote
@@ -235,11 +237,14 @@ defmodule Plunger.Questions do
 
   """
 
-  def downvote_question(question_id, user_id) do
-    question_vote = get_question_vote(question_id, user_id)
+  def downvote_question(%Question{} = question, %User{} = user) do
+    question_vote = get_question_vote(question, user)
+    posting_user = associated_user(question)
+
     cond do
+      Accounts.id(user) == Accounts.id(posting_user) -> false
       question_vote == nil ->
-        create_question_downvote!(question_id, user_id)
+        create_question_downvote!(question, user)
         true
       question_vote.votes > -1 ->
         question_vote
@@ -254,17 +259,14 @@ defmodule Plunger.Questions do
   #Retrieves a QuestionVote associated with the given 'question_id' and 'user_id'.
   #If no QuestionVote is found, returns nil.
 
-  defp get_question_vote(question_id, user_id) do
-    Repo.one(from qv in QuestionVote, where: qv.question_id == ^question_id and qv.user_id == ^user_id)
+  defp get_question_vote(%Question{} = question, %User{} = user) do
+    Repo.one(from qv in QuestionVote, where: qv.question_id == ^id(question) and qv.user_id == ^Accounts.id(user))
   end
 
   #Creates a QuestionVote struct, associates it with the question and user corresponding to the given IDs,
   #initializes the :votes field to '1', and inserts.
 
-  defp create_question_upvote!(question_id, user_id) do
-    user = Plunger.Accounts.get_user!(user_id)
-    question = get_question!(question_id)
-
+  defp create_question_upvote!(%Question{} = question, %User{} = user) do
     user
       |> Ecto.build_assoc(:question_votes)
       |> QuestionVote.changeset()
@@ -277,10 +279,7 @@ defmodule Plunger.Questions do
   #Creates a QuestionVote struct, associates it with the question and user corresponding to the given IDs,
   #initializes the :votes field to '-1', and inserts.
 
-  defp create_question_downvote!(question_id, user_id) do
-    user = Plunger.Accounts.get_user!(user_id)
-    question = get_question!(question_id)
-
+  defp create_question_downvote!(%Question{} = question, %User{} = user) do
     user
       |> Ecto.build_assoc(:question_votes)
       |> QuestionVote.changeset()
@@ -308,14 +307,14 @@ defmodule Plunger.Questions do
     end
   end
 
-  #Retrieves a QuestionView associated with the given 'question_id' and 'user_id'.
-  #If no QuestionView is found, returns nil.
+  # Retrieves a QuestionView associated with the given 'question_id' and 'user_id'.
+  # If no QuestionView is found, returns nil.
 
   defp get_question_view(question_id, user_id) do
     Repo.one(from qv in QuestionView, where: qv.question_id == ^question_id and qv.user_id == ^user_id)
   end
 
-  def create_question_view!(question_id, user_id) do
+  defp create_question_view!(question_id, user_id) do
     user = Plunger.Accounts.get_user!(user_id)
     question = get_question!(question_id)
 
@@ -402,6 +401,10 @@ defmodule Plunger.Questions do
 
   def is_under_one_week_old(%Question{} = question) do
     Time.diff(Time.utc_now(),question.inserted_at) < 604800
+  end
+
+  def id(%Question{} = question) do
+    question.id
   end
 
 

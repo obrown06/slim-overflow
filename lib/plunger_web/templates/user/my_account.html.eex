@@ -28,6 +28,11 @@
         </div>
 
         <div class="user-info">
+          <strong>Reputation:</strong>
+          <%= @user.reputation %>
+        </div>
+
+        <div class="user-info">
           <strong>Categories: </strong>
           <%= for category <- flagged_categories(@user) do %>
             <%= link name(category), to: category_path(@conn, :show, category) %>

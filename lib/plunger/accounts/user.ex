@@ -11,6 +11,7 @@ defmodule Plunger.Accounts.User do
     field :avatar, PlungerWeb.Avatar.Type
     field :email, :string
     field :name, :string
+    field :reputation, :integer, default: 0
     #field :username, :string
     #field :password, :string, virtual: true
     #field :password_hash, :string
@@ -20,8 +21,6 @@ defmodule Plunger.Accounts.User do
 
     many_to_many :categories, Plunger.Categories.Category, join_through: "categories_users", on_delete: :delete_all, on_replace: :delete
 
-    #has_many :authorizations, Plunger.Accounts.Authorization, on_delete: :delete_all
-
     has_many :responses, Plunger.Responses.Response, on_delete: :delete_all
     has_many :response_votes, Plunger.Responses.ResponseVote, on_delete: :delete_all
 
@@ -29,6 +28,7 @@ defmodule Plunger.Accounts.User do
     has_many :question_votes, Plunger.Questions.QuestionVote, on_delete: :delete_all
     has_many :question_views, Plunger.Questions.QuestionView, on_delete: :delete_all
     has_many :category_views, Plunger.Categories.CategoryView, on_delete: :delete_all
+    has_many :category_reputations, Plunger.Accounts.CategoryReputation, on_delete: :delete_all
 
     has_many :comments, Plunger.Comments.Comment, on_delete: :delete_all
     has_many :comment_votes, Plunger.Comments.CommentVote, on_delete: :delete_all

@@ -4,3 +4,51 @@
   display: inline-block;
   line-height: 60px;
 }
+
+.user-index-tag {
+  width: 230px;
+  height: 90px;
+}
+
+.user-index-tag:hover {
+  background-color: #F4F8FB;
+}
+
+.user-index-tag-left {
+  display: inline-block;
+  height: 80px;
+  width: 70px;
+  vertical-align: top;
+}
+
+.user-index-image {
+  vertical-align: top;
+  margin-top: 4px;
+  margin-left: 4px;
+}
+
+.user-index-tag-right {
+  display: inline-block;
+  height: 90px;
+  width: 140px;
+  position: relative;
+}
+
+.user-index-name {
+  padding-top: 3px;
+}
+
+.user-index-reputation {
+  color: #69737B;
+}
+
+.user-stats {
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+}
+
+.user-index-categories {
+  color: #838D94;
+  font-size: 8pt;
+}

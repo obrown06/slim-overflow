@@ -63,17 +63,25 @@ defmodule PlungerWeb.UserView do
 
   def sort(users, sort_by) do
     case sort_by do
-      "activity" ->
+      "reputation" ->
         Enum.sort_by(users, fn(user) ->
-        length(posted_questions(user) ++
-        posted_responses(user) ++ posted_comments(user))
-      end) |> Enum.reverse()
+        reputation(user) end) |> Enum.reverse()
       "date" -> Enum.sort_by(users, &Accounts.time_registered()/1, &PlungerWeb.ViewHelpers.naive_date_time_compare()/2) |> Enum.reverse()
       "name" -> Enum.sort_by(users, fn(user) ->
         name(user) end)
       "admins" -> Enum.filter(users, fn(user) -> is_admin(user) end)
       _ -> raise "This shouldn't happen"
     end
+  end
+
+  def reputation(%User{} = user) do
+    Accounts.reputation(user)
+  end
+
+  def top_categories(%User{} = user) do
+    user
+      |> Accounts.reputation_sorted_categories()
+      |> Enum.slice(0, 2)
   end
 
 

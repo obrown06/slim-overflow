@@ -11,6 +11,7 @@ defmodule PlungerWeb.QuestionController do
   alias Plunger.Comments
   alias Plunger.Responses
   alias PlungerWeb.UserEmail
+  alias Plunger.Accounts
 
   def action(conn, _) do
     apply(__MODULE__, action_name(conn),
@@ -61,13 +62,26 @@ defmodule PlungerWeb.QuestionController do
   end
 
   def upvote(conn, %{"id" => id}, user) do
-    upvote_successful = Questions.upvote_question(id, user.id)
-    #question = Questions.get_question!(id)
+    question = Questions.get_question!(id)
+    upvote_successful = Questions.upvote_question(question, user)
+    posting_user = Questions.associated_user(question)
+
+    if upvote_successful do
+      Accounts.add_rep(question, posting_user, "upvote", "posting")
+    end
+
     conn |> json %{ upvote_successful: upvote_successful } #redirect(to: NavigationHistory.last_path(conn, 1)) #question_path(conn, :show, question))
   end
 
   def downvote(conn, %{"id" => id}, user) do
-    downvote_successful = Questions.downvote_question(id, user.id)
+    question = Questions.get_question!(id)
+    downvote_successful = Questions.downvote_question(question, user)
+    posting_user = Questions.associated_user(question)
+
+    if downvote_successful do
+      Accounts.subtract_rep(question, posting_user, "downvote", "posting")
+    end
+
     conn |> json %{ downvote_successful: downvote_successful }#question_path(conn, :show, question))
   end
 

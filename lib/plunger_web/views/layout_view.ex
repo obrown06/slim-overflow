@@ -1,6 +1,8 @@
 defmodule PlungerWeb.LayoutView do
   use PlungerWeb, :view
   import PlungerWeb.Coherence.ViewHelpers
+  alias Plunger.Accounts
+  alias Plunger.Accounts.User
 
   def show_flash(conn) do
     get_flash(conn) |> flash_msg
@@ -16,5 +18,9 @@ defmodule PlungerWeb.LayoutView do
 
   def flash_msg(_) do
     nil
+  end
+
+  def reputation(%User{} = user) do
+    Accounts.reputation(user)
   end
 end

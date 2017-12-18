@@ -87,6 +87,16 @@ body, form, ul, table {
     line-height: 80px;
   }
 
+  .header-reputation {
+    display: inline-block;
+    padding-right: 5px;
+    color: #3B4045;
+  }
+
+  .header-account-picture {
+    display: inline-block;
+  }
+
   .header-block:hover {
     background-color: #EFF0F1;
     text-decoration: none;

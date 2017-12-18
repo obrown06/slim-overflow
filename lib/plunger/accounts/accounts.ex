@@ -9,6 +9,20 @@ defmodule Plunger.Accounts do
 
   alias Plunger.Accounts.User
   alias Plunger.Categories
+  alias Plunger.Accounts.CategoryReputation
+  alias Plunger.Questions
+  alias Plunger.Accounts
+  alias Plunger.Responses
+  alias Plunger.Questions.Question
+  alias Plunger.Responses.Response
+  alias Plunger.Categories
+  alias Plunger.Categories.Category
+
+  @question_rep_boost 5
+  @posting_user_upvoted_response_rep_boost 10
+  @voting_user_upvoted_response_rep_boost 1
+  @posting_user_accepted_response_rep_boost 15
+  @question_owner_accepted_response_rep_boost 2
 
   @doc """
   Returns the list of users.
@@ -224,15 +238,6 @@ defmodule Plunger.Accounts do
   end
 
   @doc """
-  Returns the id field of the given user struct.
-
-  """
-
-  def id(%User{} = user) do
-    user.id
-  end
-
-  @doc """
   Returns the avatar field of the given user struct.
 
   """
@@ -259,4 +264,155 @@ defmodule Plunger.Accounts do
   def time_registered(%User{} = user) do
     user.inserted_at
   end
+
+  @doc """
+  Returns the id field of the given user struct.
+
+  """
+
+  def id(%User{} = user) do
+    user.id
+  end
+
+  @doc """
+  Returns the id field of the given user struct.
+
+  """
+
+  def reputation(%User{} = user) do
+    user.reputation
+  end
+
+  alias Plunger.Accounts.CategoryReputation
+
+  @doc """
+  Adds the given amount of rep to the reputation field of the user struct
+  and also adds the given amount of rep to the category_reputation structs
+  for all of the question's categories.
+
+  """
+
+  def add_rep(%Question{} = question, %User{} = user, "upvote", "posting") do
+    update_rep(question, user, @question_rep_boost)
+  end
+
+  def add_rep(%Response{} = response, %User{} = user, "upvote", "posting") do
+    question = Responses.parent_question(response)
+    update_rep(question, user, @posting_user_upvoted_response_rep_boost)
+  end
+
+  def add_rep(%Response{} = response, %User{} = user, "upvote", "voting") do
+    question = Responses.parent_question(response)
+    update_rep(question, user, @voting_user_upvoted_response_rep_boost)
+  end
+
+  def add_rep(%Response{} = response, %User{} = user, "accept", "posting") do
+    question = Responses.parent_question(response)
+    update_rep(question, user, @posting_user_accepted_response_rep_boost)
+  end
+
+  def add_rep(%Response{} = response, %User{} = user, "accept", "question_owner") do
+    question = Responses.parent_question(response)
+    update_rep(question, user, @question_owner_accepted_response_rep_boost)
+  end
+
+  def subtract_rep(%Question{} = question, %User{} = user, "downvote", "posting") do
+    update_rep(question, user, 0 - @question_rep_boost)
+  end
+
+  def subtract_rep(%Response{} = response, %User{} = user, "downvote", "posting") do
+    question = Responses.parent_question(response)
+    update_rep(question, user, 0 - @posting_user_upvoted_response_rep_boost)
+  end
+
+  def subtract_rep(%Response{} = response, %User{} = user, "downvote", "voting") do
+    question = Responses.parent_question(response)
+    update_rep(question, user, 0 - @voting_user_upvoted_response_rep_boost)
+  end
+
+  def subtract_rep(%Response{} = response, %User{} = user, "reject", "posting") do
+    question = Responses.parent_question(response)
+    update_rep(question, user, 0 - @posting_user_accepted_response_rep_boost)
+  end
+
+  def subtract_rep(%Response{} = response, %User{} = user, "reject", "question_owner") do
+    question = Responses.parent_question(response)
+    update_rep(question, user, 0 - @question_owner_accepted_response_rep_boost)
+  end
+
+  def update_rep(%Question{} = question, %User{} = user, delta) do
+    user = user |> id() |> Accounts.get_user!()
+    IO.puts "delta"
+    IO.puts delta
+    IO.puts "reputation"
+    IO.puts user.reputation
+    updated_reputation =
+      if user.reputation + delta >= 0 do
+        user.reputation + delta
+      else
+        0
+      end
+
+    IO.puts "updated_reputation"
+    IO.puts updated_reputation
+
+    user
+      |> Ecto.Changeset.change(%{:reputation => updated_reputation})
+      |> Repo.update
+
+    question = Repo.preload(question, :categories)
+
+    for category <- question.categories do
+      update_rep(category, user, delta)
+    end
+  end
+
+  def update_rep(%Category{} = category, %User{} = user, delta) do
+    user = user |> id() |> Accounts.get_user!()
+    category_reputation = get_category_reputation(user.id, category.id)
+
+    if category_reputation == nil do
+      category_reputation = create_category_reputation!(user, category)
+    end
+
+    updated_reputation =
+      if category_reputation.amount + delta >= 0 do
+        category_reputation.amount + delta
+      else
+        0
+      end
+
+    category_reputation
+      |> Ecto.Changeset.change(%{:amount => updated_reputation})
+      |> Repo.update
+  end
+
+  defp get_category_reputation(user_id, category_id) do
+    Repo.one(from cr in CategoryReputation, where: cr.user_id == ^user_id and cr.category_id == ^category_id)
+  end
+
+  defp create_category_reputation!(%User{} = user, %Category{} = category) do
+    user
+      |> Ecto.build_assoc(:category_reputations)
+      |> CategoryReputation.changeset()
+      |> Ecto.Changeset.change()
+      |> Ecto.Changeset.put_assoc(:category, category, :required)
+      |> Repo.insert!()
+  end
+
+
+  def reputation_sorted_categories(%User{} = user) do
+    reputations = Repo.all(from cr in CategoryReputation, where: cr.user_id == ^id(user))
+
+    reputations
+      |> Enum.sort_by(fn(reputation) -> amount(reputation) end)
+      |> Enum.map(fn(reputation) ->
+          reputation = reputation |> Repo.preload(:category)
+          reputation.category end)
+  end
+
+  def amount(%CategoryReputation{} = reputation) do
+    reputation.amount
+  end
+
 end

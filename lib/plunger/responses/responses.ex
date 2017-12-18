@@ -146,12 +146,14 @@ defmodule Plunger.Responses do
 
   """
 
-  def upvote_response(response_id, user_id) do
-    response_vote = get_response_vote(response_id, user_id)
+  def upvote_response(%Response{} = response, %User{} = user) do
+    response_vote = get_response_vote(response, user)
+    posting_user = associated_user(response)
 
     cond do
+      Accounts.id(user) == Accounts.id(posting_user) -> false
       response_vote == nil ->
-        create_response_upvote!(response_id, user_id)
+        create_response_upvote!(response, user)
         true
       response_vote.votes < 1 ->
         response_vote
@@ -172,11 +174,14 @@ defmodule Plunger.Responses do
 
   """
 
-  def downvote_response(response_id, user_id) do
-    response_vote = get_response_vote(response_id, user_id)
+  def downvote_response(%Response{} = response, %User{} = user) do
+    response_vote = get_response_vote(response, user)
+    posting_user = associated_user(response)
+
     cond do
+      Accounts.id(user) == Accounts.id(posting_user) -> false
       response_vote == nil ->
-        create_response_downvote!(response_id, user_id)
+        create_response_downvote!(response, user)
         true
       response_vote.votes > -1 ->
         response_vote
@@ -191,18 +196,15 @@ defmodule Plunger.Responses do
   #Retrieves a ResponseVote associated with the given 'response_id' and 'user_id'.
   #If no ResponseVote is found, returns nil.
 
-  defp get_response_vote(response_id, user_id) do
-    Repo.one(from rv in ResponseVote, where: rv.response_id == ^response_id and rv.user_id == ^user_id)
+  defp get_response_vote(%Response{} = response, %User{} = user) do
+    Repo.one(from rv in ResponseVote, where: rv.response_id == ^id(response) and rv.user_id == ^Accounts.id(user))
   end
 
 
   #Creates a ResponseVote struct, associates it with the response and user corresponding to the given IDs,
   #initializes, the :votes field to '1', and inserts.
 
-  defp create_response_upvote!(response_id, user_id) do
-    user = Plunger.Accounts.get_user!(user_id)
-    response = get_response!(response_id)
-
+  defp create_response_upvote!(%Response{} = response, %User{} = user) do
     user
       |> Ecto.build_assoc(:response_votes)
       |> ResponseVote.changeset()
@@ -215,10 +217,7 @@ defmodule Plunger.Responses do
   #Creates a ResponseVote struct, associates it with the response and user corresponding to the given IDs,
   #initializes, the :votes field to '-1', and inserts.
 
-  defp create_response_downvote!(response_id, user_id) do
-    user = Plunger.Accounts.get_user!(user_id)
-    response = get_response!(response_id)
-
+  defp create_response_downvote!(%Response{} = response, %User{} = user) do
     user
       |> Ecto.build_assoc(:response_votes)
       |> ResponseVote.changeset()
@@ -283,6 +282,13 @@ defmodule Plunger.Responses do
 
   def id(%Response{} = response) do
     response.id
+  end
+
+  # Returns the parent question of the given response
+
+  def parent_question(%Response{} = response) do
+    response = Repo.preload(response, :question)
+    response.question
   end
 
 end

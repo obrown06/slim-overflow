@@ -36,6 +36,9 @@
                 <img src="<%= PlungerWeb.Avatar.url({@current_user.avatar, @current_user}) %>" width="40" height="40"/>
               <% end %>
             </div>
+            <div class="header-reputation">
+              <%= reputation(@current_user) %>
+            </div>
           </a>
         <%= else %>
           <div class="header-block header-block-right">

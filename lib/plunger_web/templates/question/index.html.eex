@@ -24,8 +24,8 @@
               $(this).css('border-bottom', 'solid white');
               $(this).css('border-width', '2px 1px 1px 1px');
               $(this).css('height', '58px');
-              $(this).css('margin-right', '5px');
-              $(this).css('margin-left', '0px');
+              $(this).css('margin-left', '5px');
+              $(this).css('margin-right', '0px');
               $(this).css('margin-top', '0px');
             })
           }
@@ -33,20 +33,19 @@
         });
 
     </script>
-    <div class="new-question-container">
-      <a class="blue-button" href="<%= question_path(@conn, :new) %>">
-        Ask Question
-      </a>
-    </div>
+
+
 
     <div class="index-header">
 
-      <div class="index-page-title">
-        <%= if @selected_category != "all" do %>
-          Tagged Questions
-        <% else %>
-          All Questions
-        <% end %>
+      <div class="index-header-left">
+        <div class="index-page-title">
+          <%= if @selected_category != "all" do %>
+            Tagged Questions
+            <% else %>
+            All Questions
+            <% end %>
+        </div>
       </div>
 
       <div class="index-sorts">
@@ -145,5 +144,13 @@
       <% end %>
 
     </div>
+
+    <div class="new-question-container">
+      <a class="blue-button" href="<%= question_path(@conn, :new) %>">
+        Ask Question
+      </a>
+    </div>
+
+  </body>
 
 </html>

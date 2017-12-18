@@ -23,8 +23,8 @@
             $(this).css('border-bottom', 'solid white');
             $(this).css('border-width', '2px 1px 1px 1px');
             $(this).css('height', '58px');
-            $(this).css('margin-right', '5px');
-            $(this).css('margin-left', '0px');
+            $(this).css('margin-left', '5px');
+            $(this).css('margin-right', '0px');
             $(this).css('margin-top', '0px');
           })
 
@@ -39,8 +39,8 @@
       </div>
 
       <div class="index-sorts">
-        <a class="index-sort" id="activity" href = "<%= user_path(@conn, :index, sort: "activity") %>">
-          activity
+        <a class="index-sort" id="reputation" href = "<%= user_path(@conn, :index, sort: "reputation") %>">
+          reputation
         </a>
         <a class="index-sort" id="name" href = "<%= user_path(@conn, :index, sort: "name") %>">
           name
@@ -64,17 +64,31 @@
         <tr class="user-index-row">
           <%= for user <- user_triple do %>
             <td class="user-index-tag">
-              <%= if user.avatar == nil do %>
-                <img src="/uploads/no_profile_image.gif" width=60 height=60/>
-                <%= else %>
-                  <img src="<%= PlungerWeb.Avatar.url({user.avatar, user}) %>" width="60" height="60"/>
-              <% end %>
-              <div class = "index-user-name">
-                <%= link name(user), to: user_path(@conn, :show, user) %>
+              <div class="user-index-tag-left">
+                <div class="user-index-image">
+                  <a href="<%= user_path(@conn, :show, user) %>">
+                  <%= if user.avatar == nil do %>
+                      <img src="/uploads/no_profile_image.gif" width=60 height=60/>
+                  <%= else %>
+                    <img src="<%= PlungerWeb.Avatar.url({user.avatar, user}) %>" width="60" height="60"/>
+                  <% end %>
+                  </a>
+                </div>
               </div>
-
-              <div class="user-stats">
-
+              <div class="user-index-tag-right">
+                <div class = "user-index-name">
+                  <%= link name(user), to: user_path(@conn, :show, user) %>
+                </div>
+                <div class ="user-index-reputation">
+                  <b> <%= reputation(user) %> </b>
+                </div>
+                <div class="user-stats">
+                  <%= for category <- top_categories(user) do %>
+                    <a class="user-index-categories" href="<%= category_path(@conn, :show, category) %>">
+                      <%= name(category) <> " " %>
+                    </a>
+                  <% end %>
+                </div>
               </div>
             <td>
           <%= end %>
