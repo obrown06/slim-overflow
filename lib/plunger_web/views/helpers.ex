@@ -18,6 +18,16 @@ defmodule PlungerWeb.ViewHelpers do
     month <> " " <> day <> " " <> year <> " at " <> hour <> ":" <> minute
   end
 
+  def format_date(date_time) do
+    month = Map.get(@months, date_time.month)
+    day = Integer.to_string(date_time.day)
+    year = "'" <> Integer.to_string(rem(date_time.year, 2000))
+    hour = Integer.to_string(date_time.hour)
+    minute = Integer.to_string(date_time.minute)
+
+    month <> " " <> day <> " " <> year
+  end
+
   def naive_date_time_compare(time1, time2) do
     case NaiveDateTime.compare(time1, time2) do
       :lt -> true

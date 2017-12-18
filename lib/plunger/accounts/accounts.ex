@@ -247,6 +247,26 @@ defmodule Plunger.Accounts do
   end
 
   @doc """
+  Returns all associated responses.
+
+  """
+
+  def responses(%User{} = user) do
+    user = user |> Repo.preload(:responses)
+    user.responses
+  end
+
+  @doc """
+  Returns all associated questions.
+
+  """
+
+  def questions(%User{} = user) do
+    user = user |> Repo.preload(:questions)
+    user.questions
+  end
+
+  @doc """
   Returns the avatar field of the given user struct.
 
   """
@@ -342,10 +362,6 @@ defmodule Plunger.Accounts do
 
   def update_rep(%Question{} = question, %User{} = user, delta) do
     user = user |> id() |> Accounts.get_user!()
-    IO.puts "delta"
-    IO.puts delta
-    IO.puts "reputation"
-    IO.puts user.reputation
     updated_reputation =
       if user.reputation + delta >= 0 do
         user.reputation + delta
@@ -369,7 +385,7 @@ defmodule Plunger.Accounts do
 
   def update_rep(%Category{} = category, %User{} = user, delta) do
     user = user |> id() |> Accounts.get_user!()
-    category_reputation = get_category_reputation(user.id, category.id)
+    category_reputation = get_category_reputation(user, category)
 
     if category_reputation == nil do
       category_reputation = create_category_reputation!(user, category)
@@ -387,8 +403,8 @@ defmodule Plunger.Accounts do
       |> Repo.update
   end
 
-  defp get_category_reputation(user_id, category_id) do
-    Repo.one(from cr in CategoryReputation, where: cr.user_id == ^user_id and cr.category_id == ^category_id)
+  def get_category_reputation(%User{} = user, %Category{} = category) do
+    Repo.one(from cr in CategoryReputation, where: cr.user_id == ^Accounts.id(user) and cr.category_id == ^Categories.id(category))
   end
 
   defp create_category_reputation!(%User{} = user, %Category{} = category) do
@@ -400,11 +416,13 @@ defmodule Plunger.Accounts do
       |> Repo.insert!()
   end
 
+  def reputations(%User{} = user) do
+    reputations = Repo.all(from cr in CategoryReputation, where: cr.user_id == ^id(user))
+  end
 
   def reputation_sorted_categories(%User{} = user) do
-    reputations = Repo.all(from cr in CategoryReputation, where: cr.user_id == ^id(user))
-
-    reputations
+    user
+      |> reputations()
       |> Enum.sort_by(fn(reputation) -> amount(reputation) end)
       |> Enum.map(fn(reputation) ->
           reputation = reputation |> Repo.preload(:category)
@@ -413,6 +431,14 @@ defmodule Plunger.Accounts do
 
   def amount(%CategoryReputation{} = reputation) do
     reputation.amount
+  end
+
+  def position(%User{} = user) do
+    user.position
+  end
+
+  def description(%User{} = user) do
+    user.description
   end
 
 end

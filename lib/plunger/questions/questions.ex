@@ -408,5 +408,11 @@ defmodule Plunger.Questions do
   end
 
 
+  def tagged_with(%Question{} = question, %Category{} = category) do
+    question = question |> Repo.preload(:categories)
+    Enum.member?(question.categories, category)
+  end
+
+
 
 end

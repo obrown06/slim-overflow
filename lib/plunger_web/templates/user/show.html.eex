@@ -1,21 +1,62 @@
-<h2>Show User</h2>
+<html>
+  <head>
+    <link rel="stylesheet" href="<%= static_path(@conn, "/css/user_account.css") %>">
+  </head>
 
-<%= if @user.avatar == nil do %>
-  <img src="/uploads/no_profile_image.gif" width=200 height=200/>
-<%= else %>
-  <img src="<%= PlungerWeb.Avatar.url({@user.avatar, @user}) %>" width="200" height="200"/><td>
-<% end %>
-<ul>
+  <body>
 
-  <li>
-    <strong>Name:</strong>
-    <%= @user.name %>
-  </li>
+    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+          if ("<%= @tab %>" != "nil") {
+            $("#" + "<%= @tab %>").css('border-top', 'solid #F69B55');
+            $("#" + "<%= @tab %>").css('border-right', 'solid #EEEEEE');
+            $("#" + "<%= @tab %>").css('border-left', 'solid #EEEEEE');
+            $("#" + "<%= @tab %>").css('border-bottom', 'solid white');
+            $("#" + "<%= @tab %>").css('border-width', '2px 1px 1px 1px');
 
-</ul>
+            $(".account-tab").hover(function() {
+              $(this).css('height', '57px');
+            })
 
-<span><%= link "Back", to: user_path(@conn, :index) %></span>
+            $("#" + "<%= @tab %>").hover(function() {
+              $(this).css('border-top', 'solid #F69B55');
+              $(this).css('border-right', 'solid #EEEEEE');
+              $(this).css('border-left', 'solid #EEEEEE');
+              $(this).css('border-bottom', 'solid white');
+              $(this).css('border-width', '2px 1px 1px 1px');
+              $(this).css('height', '58px');
+              $(this).css('margin-right', '5px');
+              $(this).css('margin-left', '0px');
+              $(this).css('margin-top', '0px');
+            })
+          }
 
-<%= if current_user(@conn).is_admin and not @user.is_admin do %>
-  <span><%= link "Promote To Admin", to: user_path(@conn, :promote, @user), class: "btn btn-default btn-xs" %></span>
-<% end %>
+        });
+
+    </script>
+
+    <div class="account-header">
+      <div class="account-header-left">
+        <a class="account-tab" id="profile" href = "<%= user_path(@conn, :show, @user, tab: "profile") %>">
+          Profile
+        </a>
+        <a class="account-tab" id="activity" href = "<%= user_path(@conn, :show, @user, tab: "activity") %>">
+          Activity
+        </a>
+      </div>
+      <div class="bottom-line-account">
+        <hr>
+      </div>
+    </div>
+
+    <%= if @tab == "profile" do %>
+      <%= render "profile.html", user: @user,
+        conn: @conn %>
+    <%= else %>
+      <%= render "activity.html", user: @user,
+        conn: @conn %>
+    <% end %>
+    
+  </body>
+</html>

@@ -1,0 +1,185 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="<%= static_path(@conn, "/css/user_account.css") %>">
+  </head>
+
+  <body>
+    <div class="profile-top">
+      <div class="profile-image-container">
+        <div class="profile-image">
+          <%= if @user.avatar == nil do %>
+            <img src="/uploads/no_profile_image.gif" width=200 height=200/>
+            <%= else %>
+              <img src="<%= PlungerWeb.Avatar.url({@user.avatar, @user}) %>" width="200" height="200"/>
+          <% end %>
+        </div>
+        <div class="profile-image-info">
+          <div class="profile-image-info-data">
+            <%= reputation(@user) %>
+          </div>
+          <div class="profile-image-info-name">
+            REPUTATION
+          </div>
+
+        </div>
+      </div>
+      <div class="profile-overview">
+        <div class="profile-name">
+          <h2> <%= name(@user) %> </h2>
+        </div>
+        <%= if position(@user) != "" do %>
+          <div class="profile-position">
+             <%= position(@user) %>
+          </div>
+        <% end %>
+
+        <div class="profile-description">
+          <%= if description(@user) != "" do %>
+            <%= description(@user) %>
+          <%= else %>
+            Apparently, this user prefers to keep an air of mystery about them.
+          <% end %>
+        </div>
+      </div>
+    </div>
+    <div class="profile-mid">
+      <div class="profile-info-container">
+        <div class="profile-stats-container">
+
+          <div class="profile-stat">
+            <div class="profile-stat-data">
+              <%= length(posted_responses(@user)) %>
+            </div>
+            <div class="profile-stat-name">
+              answers
+            </div>
+          </div>
+
+          <div class="profile-stat">
+            <div class="profile-stat-data">
+              <%= length(posted_questions(@user)) %>
+            </div>
+            <div class="profile-stat-name">
+              questions
+            </div>
+          </div>
+
+          <div class="profile-stat">
+            <div class="profile-stat-data">
+              <%= length(posted_comments(@user)) %>
+            </div>
+            <div class="profile-stat-name">
+              comments
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="profile-categories-container">
+        <div class="profile-categories-title">
+          <div class="profile-categories-title-name">
+            Top Tags
+          </div>
+          <div class = "profile-categories-title-number" style="color: grey">
+            (<%= num_category_reputations(@user) %>)
+          </div>
+        </div>
+
+        <%= for category <- top_categories(@user) do %>
+          <div class="profile-top-category-tag">
+            <a class="profile-category-tag" href="<%= category_path(@conn, :show, category) %>">
+              <%= PlungerWeb.CategoryView.name(category) %>
+            </a>
+
+            <div class="profile-category-stat-tag">
+              <div class="profile-category-stat-tag-name">
+                POSTS
+              </div>
+              <div class="profile-category-stat-tag-data">
+                <%= num_posts_in_category(category, @user) %>
+              </div>
+            </div>
+
+            <div class="profile-category-stat-tag">
+              <div class="profile-category-stat-tag-name">
+                SCORE
+              </div>
+              <div class="profile-category-stat-tag-data">
+                <%= category_score(category, @user) %>
+              </div>
+            </div>
+
+          </div>
+        <% end %>
+      </div>
+    </div>
+    <div class="profile-bottom">
+      <div class="profile-posts-header">
+
+        <div class="profile-posts-left">
+          <div class="profile-posts-title">
+            Top Posts
+          </div>
+        </div>
+
+        <div class="profile-posts-filters">
+          <a class="profile-posts-filter" id="reputation" href = "<%= user_path(@conn, :index, sort: "reputation") %>">
+            All
+          </a>
+          <a class="profile-posts-filter" id="name" href = "<%= user_path(@conn, :index, sort: "name") %>">
+            Questions
+          </a>
+          <a class="profile-posts-filter" id="admins" href = "<%= user_path(@conn, :index, sort: "admins") %>">
+            Answers
+          </a>
+        </div>
+
+        <div class="bottom-line">
+          <hr>
+        </div>
+      </div>
+      <div class="profile-posts">
+        <%= for post <- vote_sorted_posts(@user) do %>
+          <div class="filterDiv profile-post">
+            <div class="profile-post-type">
+              <%= if is_question(post) do %>
+                Q
+              <%= else %>
+                A
+              <% end %>
+            </div>
+
+            <div class="profile-post-votes">
+              <%= if is_or_has_best_response(post) do %>
+                <div class="profile-post-votes-box" style="background-color: #5FBB7D; color: #FFFFFF; border: 1px solid #5FBB7D; border-radius: 3px;">
+                  <%= vote_count(post) %>
+                </div>
+              <%= else %>
+                <div class="profile-post-votes-box" style="border: 1px solid #BABABA; border-radius: 3px;">
+                  <%= vote_count(post) %>
+                </div>
+              <% end %>
+            </div>
+
+            <div class="profile-post-question-title">
+              <%= if is_question(post) do %>
+                <a href = "<%= question_path(@conn, :show, post) %>">
+                  <%= title(post) %>
+                </a>
+              <%= else %>
+                <a href = "<%= question_path(@conn, :show, parent_question(post)) %>">
+                  <%= parent_question(post) |> title() %>
+                </a>
+              <% end %>
+            </div>
+
+            <div class="profile-post-date">
+              <%= date_posted(post) %>
+            </div>
+          </div>
+          <hr>
+        <% end %>
+      </div>
+    </div>
+  </body>
+</html>

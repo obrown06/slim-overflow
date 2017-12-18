@@ -269,6 +269,12 @@ defmodule Plunger.Responses do
     response.description
   end
 
+  # Returns the description field of the given response
+
+  def is_best(%Response{} = response) do
+    response.is_best
+  end
+
   # Returns the set of responses associated with the given user
 
   def user_responses(%User{} = user) do

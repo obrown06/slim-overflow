@@ -12,6 +12,8 @@ defmodule PlungerWeb.UserView do
   alias Plunger.Categories.Category
   alias Plunger.Accounts.User
   alias PlungerWeb.CommentView
+  alias PlungerWeb.ResponseView
+  alias PlungerWeb.QuestionView
   import Ecto.Query, only: [from: 2]
 
   def posted_questions(%User{} = user) do
@@ -81,7 +83,81 @@ defmodule PlungerWeb.UserView do
   def top_categories(%User{} = user) do
     user
       |> Accounts.reputation_sorted_categories()
-      |> Enum.slice(0, 2)
+      |> Enum.slice(0, 3)
+      |> Enum.reverse()
+  end
+
+  def position(%User{} = user) do
+    Accounts.position(user)
+  end
+
+  def description(%User{} = user) do
+    Accounts.description(user)
+  end
+
+  def num_category_reputations(%User{} = user) do
+    length(Accounts.reputations(user))
+  end
+
+  def category_score(%Category{} = category, %User{} = user) do
+    Accounts.get_category_reputation(user, category)
+      |> Accounts.amount()
+  end
+
+  def num_posts_in_category(%Category{} = category, %User{} = user) do
+    responses = Accounts.responses(user)
+    questions = Accounts.questions(user)
+
+    responses = Enum.filter(responses, fn(response) -> response |> Responses.parent_question() |> Questions.tagged_with(category) end)
+    questions = Enum.filter(questions, fn(question) -> question |> Questions.tagged_with(category) end)
+
+    length(responses) + length(questions)
+
+  end
+
+  def vote_sorted_posts(%User{} = user) do
+    posts = Questions.user_questions(user) ++ Responses.user_responses(user)
+    Enum.sort_by(posts, fn(post) -> vote_count(post) end) |> Enum.reverse()
+  end
+
+  def vote_count(%Question{} = question) do
+    PlungerWeb.QuestionView.vote_count(question)
+  end
+
+  def vote_count(%Response{} = response) do
+    PlungerWeb.ResponseView.vote_count(response)
+  end
+
+  def is_question(%Question{} = question) do
+    true
+  end
+
+  def is_question(non_question) do
+    false
+  end
+
+  def is_or_has_best_response(%Question{} = question) do
+    Responses.best_response(question) != nil
+  end
+
+  def is_or_has_best_response(%Response{} = response) do
+    Responses.is_best(response)
+  end
+
+  def title(%Question{} = question) do
+    Questions.title(question)
+  end
+
+  def parent_question(%Response{} = response) do
+    Responses.parent_question(response)
+  end
+
+  def date_posted(%Response{} = response) do
+    ResponseView.date_posted(response)
+  end
+
+  def date_posted(%Question{} = question) do
+    QuestionView.date_posted(question)
   end
 
 

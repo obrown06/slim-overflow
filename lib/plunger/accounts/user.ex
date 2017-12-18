@@ -12,9 +12,8 @@ defmodule Plunger.Accounts.User do
     field :email, :string
     field :name, :string
     field :reputation, :integer, default: 0
-    #field :username, :string
-    #field :password, :string, virtual: true
-    #field :password_hash, :string
+    field :position, :string
+    field :description, :string
     field :is_admin, :boolean, default: false
     coherence_schema()
     coherence_assent_schema()
@@ -37,7 +36,7 @@ defmodule Plunger.Accounts.User do
     timestamps()
   end
 
-  @required_fields ~w(name email)
+  @required_fields ~w(name email position description)
   @optional_fields ~w(is_admin)
 
   @required_file_fields ~w()

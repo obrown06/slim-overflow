@@ -18,6 +18,10 @@ defmodule PlungerWeb.ResponseView do
     Responses.time_posted(response) |> PlungerWeb.ViewHelpers.format_time()
   end
 
+  def date_posted(%Response{} = response) do
+    Responses.time_posted(response) |> PlungerWeb.ViewHelpers.format_date()
+  end
+
   def vote_count(%Response{} = response) do
     Responses.vote_count(response)
   end

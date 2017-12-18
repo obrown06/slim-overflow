@@ -35,15 +35,18 @@ defmodule PlungerWeb.UserController do
   #  end
   #end
 
-  def show(conn, %{"id" => id}) do
+  def show(conn, params) do
+    id = Map.get(params, "id")
     current_user = Coherence.current_user(conn)
     user = Accounts.get_user!(id)
-    IO.inspect(user)
-    if user.id == current_user.id do
-      render(conn, "my_account.html", user: user)
-    else
-      render(conn, "show.html", user: user)
+
+    tab = Map.get(params, "tab")
+
+    if tab == nil do
+      tab = "profile"
     end
+
+    render(conn, "show.html", user: user, tab: tab)
   end
 
   def edit(conn, %{"id" => id}) do

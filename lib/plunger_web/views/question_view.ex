@@ -28,6 +28,10 @@ defmodule PlungerWeb.QuestionView do
     Questions.time_posted(question) |> PlungerWeb.ViewHelpers.format_time()
   end
 
+  def date_posted(%Question{} = question) do
+    Questions.time_posted(question) |> PlungerWeb.ViewHelpers.format_date()
+  end
+
   def title(%Question{} = question) do
     Questions.title(question)
   end
