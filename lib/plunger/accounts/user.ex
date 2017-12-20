@@ -29,6 +29,8 @@ defmodule Plunger.Accounts.User do
     has_many :category_views, Plunger.Categories.CategoryView, on_delete: :delete_all
     has_many :category_reputations, Plunger.Accounts.CategoryReputation, on_delete: :delete_all
 
+    has_many :profile_views_received, Plunger.Accounts.ProfileView, foreign_key: :viewed_user_id, on_delete: :delete_all
+    has_many :profiles_viewed, Plunger.Accounts.ProfileView, foreign_key: :viewing_user_id, on_delete: :delete_all
     has_many :comments, Plunger.Comments.Comment, on_delete: :delete_all
     has_many :comment_votes, Plunger.Comments.CommentVote, on_delete: :delete_all
 

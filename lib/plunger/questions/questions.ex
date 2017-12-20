@@ -384,11 +384,17 @@ defmodule Plunger.Questions do
       |> Repo.all
   end
 
-  # Returns the set of questions associated with the given user
+  # Returns the number of responses associated with the given question
 
   def num_responses(%Question{} = question) do
+    question |> responses() |> length()
+  end
+
+  # Returns the set of responses associated with the given question
+
+  def responses(%Question{} = question) do
     question = Repo.preload(question, :responses)
-    length(question.responses)
+    question.responses
   end
 
   # Returns true if question is less than one day old; false otherwise

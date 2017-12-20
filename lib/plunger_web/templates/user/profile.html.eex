@@ -4,6 +4,52 @@
   </head>
 
   <body>
+
+    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript">
+
+      function filterSelection(c) {
+        var x, i;
+        x = document.getElementsByClassName("profile-post");
+        if (c == "all") c = "";
+        // Add the "show" class (display:block) to the filtered elements, and remove the "show" class from the elements that are not selected
+        for (i = 0; i < x.length; i++) {
+          w3RemoveClass(x[i], "show");
+          if (x[i].className.indexOf(c) > -1) w3AddClass(x[i], "show");
+        }
+      }
+
+      // Show filtered elements
+      function w3AddClass(element, name) {
+        var i, arr1, arr2;
+        arr1 = element.className.split(" ");
+        arr2 = name.split(" ");
+        for (i = 0; i < arr2.length; i++) {
+          if (arr1.indexOf(arr2[i]) == -1) {
+            element.className += " " + arr2[i];
+          }
+        }
+      }
+
+      // Hide elements that are not selected
+      function w3RemoveClass(element, name) {
+        var i, arr1, arr2;
+        arr1 = element.className.split(" ");
+        arr2 = name.split(" ");
+        for (i = 0; i < arr2.length; i++) {
+          while (arr1.indexOf(arr2[i]) > -1) {
+            arr1.splice(arr1.indexOf(arr2[i]), 1);
+          }
+        }
+        element.className = arr1.join(" ");
+      }
+
+      $(document).ready(function(){
+        filterSelection("all")
+      });
+
+    </script>
+
     <div class="profile-top">
       <div class="profile-image-container">
         <div class="profile-image">
@@ -74,6 +120,17 @@
           </div>
 
         </div>
+
+        <div class="profile-stats-container-bottom">
+
+          <div class="profile-stat-name" style="margin-top: 10px;">
+            Member for <%= age(@user) %>
+          </div>
+
+          <div class="profile-stat-name" style="margin-top: 10px;">
+            <%= num_profile_views(@user) %> profile <%= pluralize(num_profile_views(@user), "view") %>
+          </div>
+        </div>
       </div>
       <div class="profile-categories-container">
         <div class="profile-categories-title">
@@ -84,33 +141,38 @@
             (<%= num_category_reputations(@user) %>)
           </div>
         </div>
+        <div class="profile-categories-list">
+          <%= for category <- top_categories(@user) do %>
+            <div class="profile-top-category-tag">
+              <a class="profile-category-tag" href="<%= question_path(@conn, :index, selected_category: category) %>">
+                <%= PlungerWeb.CategoryView.name(category) %>
+              </a>
 
-        <%= for category <- top_categories(@user) do %>
-          <div class="profile-top-category-tag">
-            <a class="profile-category-tag" href="<%= category_path(@conn, :show, category) %>">
-              <%= PlungerWeb.CategoryView.name(category) %>
-            </a>
+              <div class="profile-category-stat-tag">
+                <div class="profile-category-stat-tag-name">
+                  POSTS
+                </div>
+                <div class="profile-category-stat-tag-data">
+                  <%= num_posts_in_category(category, @user) %>
+                </div>
+              </div>
 
-            <div class="profile-category-stat-tag">
-              <div class="profile-category-stat-tag-name">
-                POSTS
+              <div class="profile-category-stat-tag">
+                <div class="profile-category-stat-tag-name">
+                  SCORE
+                </div>
+                <div class="profile-category-stat-tag-data">
+                  <%= category_score(category, @user) %>
+                </div>
               </div>
-              <div class="profile-category-stat-tag-data">
-                <%= num_posts_in_category(category, @user) %>
-              </div>
+
             </div>
+          <% end %>
+        </div>
 
-            <div class="profile-category-stat-tag">
-              <div class="profile-category-stat-tag-name">
-                SCORE
-              </div>
-              <div class="profile-category-stat-tag-data">
-                <%= category_score(category, @user) %>
-              </div>
-            </div>
-
-          </div>
-        <% end %>
+        <a class="profile-categories-link" href="<%= user_path(@conn, :show, @user, tab: "categories") %>">
+          View all categories -->
+        </a>
       </div>
     </div>
     <div class="profile-bottom">
@@ -123,15 +185,15 @@
         </div>
 
         <div class="profile-posts-filters">
-          <a class="profile-posts-filter" id="reputation" href = "<%= user_path(@conn, :index, sort: "reputation") %>">
+          <btn class="profile-posts-filter" onclick="filterSelection('all')">
             All
-          </a>
-          <a class="profile-posts-filter" id="name" href = "<%= user_path(@conn, :index, sort: "name") %>">
+          </btn>
+          <btn class="profile-posts-filter" onclick="filterSelection('profile-question')">
             Questions
-          </a>
-          <a class="profile-posts-filter" id="admins" href = "<%= user_path(@conn, :index, sort: "admins") %>">
+          </btn>
+          <btn class="profile-posts-filter" onclick="filterSelection('profile-answer')">
             Answers
-          </a>
+          </btn>
         </div>
 
         <div class="bottom-line">
@@ -140,46 +202,82 @@
       </div>
       <div class="profile-posts">
         <%= for post <- vote_sorted_posts(@user) do %>
-          <div class="filterDiv profile-post">
-            <div class="profile-post-type">
-              <%= if is_question(post) do %>
+          <%= if is_question(post) do %>
+            <div class="profile-post profile-question">
+              <div class="profile-post-type">
                 Q
-              <%= else %>
-                A
-              <% end %>
-            </div>
+              </div>
 
-            <div class="profile-post-votes">
-              <%= if is_or_has_best_response(post) do %>
-                <div class="profile-post-votes-box" style="background-color: #5FBB7D; color: #FFFFFF; border: 1px solid #5FBB7D; border-radius: 3px;">
-                  <%= vote_count(post) %>
-                </div>
-              <%= else %>
-                <div class="profile-post-votes-box" style="border: 1px solid #BABABA; border-radius: 3px;">
-                  <%= vote_count(post) %>
-                </div>
-              <% end %>
-            </div>
+              <div class="profile-post-votes">
+                <%= if is_or_has_best_response(post) do %>
+                  <div class="profile-post-votes-box" style="background-color: #5FBB7D; color: #FFFFFF; border: 1px solid #5FBB7D; border-radius: 3px;">
+                    <%= vote_count(post) %>
+                  </div>
+                <%= else %>
+                  <div class="profile-post-votes-box" style="border: 1px solid #BABABA; border-radius: 3px;">
+                    <%= vote_count(post) %>
+                  </div>
+                <% end %>
+              </div>
 
-            <div class="profile-post-question-title">
-              <%= if is_question(post) do %>
+              <div class="profile-post-question-title">
                 <a href = "<%= question_path(@conn, :show, post) %>">
                   <%= title(post) %>
                 </a>
-              <%= else %>
+              </div>
+
+              <div class="profile-post-date">
+                <%= date_posted(post) %>
+              </div>
+              <div class="profile-post-bottom-line">
+                <hr>
+              </div>
+            </div>
+          <%= else %>
+            <div class="profile-post profile-answer">
+              <div class="profile-post-type">
+                A
+              </div>
+
+              <div class="profile-post-votes">
+                <%= if is_or_has_best_response(post) do %>
+                  <div class="profile-post-votes-box" style="background-color: #5FBB7D; color: #FFFFFF; border: 1px solid #5FBB7D; border-radius: 3px;">
+                    <%= vote_count(post) %>
+                  </div>
+                <%= else %>
+                  <div class="profile-post-votes-box" style="border: 1px solid #BABABA; border-radius: 3px;">
+                    <%= vote_count(post) %>
+                  </div>
+                <% end %>
+              </div>
+
+              <div class="profile-post-question-title">
                 <a href = "<%= question_path(@conn, :show, parent_question(post)) %>">
                   <%= parent_question(post) |> title() %>
                 </a>
-              <% end %>
-            </div>
+              </div>
 
-            <div class="profile-post-date">
-              <%= date_posted(post) %>
+              <div class="profile-post-date">
+                <%= date_posted(post) %>
+              </div>
+              <div class="profile-post-bottom-line">
+                <hr>
+              </div>
             </div>
-          </div>
-          <hr>
+          <% end %>
         <% end %>
       </div>
+
+      <div class="profile-question-answer-link">
+        View all
+        <a href="<%= user_path(@conn, :show, @user, tab: "questions") %>">
+          questions
+        </a>
+        and
+        <a href="<%= user_path(@conn, :show, @user, tab: "answers") %>">
+          answers
+        </a>
+        -->
     </div>
   </body>
 </html>

@@ -1,0 +1,84 @@
+<html>
+  <head>
+  </head>
+
+  <body>
+
+    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+          $("#" + "<%= @sort %>").css('border-bottom', '1px solid #F79C56');
+          $("#" + "<%= @sort %>").css('font-weight', '500');
+          $("#" + "<%= @sort %>").css('color', '#3B4045');
+          $("#" + "<%= @sort %>").css('height', '50.5px');
+
+
+          $("#" + "<%= @sort %>").hover(function() {
+            $(this).css('color', '#0C0D0E');
+            $(this).css('border-bottom', '1px solid #FE9B4C');
+          })
+        });
+
+    </script>
+    <div class="profile-bottom">
+      <div class="profile-posts-header">
+
+        <div class="profile-posts-left">
+          <div class="profile-posts-title" style="color:grey;">
+            <%= length(posted_responses(@user)) %>
+          </div>
+          <div class="profile-posts-title" style="font-weight:450">
+            Answers
+          </div>
+        </div>
+
+        <div class="profile-posts-filters">
+          <a class="profile-posts-sort" id="votes" href="<%= user_path(@conn, :show, @user, tab: "answers", sort: "votes") %>">
+            votes
+          </a>
+          <a class="profile-posts-sort" id="newest" href="<%= user_path(@conn, :show, @user, tab: "answers", sort: "newest") %>">
+            newest
+          </a>
+        </div>
+
+        <div class="bottom-line">
+          <hr>
+        </div>
+      </div>
+      <div class="profile-posts">
+        <table>
+        <%= for answer <- sorted_answers(@user, @sort) do %>
+          <tr>
+            <div class="profile-post-votes">
+              <%= if is_or_has_best_response(answer) do %>
+                <div class="profile-post-votes-box" style="background-color: #5FBB7D; color: #FFFFFF; border: 1px solid #5FBB7D; border-radius: 3px;">
+                  <%= vote_count(answer) %>
+                </div>
+              <%= else %>
+                <div class="profile-post-votes-box" style="border: 1px solid #BABABA; border-radius: 3px;">
+                  <%= vote_count(answer) %>
+                </div>
+              <% end %>
+            </div>
+
+
+
+            <div class="profile-post-question-title">
+              <a href = "<%= question_path(@conn, :show, parent_question(answer)) %>">
+                <%= parent_question(answer) |> title() %>
+              </a>
+            </div>
+
+            <div class="profile-post-date">
+              <%= date_posted(answer) %>
+            </div>
+            <div class="profile-post-bottom-line">
+              <hr>
+            </div>
+          <tr>
+        <% end %>
+      </table>
+      </div>
+  </body>
+</html>

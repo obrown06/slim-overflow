@@ -40,13 +40,20 @@ defmodule PlungerWeb.UserController do
     current_user = Coherence.current_user(conn)
     user = Accounts.get_user!(id)
 
+    Accounts.view_profile!(Accounts.id(current_user), id)
+
     tab = Map.get(params, "tab")
+    sort = Map.get(params, "sort")
 
     if tab == nil do
       tab = "profile"
     end
 
-    render(conn, "show.html", user: user, tab: tab)
+    if sort == nil do
+      sort = "votes"
+    end
+
+    render(conn, "show.html", user: user, tab: tab, sort: sort)
   end
 
   def edit(conn, %{"id" => id}) do

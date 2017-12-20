@@ -84,7 +84,7 @@
                 </div>
                 <div class="user-stats">
                   <%= for category <- top_categories(user) do %>
-                    <a class="user-index-categories" href="<%= category_path(@conn, :show, category) %>">
+                    <a class="user-index-categories" href="<%= question_path(@conn, :index, selected_category: category) %>">
                       <%= name(category) <> " " %>
                     </a>
                   <% end %>

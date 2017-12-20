@@ -17,6 +17,7 @@ defmodule Plunger.Accounts do
   alias Plunger.Responses.Response
   alias Plunger.Categories
   alias Plunger.Categories.Category
+  alias Plunger.Accounts.ProfileView
 
   @question_rep_boost 5
   @posting_user_upvoted_response_rep_boost 10
@@ -439,6 +440,43 @@ defmodule Plunger.Accounts do
 
   def description(%User{} = user) do
     user.description
+  end
+
+  alias Plunger.Accounts.ProfileView
+
+  @doc """
+    Creates a profile_view for the given viewing and receiving users if one does not exist already.
+  """
+
+  def view_profile!(viewing_user_id, viewed_user_id) do
+    if get_profile_view(viewing_user_id, viewed_user_id) == nil do
+      create_profile_view!(viewing_user_id, viewed_user_id)
+    end
+  end
+
+  #Retrieves a ProfileView associated with the given 'viewing_user_id' and 'viewed_user_id'.
+  #If no ProfileView is found, returns nil.
+
+  defp get_profile_view(viewing_user_id, viewed_user_id) do
+    Repo.one(from pv in ProfileView, where: pv.viewing_user_id == ^viewing_user_id and pv.viewed_user_id == ^viewed_user_id)
+  end
+
+  def create_profile_view!(viewing_user_id, viewed_user_id) do
+    viewing_user = get_user!(viewing_user_id)
+    viewed_user = get_user!(viewed_user_id)
+
+    viewing_user
+      |> Ecto.build_assoc(:profiles_viewed)
+      |> ProfileView.changeset()
+      |> Ecto.Changeset.put_assoc(:viewed_user, viewed_user, :required)
+      |> Repo.insert!()
+  end
+
+
+  # Returns the set of category views associated with the given category
+
+  def list_profile_views(%User{} = user) do
+    (from pv in ProfileView, where: pv.viewed_user_id == ^user.id) |> Repo.all
   end
 
 end

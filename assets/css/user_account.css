@@ -27,6 +27,10 @@
   display: inline-block;
 }
 
+.activity-list {
+  margin-top: -25px;
+}
+
 .btn{
 	text-decoration:none;
 	color:#333333;
@@ -155,13 +159,11 @@
   height: 200px;
   width: 250px;
   display: inline-block;
-  border: solid;
 }
 
 .profile-mid {
   display: inline-block;
   width: 100%;
-  border: solid;
   margin-top: 30px;
 }
 
@@ -171,9 +173,17 @@
   display: inline-block;
 }
 
+.profile-categories-list {
+  margin-bottom: 20px;
+}
+
+.profile-question-answer-link {
+  float: right;
+}
+
 .profile-categories-container {
   width: 420px;
-  height: 200px;
+  height: 250px;
   display: inline-block;
   margin-left: 20px;
   vertical-align: top;
@@ -211,8 +221,11 @@
 
 .profile-posts-header {
   display: inline-block;
-  border: solid;
   width: 100%;
+}
+
+.profile-posts {
+  margin-top: -8px;
 }
 
 .profile-posts-left {
@@ -243,12 +256,43 @@
   color: grey;
 }
 
-.profile-post {
+.profile-posts-filter:hover {
+  border-bottom: 2px solid #FBCEAB;
+  margin-top: -2px;
+  height: 58px;
+  text-decoration: none;
+  color: #3B4045;
+}
+
+.profile-posts-sort {
+  padding-right: 8px;
+  padding-left: 8px;
+  margin-left: 5px;
   display: inline-block;
+  height: 50px;
+  line-height: 63px;
+  color: grey;
+}
+
+.profile-posts-sort:hover {
+  border-bottom: 1px solid #FBCEAB;
+  margin-bottom: -1px;
+  height: 50px;
+  text-decoration: none;
+  color: #3B4045;
+}
+
+.profile-post {
+  display: none;
   width: 100%;
-  height: 20px;
+  height: 60px;
   text-align: middle;
   line-height: 20px;
+  margin-bottom: 2px;
+}
+
+.show {
+  display: inline-block;
 }
 
 .profile-post-type {
@@ -276,14 +320,6 @@
   float: right;
   margin-right: 5px;
   color: #777777;
-}
-
-.profile-posts-filter:hover {
-  border-bottom: 2px solid #FBCEAB;
-  margin-top: -2px;
-  height: 58px;
-  text-decoration: none;
-  color: #3B4045;
 }
 
 .profile-category-stat-tag {
@@ -337,4 +373,145 @@
 
 .profile-top {
   display: inline-block;
+}
+
+.activity-top {
+  display: inline-block;
+  height: 200px;
+  width: 100%;
+  margin-bottom: 40px;
+}
+
+.activity-reputation-block {
+  background-color: #FAFAFB;
+  border: 1px solid #E4E6E8;
+  width: 300px;
+  height: 200px;
+}
+
+.activity-reputation-top {
+  margin-top: 15px;
+  margin-left: 15px;
+  width: 100px;
+  height: 50px;
+}
+
+.activity-reputation-name {
+  font-size: x-small;
+  color: #838D94;
+}
+
+.activity-reputation-data {
+  font-size: x-large;
+}
+
+.activity-reputation-bottom {
+  margin-top: 40px;
+  height: 60px;
+}
+
+.activity-category-intro {
+  margin-left: 10px;
+  margin-bottom: 7px;
+  color: #535A60;
+  font-size: small;
+}
+
+.profile-post-question-votes {
+  display: inline-block;
+  margin-right: 20px;
+  vertical-align: middle;
+  text-align:
+}
+
+.profile-post-question-votes-name {
+  font-size: x-small;
+  color: #848D95;
+}
+
+.profile-post-question-votes-data {
+  text-align: center;
+  font-size: large;
+  color: #6A737C;
+}
+
+.profile-post-question-answers-box {
+  width: 60px;
+  height: 50px;
+  vertical-align: middle;
+  display: inline-block;
+  text-align: center;
+  line-height: 40px;
+  margin-right: 20px;
+}
+
+.profile-post-question-answers-box-data {
+  font-size: large;
+  margin-bottom: -21px;
+  margin-top: -2px;
+}
+
+.profile-post-question-answers-box-name {
+  font-size: x-small;
+}
+
+.profile-post-question-views {
+  display: inline-block;
+  margin-right: 20px;
+  text-align: center;
+  vertical-align: middle;
+  color: #9B764F;
+}
+
+.profile-post-question-views-data {
+  font-size: large;
+}
+
+.profile-post-question-views-name {
+  font-size: x-small;
+}
+
+.profile-post-question-date {
+  display: inline-block;
+  float: right;
+  margin-right: 5px;
+  margin-top: 15px;
+  color: #777777;
+}
+
+.activity-category-cell {
+  width: 400px;
+}
+
+.activity-category-row {
+  height: 40px;
+  width: 100%;
+}
+
+.activity-category-index-list {
+  margin-top: -30px;
+}
+
+.activity-category-reputation {
+  display: inline-block;
+  width: 20px;
+  color: #535A60;
+}
+
+.activity-category-tag {
+  background-color: #E0EAF1;
+  color: #479FE0;
+  padding: 4px;
+  display: inline-block;
+  margin-right: 4px;
+}
+
+.activity-category-num-questions {
+  display: inline-block;
+  color: #6A737C;
+}
+
+.profile-stats-container-bottom {
+  height: 200px;
+  width: 100%;
 }

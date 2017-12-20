@@ -8,6 +8,7 @@ defmodule PlungerWeb.CommentView do
   alias PlungerWeb.QuestionView
   alias Plunger.Accounts
   alias Plunger.Repo
+  alias PlungerWeb.UserView
   import Ecto.Query, only: [from: 2]
 
 
