@@ -1,4 +1,18 @@
-# SlimOverflow
+# slim-overflow
+
+**slim-overflow** is a web application which implements many (but not all) of the core
+functionality of [Stack Overflow] (https://stackoverflow.com/). It is written in [Elixir] (https://github.com/elixir-lang/elixir) and built on the [Phoenix Framework]
+(https://github.com/phoenixframework/phoenix).
+
+Some of the features it supports:
+
+  * User accounts (including auth, OAuth, email verification, etc.)
+  * CRUD operations for questions, responses, nested comments, categories
+  * User reputation, determined by upvotes, downvotes, and response "promotions"
+  * Tracking page views for profiles, questions, and categories
+  * Live chatrooms on each question page implemented using Phoenix Channels
+
+# Installation
 
 To start your Phoenix server:
 

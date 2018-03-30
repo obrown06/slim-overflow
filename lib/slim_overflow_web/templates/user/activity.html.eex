@@ -41,7 +41,7 @@
             <%= reputation(@user) %>
           </div>
         </div>
-
+        <%= if length(top_categories(@user)) > 0 do %>
         <div class="activity-reputation-bottom">
           <div class="activity-category-intro">
             Top Category
@@ -51,6 +51,7 @@
           </a>
 
         </div>
+        <% end %>
       </div>
     </div>
 

@@ -26,7 +26,6 @@ defmodule SlimOverflowWeb.UserView do
   end
 
   def received_comments(%User{} = user) do
-
     posts = [posted_questions(user), posted_responses(user), posted_comments(user)]
     Kernel.length(posts)
 
