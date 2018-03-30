@@ -1,6 +1,0 @@
-<div class="jumbotron">
-  <h2><%= gettext "Welcome to %{name}!", name: "Plunger" %></h2>
-  <p class="lead">A community message board that <br />doubles as a toilet-cleaning utility.</p>
-
-  <span><%= link "Questions", to: question_path(@conn, :index) %></span>
-</div>

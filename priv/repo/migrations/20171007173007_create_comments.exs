@@ -1,4 +1,4 @@
-defmodule Plunger.Repo.Migrations.CreateComments do
+defmodule SlimOverflow.Repo.Migrations.CreateComments do
   use Ecto.Migration
 
   def change do

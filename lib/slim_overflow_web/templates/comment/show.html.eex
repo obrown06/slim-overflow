@@ -1,0 +1,118 @@
+<html>
+
+<head>
+  <link rel="stylesheet" href="/assets/css/response.css">
+</head>
+
+<body>
+
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+      $("#upvote-comment").attr("id", "upvote-comment" + "<%= id(@comment) %>");
+      $("#downvote-comment").attr("id", "downvote-comment" + "<%= id(@comment) %>");
+      $("#comment-vote-count").attr("id", "comment-vote-count" + "<%= id(@comment) %>");
+      $("#comment-on-comment").attr("id", "comment-on-comment" + "<%= id(@comment) %>");
+      $("#comment-on-comment-form").attr("id", "comment-on-comment-form" + "<%= id(@comment) %>");
+      $("#comment-on-comment-form" + "<%= id(@comment) %>").hide();
+      var comment_button = $("#comment-on-comment" + "<%= id(@comment) %>");
+
+      comment_button.css({'background': 'none'})
+      comment_button.css({'border': 'none'})
+      comment_button.css({'left': '40px'})
+      comment_button.css({'color': '#357AB8'})
+
+      $("#upvote-comment" + "<%= id(@comment) %>").click(function() {
+        $.ajax({
+            url: "<%= comment_path(@conn, :upvote, @comment, question_id: @question.id) %>",
+            type: "GET",
+            dataType: "json",
+            success: function(data){
+                if (data.upvote_successful === true)
+                {
+                  var count = parseInt($('#comment-vote-count' + "<%= id(@comment) %>").text());
+                  $('#comment-vote-count' + "<%= id(@comment) %>").text(count + 1)
+                }
+            },
+            error: function(error){
+                 console.log("Error:");
+                 console.log(error);
+            }
+        });
+      });
+
+      $("#downvote-comment" + "<%= id(@comment) %>").click(function() {
+        $.ajax({
+            url: "<%= comment_path(@conn, :downvote, @comment, question_id: @question.id) %>",
+            type: "GET",
+            dataType: "json",
+            success: function(data){
+                if (data.downvote_successful === true)
+                {
+                  var count = parseInt($('#comment-vote-count' + "<%= id(@comment) %>").text());
+                  $('#comment-vote-count' + "<%= id(@comment) %>").text(count - 1)
+                }
+            },
+            error: function(error){
+                 console.log("Error:");
+                 console.log(error);
+            }
+        });
+      });
+
+      $("#comment-on-comment" + "<%= id(@comment) %>").click(function() {
+        $('#comment-on-comment-form' + "<%= id(@comment) %>").show();
+      });
+    });
+</script>
+
+<div class="comment-top-line">
+  <hr>
+</div>
+<div class="comment">
+  <div class="comment-left">
+    <div class="voting-block">
+      <div class="upvote-small" id="upvote-comment"></div>
+      <div class="vote-count-small" id="comment-vote-count">
+          <%= vote_count(@comment) %>
+      </div>
+      <div class="downvote-small" id="downvote-comment"></div>
+    </div>
+  </div>
+  <div class="comment-right">
+    <div class="comment-body">
+      <%= @comment.description %>
+    </div>
+
+    <div class="comment-posting-info">
+
+      <a href="user_path(@conn, :show, associated_user(@comment)) %>">
+        -
+        <%= associated_user_name(@comment) %>
+      </a>
+
+      <div class="comment-time-posted">
+        <%= time_posted(@comment) %>
+      </div>
+      <%= " • " %>
+      <div class="comment-on-comment" id="comment-on-comment">
+        reply
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="comment-on-comment-form">
+  <%= render SlimOverflowWeb.CommentView, "form.html", conn: @conn, question: @question,
+    comment_changeset: @comment_changeset, action: comment_path(@conn, :create, parent_type: "comment", question_id: @question.id, comment_id: @comment.id) %>
+</div>
+
+<%= for comment <- SlimOverflowWeb.CommentView.list_comments(@comment) do %>
+  <div class="comment-container">
+    <%= render SlimOverflowWeb.CommentView, "show.html", comment_changeset: @comment_changeset, conn: @conn, comment: comment, question: @question  %>
+  </div>
+<% end %>
+
+</body>
+</html>

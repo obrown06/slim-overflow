@@ -1,4 +1,4 @@
-defmodule Plunger.Repo.Migrations.CreateProfileView do
+defmodule SlimOverflow.Repo.Migrations.CreateProfileView do
   use Ecto.Migration
 
   def change do

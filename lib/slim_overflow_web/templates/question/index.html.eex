@@ -1,0 +1,156 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="<%= static_path(@conn, "/css/question-index.css") %>">
+  </head>
+  <body>
+    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+          if ("<%= @sort %>" != "nil") {
+            $("#" + "<%= @sort %>").css('border-top', 'solid #F69B55');
+            $("#" + "<%= @sort %>").css('border-right', 'solid #EEEEEE');
+            $("#" + "<%= @sort %>").css('border-left', 'solid #EEEEEE');
+            $("#" + "<%= @sort %>").css('border-bottom', 'solid white');
+            $("#" + "<%= @sort %>").css('border-width', '2px 1px 1px 1px');
+
+            $(".index-sort").hover(function() {
+              $(this).css('height', '57px');
+            })
+
+            $("#" + "<%= @sort %>").hover(function() {
+              $(this).css('border-top', 'solid #F69B55');
+              $(this).css('border-right', 'solid #EEEEEE');
+              $(this).css('border-left', 'solid #EEEEEE');
+              $(this).css('border-bottom', 'solid white');
+              $(this).css('border-width', '2px 1px 1px 1px');
+              $(this).css('height', '58px');
+              $(this).css('margin-left', '5px');
+              $(this).css('margin-right', '0px');
+              $(this).css('margin-top', '0px');
+            })
+          }
+
+        });
+
+    </script>
+
+
+
+    <div class="index-header">
+
+      <div class="index-header-left">
+        <div class="index-page-title">
+          <%= if @selected_category != "all" do %>
+            Tagged Questions
+            <% else %>
+            All Questions
+            <% end %>
+        </div>
+      </div>
+
+      <div class="index-sorts">
+        <a class="index-sort" id="votes" href = "<%= question_path(@conn, :index, sort: "votes", selected_category: @selected_category) %>">
+          votes
+        </a>
+        <a class="index-sort" id="responses" href = "<%= question_path(@conn, :index, sort: "responses", selected_category: @selected_category) %>">
+          responses
+        </a>
+        <a class="index-sort" id="views" href = "<%= question_path(@conn, :index, sort: "views", selected_category: @selected_category) %>">
+          views
+        </a>
+        <a class="index-sort" id="date" href = "<%= question_path(@conn, :index, sort: "date", selected_category: @selected_category) %>">
+          newest
+        </a>
+      </div>
+      <div class="bottom-line">
+        <hr>
+      </div>
+    </div>
+    <div class="index-question-list">
+
+      <%= if @selected_category != "all" do %>
+        <%= render SlimOverflowWeb.CategoryView, "index_header.html", category: Categories.get_category!(String.to_integer(@selected_category)),
+          conn: @conn %>
+      <% end %>
+
+      <%= for question <- sort(@questions, @sort) do %>
+        <div class="index-question">
+          <div class="index-left-block">
+
+            <div class="index-votes">
+              <div class="index-number">
+                <%= vote_count(question) %>
+              </div>
+              <div class="index-type">
+                votes
+              </div>
+            </div>
+
+            <div class="index-answers">
+              <div class="index-number">
+                <%= num_responses(question) %>
+              </div>
+              <div class="index-type">
+                answers
+              </div>
+            </div>
+
+            <div class="index-views">
+              <%= nv = num_views(question) %>
+              <%= if nv != 1 do %>
+                    views
+              <% else %>
+                  view
+              <% end %>
+
+            </div>
+
+          </div>
+
+          <div class="index-right-block">
+            <a class="index-title" href = "<%= question_path(@conn, :show, question) %>">
+              <%= title(question) %>
+            </a>
+
+            <div class="index-body">
+              <%= truncated_body(question) %>
+            </div>
+
+            <div class="index-category-tags">
+              <%= for category <- list_categories(question) do %>
+                <div class="category-tag">
+                  <%= link Categories.name(category), to: question_path(@conn, :index, selected_category: category) %>
+                </div>
+              <% end %>
+            </div>
+
+            <div class="index-user-tag-container">
+              <div class="index-question-user-tag">
+                <div class = "index-user-time-posted">
+                  asked <%= time_posted(question) %>
+                </div>
+                <div class = "index-user-img">
+                  <img src="<%= SlimOverflowWeb.Avatar.url({user(question).avatar, user(question)}) %>" width="50" height="50"/>
+                </div>
+                <div class = "index-user-name">
+                  <%= link user_name(question), to: user_path(@conn, :show, user(question)) %>
+                </div>
+              </div>
+            </div>
+
+        </div>
+        <hr>
+        </div>
+      <% end %>
+
+    </div>
+
+    <div class="new-question-container">
+      <a class="blue-button" href="<%= question_path(@conn, :new) %>">
+        Ask Question
+      </a>
+    </div>
+
+  </body>
+
+</html>

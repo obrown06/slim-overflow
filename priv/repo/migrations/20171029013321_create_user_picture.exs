@@ -1,4 +1,4 @@
-defmodule Plunger.Repo.Migrations.CreateUserPicture do
+defmodule SlimOverflow.Repo.Migrations.CreateUserPicture do
   use Ecto.Migration
 
   def change do

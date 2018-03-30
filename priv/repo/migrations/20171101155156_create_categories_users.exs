@@ -1,4 +1,4 @@
-defmodule Plunger.Repo.Migrations.CreateCategoriesUsers do
+defmodule SlimOverflow.Repo.Migrations.CreateCategoriesUsers do
   use Ecto.Migration
 
   def change do

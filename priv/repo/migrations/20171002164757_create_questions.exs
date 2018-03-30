@@ -1,4 +1,4 @@
-defmodule Plunger.Repo.Migrations.CreateQuestions do
+defmodule SlimOverflow.Repo.Migrations.CreateQuestions do
   use Ecto.Migration
 
   def change do

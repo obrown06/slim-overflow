@@ -1,4 +1,4 @@
-defmodule Plunger.Repo.Migrations.AddCoherenceToUser do
+defmodule SlimOverflow.Repo.Migrations.AddCoherenceToUser do
   use Ecto.Migration
   def change do
     alter table(:users) do

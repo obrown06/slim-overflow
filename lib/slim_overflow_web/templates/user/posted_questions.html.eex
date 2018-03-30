@@ -1,0 +1,109 @@
+<html>
+  <head>
+  </head>
+
+  <body>
+
+    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+          $("#" + "<%= @sort %>").css('border-bottom', '1px solid #F79C56');
+          $("#" + "<%= @sort %>").css('font-weight', '500');
+          $("#" + "<%= @sort %>").css('color', '#3B4045');
+          $("#" + "<%= @sort %>").css('height', '50.5px');
+
+
+          $("#" + "<%= @sort %>").hover(function() {
+            $(this).css('color', '#0C0D0E');
+            $(this).css('border-bottom', '1px solid #FE9B4C');
+          })
+        });
+
+    </script>
+    <div class="profile-bottom">
+      <div class="profile-posts-header">
+
+        <div class="profile-posts-left">
+          <div class="profile-posts-title" style="color:grey;">
+            <%= length(posted_questions(@user)) %>
+          </div>
+          <div class="profile-posts-title" style="font-weight:450">
+            Questions
+          </div>
+        </div>
+
+        <div class="profile-posts-filters">
+          <a class="profile-posts-sort" id="votes" href="<%= user_path(@conn, :show, @user, tab: "questions", sort: "votes") %>">
+            votes
+          </a>
+          <a class="profile-posts-sort" id="newest" href="<%= user_path(@conn, :show, @user, tab: "questions", sort: "newest") %>">
+            newest
+          </a>
+        </div>
+
+        <div class="bottom-line">
+          <hr>
+        </div>
+      </div>
+      <div class="profile-posts">
+        <table>
+        <%= for question <- sorted_questions(@user, @sort) do %>
+          <tr>
+            <div class="profile-post-question-votes">
+              <div class="profile-post-question-votes-data">
+                <%= vote_count(question) %>
+              </div>
+              <div class="profile-post-question-votes-name">
+                votes
+              </div>
+            </div>
+
+            <%= if is_or_has_best_response(question) do %>
+              <div class="profile-post-question-answers-box" style="background-color: #5FBB7D; color: #FFFFFF; border: 1px solid #5FBB7D;">
+                <div class="profile-post-question-answers-box-data">
+                  <%= num_responses(question) %>
+                </div>
+                <div class="profile-post-question-answers-box-name">
+                  answers
+                </div>
+              </div>
+            <% else %>
+              <div class="profile-post-question-answers-box" style="border: 1px solid #A3D0B2; color: #45A263">
+                <div class="profile-post-question-answers-box-data">
+                  <%= num_responses(question) %>
+                </div>
+                <div class="profile-post-question-answers-box-name">
+                  answers
+                </div>
+              </div>
+            <% end %>
+
+
+            <div class="profile-post-question-views">
+              <div class="profile-post-question-views-data">
+                <%= num_views(question) %>
+              </div>
+              <div class="profile-post-question-views-name">
+                views
+              </div>
+            </div>
+
+            <div class="profile-post-question-title">
+              <a href = "<%= question_path(@conn, :show, question) %>">
+                <%= title(question) %>
+              </a>
+            </div>
+
+            <div class="profile-post-question-date">
+              <%= date_posted(question) %>
+            </div>
+            <div class="profile-post-bottom-line">
+              <hr>
+            </div>
+          <tr>
+        <% end %>
+      </table>
+      </div>
+  </body>
+</html>

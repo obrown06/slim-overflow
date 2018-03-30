@@ -1,4 +1,4 @@
-defmodule PlungerWeb.ChannelCase do
+defmodule SlimOverflowWeb.ChannelCase do
   @moduledoc """
   This module defines the test case to be used by
   channel tests.
@@ -21,15 +21,15 @@ defmodule PlungerWeb.ChannelCase do
       use Phoenix.ChannelTest
 
       # The default endpoint for testing
-      @endpoint PlungerWeb.Endpoint
+      @endpoint SlimOverflowWeb.Endpoint
     end
   end
 
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Plunger.Repo)
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(SlimOverflow.Repo)
     unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(Plunger.Repo, {:shared, self()})
+      Ecto.Adapters.SQL.Sandbox.mode(SlimOverflow.Repo, {:shared, self()})
     end
     :ok
   end

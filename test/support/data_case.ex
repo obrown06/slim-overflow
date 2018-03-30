@@ -1,4 +1,4 @@
-defmodule Plunger.DataCase do
+defmodule SlimOverflow.DataCase do
   @moduledoc """
   This module defines the setup for tests requiring
   access to the application's data layer.
@@ -16,21 +16,21 @@ defmodule Plunger.DataCase do
 
   using do
     quote do
-      alias Plunger.Repo
+      alias SlimOverflow.Repo
 
       import Ecto
       import Ecto.Changeset
       import Ecto.Query
-      import Plunger.DataCase
-      import Plunger.TestHelpers
+      import SlimOverflow.DataCase
+      import SlimOverflow.TestHelpers
     end
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Plunger.Repo)
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(SlimOverflow.Repo)
 
     unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(Plunger.Repo, {:shared, self()})
+      Ecto.Adapters.SQL.Sandbox.mode(SlimOverflow.Repo, {:shared, self()})
     end
 
     :ok

@@ -1,4 +1,4 @@
-defmodule Plunger.Repo.Migrations.AddUserPositionAndDescription do
+defmodule SlimOverflow.Repo.Migrations.AddUserPositionAndDescription do
   use Ecto.Migration
 
   def change do

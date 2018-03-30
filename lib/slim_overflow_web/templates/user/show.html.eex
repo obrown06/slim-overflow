@@ -1,0 +1,68 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="<%= static_path(@conn, "/css/user_account.css") %>">
+  </head>
+
+  <body>
+
+    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+          var tab;
+
+          if("<%= @tab %>" == "profile") {
+            tab = "#profile";
+          }
+          else {
+            tab = "#activity";
+          }
+
+          $(tab).css('border-top', 'solid #F69B55');
+          $(tab).css('border-right', 'solid #EEEEEE');
+          $(tab).css('border-left', 'solid #EEEEEE');
+          $(tab).css('border-bottom', 'solid white');
+          $(tab).css('border-width', '2px 1px 1px 1px');
+
+          $(".account-tab").hover(function() {
+            $(this).css('height', '57px');
+          })
+
+          $(tab).hover(function() {
+            $(this).css('border-top', 'solid #F69B55');
+            $(this).css('border-right', 'solid #EEEEEE');
+            $(this).css('border-left', 'solid #EEEEEE');
+            $(this).css('border-bottom', 'solid white');
+            $(this).css('border-width', '2px 1px 1px 1px');
+            $(this).css('height', '58px');
+            $(this).css('margin-right', '5px');
+            $(this).css('margin-left', '0px');
+            $(this).css('margin-top', '0px');
+          })
+        });
+
+    </script>
+
+    <div class="account-header">
+      <div class="account-header-left">
+        <a class="account-tab" id="profile" href = "<%= user_path(@conn, :show, @user, tab: "profile") %>">
+          Profile
+        </a>
+        <a class="account-tab" id="activity" href = "<%= user_path(@conn, :show, @user, tab: "answers") %>">
+          Activity
+        </a>
+      </div>
+      <div class="bottom-line-account">
+        <hr>
+      </div>
+    </div>
+
+    <%= if @tab == "profile" do %>
+      <%= render "profile.html", user: @user,
+        conn: @conn %>
+    <% else %>
+      <%= render "activity.html", user: @user,
+        conn: @conn, tab: @tab, sort: @sort %>
+    <% end %>
+
+  </body>
+</html>

@@ -1,0 +1,100 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="<%= static_path(@conn, "/css/user.css") %>">
+  </head>
+  <body>
+    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+          $("#" + "<%= @sort %>").css('border-top', 'solid #F69B55');
+          $("#" + "<%= @sort %>").css('border-right', 'solid #EEEEEE');
+          $("#" + "<%= @sort %>").css('border-left', 'solid #EEEEEE');
+          $("#" + "<%= @sort %>").css('border-bottom', 'solid white');
+          $("#" + "<%= @sort %>").css('border-width', '2px 1px 1px 1px');
+
+          $(".index-sort").hover(function() {
+            $(this).css('height', '57px');
+          })
+
+          $("#" + "<%= @sort %>").hover(function() {
+            $(this).css('border-top', 'solid #F69B55');
+            $(this).css('border-right', 'solid #EEEEEE');
+            $(this).css('border-left', 'solid #EEEEEE');
+            $(this).css('border-bottom', 'solid white');
+            $(this).css('border-width', '2px 1px 1px 1px');
+            $(this).css('height', '58px');
+            $(this).css('margin-left', '5px');
+            $(this).css('margin-right', '0px');
+            $(this).css('margin-top', '0px');
+          })
+
+      });
+
+    </script>
+
+    <div class="user-index-header">
+
+      <div class="user-page-title">
+        Users
+      </div>
+
+      <div class="index-sorts">
+        <a class="index-sort" id="reputation" href = "<%= user_path(@conn, :index, sort: "reputation") %>">
+          reputation
+        </a>
+        <a class="index-sort" id="name" href = "<%= user_path(@conn, :index, sort: "name") %>">
+          name
+        </a>
+        <a class="index-sort" id="admins" href = "<%= user_path(@conn, :index, sort: "admins") %>">
+          admins
+        </a>
+        <a class="index-sort" id="date" href = "<%= user_path(@conn, :index, sort: "date") %>">
+          newest
+        </a>
+      </div>
+
+      <div class="bottom-line">
+        <hr>
+      </div>
+    </div>
+
+    <div class="user-index-list">
+      <table>
+      <%= for user_triple <- sort_and_partition(@users, @sort, 3) do %>
+        <tr class="user-index-row">
+          <%= for user <- user_triple do %>
+            <td class="user-index-tag">
+              <div class="user-index-tag-left">
+                <div class="user-index-image">
+                  <a href="<%= user_path(@conn, :show, user) %>">
+                  <%= if user.avatar == nil do %>
+                      <img src="/uploads/no_profile_image.gif" width=60 height=60/>
+                  <%= else %>
+                    <img src="<%= SlimOverflowWeb.Avatar.url({user.avatar, user}) %>" width="60" height="60"/>
+                  <% end %>
+                  </a>
+                </div>
+              </div>
+              <div class="user-index-tag-right">
+                <div class = "user-index-name">
+                  <%= link name(user), to: user_path(@conn, :show, user) %>
+                </div>
+                <div class ="user-index-reputation">
+                  <b> <%= reputation(user) %> </b>
+                </div>
+                <div class="user-stats">
+                  <%= for category <- top_categories(user) do %>
+                    <a class="user-index-categories" href="<%= question_path(@conn, :index, selected_category: category) %>">
+                      <%= name(category) <> " " %>
+                    </a>
+                  <% end %>
+                </div>
+              </div>
+            <td>
+          <% end %>
+        </tr>
+      <% end %>
+    </table>
+  </div>
+    </body>
+</html>

@@ -1,4 +1,4 @@
-defmodule Plunger.Repo.Migrations.AddVotes do
+defmodule SlimOverflow.Repo.Migrations.AddVotes do
   use Ecto.Migration
 
   def change do

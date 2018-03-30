@@ -1,4 +1,4 @@
-defmodule Plunger.Repo.Migrations.AddCommentsToResponses do
+defmodule SlimOverflow.Repo.Migrations.AddCommentsToResponses do
   use Ecto.Migration
 
   def change do

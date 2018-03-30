@@ -1,4 +1,4 @@
-defmodule Plunger.Repo.Migrations.AddReputationToUser do
+defmodule SlimOverflow.Repo.Migrations.AddReputationToUser do
   use Ecto.Migration
 
   def change do

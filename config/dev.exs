@@ -6,7 +6,7 @@ use Mix.Config
 # The watchers configuration can be used to run external
 # watchers to your application. For example, we use it
 # with brunch.io to recompile .js and .css sources.
-config :plunger, PlungerWeb.Endpoint,
+config :slim_overflow, SlimOverflowWeb.Endpoint,
   http: [port: System.get_env("PORT") || 4000],
   debug_errors: true,
   code_reloader: true,
@@ -31,13 +31,13 @@ config :plunger, PlungerWeb.Endpoint,
 # different ports.
 
 # Watch static and templates for browser reloading.
-config :plunger, PlungerWeb.Endpoint,
+config :slim_overflow, SlimOverflowWeb.Endpoint,
   live_reload: [
     patterns: [
       ~r{priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$},
       ~r{priv/gettext/.*(po)$},
-      ~r{lib/plunger_web/views/.*(ex)$},
-      ~r{lib/plunger_web/templates/.*(eex)$}
+      ~r{lib/slim_overflow_web/views/.*(ex)$},
+      ~r{lib/slim_overflow_web/templates/.*(eex)$}
     ]
   ]
 
@@ -49,11 +49,11 @@ config :logger, :console, format: "[$level] $message\n"
 config :phoenix, :stacktrace_depth, 20
 
 # Configure your database
-config :plunger, Plunger.Repo,
+config :slim_overflow, SlimOverflow.Repo,
   adapter: Ecto.Adapters.Postgres,
   username: "postgres",
   password: "postgres",
-  database: "plunger_dev",
+  database: "slim_overflow_dev",
   hostname: "localhost",
   pool_size: 10
 

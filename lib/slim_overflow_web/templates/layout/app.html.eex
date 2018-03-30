@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- <title>Hello SlimOverflow!</title> -->
+    <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="header">
+        <%= if @current_user do %>
+          <a class="header-block" href="<%= category_path(@conn, :index)%>">
+            Categories
+          </a>
+          <a class="header-block" href="<%= question_path(@conn, :index)%>">
+            Questions
+          </a>
+
+          <a class="header-block" href="<%= user_path(@conn, :index)%>">
+            Users
+          </a>
+          <div class="header-block header-block-right">
+            <%= SlimOverflowWeb.Coherence.ViewHelpers.signout_link(@conn, "Sign Out") %>
+          </div>
+          <a class="header-block header-block-right" href="<%= user_path(@conn, :show, @current_user)%>">
+            <div class="header-account-picture">
+              <%= if @current_user.avatar == nil do %>
+                <img src="/uploads/no_profile_image.gif" width="40" height="40"/>
+              <% else %>
+                <img src="<%= SlimOverflowWeb.Avatar.url({@current_user.avatar, @current_user}) %>" width="40" height="40"/>
+              <% end %>
+            </div>
+            <div class="header-reputation">
+              <%= reputation(@current_user) %>
+            </div>
+          </a>
+        <% else %>
+          <div class="header-block header-block-right">
+            <%= SlimOverflowWeb.Coherence.ViewHelpers.register_link(@conn, "Register") %>
+          </div>
+          <div class="header-block header-block-right">
+            <%= link("Sign In", to: coherence_path(SlimOverflowWeb.Router.Helpers, :session_path, @conn, :new)) %>
+          </div>
+        <% end %>
+
+      </div>
+
+      <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
+      <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
+
+      <main role="main">
+        <%= render @view_module, @view_template, assigns %>
+      </main>
+
+    </div> <!-- /container -->
+    <script>window.userToken = "<%= assigns[:user_token] %>"</script>
+    <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
+  </body>
+</html>

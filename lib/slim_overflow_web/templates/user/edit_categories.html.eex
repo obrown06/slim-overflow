@@ -1,0 +1,17 @@
+<html>
+
+<head>
+</head>
+
+<body>
+  <div class="category-select-header">
+    Mark a box to update update your interests!
+  </div>
+
+  <div class="category-form">
+    <%= render "form_category_select.html", changeset: SlimOverflow.Accounts.change_user(@user),
+        action: user_path(@conn, :update_categories, @user), categories: SlimOverflow.Categories.list_categories() %>
+  </div>
+
+</body>
+</html>

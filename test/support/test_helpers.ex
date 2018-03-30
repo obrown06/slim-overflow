@@ -1,15 +1,15 @@
-defmodule Plunger.TestHelpers do
-  alias Plunger.Repo
-  alias Plunger.Questions.Question
-  alias Plunger.Questions
-  alias Plunger.Questions.QuestionVote
-  alias Plunger.Responses
-  alias Plunger.Responses.Response
-  alias Plunger.Responses.ResponseVote
-  alias Plunger.Comments
-  alias Plunger.Comments.Comment
-  alias Plunger.Comments.CommentVote
-  alias Plunger.Accounts
+defmodule SlimOverflow.TestHelpers do
+  alias SlimOverflow.Repo
+  alias SlimOverflow.Questions.Question
+  alias SlimOverflow.Questions
+  alias SlimOverflow.Questions.QuestionVote
+  alias SlimOverflow.Responses
+  alias SlimOverflow.Responses.Response
+  alias SlimOverflow.Responses.ResponseVote
+  alias SlimOverflow.Comments
+  alias SlimOverflow.Comments.Comment
+  alias SlimOverflow.Comments.CommentVote
+  alias SlimOverflow.Accounts
   import Ecto.Query, only: [from: 2]
 
   def insert_user(attrs \\ %{}) do
@@ -45,8 +45,8 @@ defmodule Plunger.TestHelpers do
     }, attrs)
 
     {:ok, category} =
-      %Plunger.Categories.Category{}
-      |> Plunger.Categories.Category.changeset(changes)
+      %SlimOverflow.Categories.Category{}
+      |> SlimOverflow.Categories.Category.changeset(changes)
       |> Repo.insert()
 
     category

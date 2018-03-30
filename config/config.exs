@@ -6,16 +6,16 @@
 use Mix.Config
 
 # General application configuration
-config :plunger,
-  ecto_repos: [Plunger.Repo]
+config :slim_overflow,
+  ecto_repos: [SlimOverflow.Repo]
 
 # Configures the endpoint
-config :plunger, PlungerWeb.Endpoint,
+config :slim_overflow, SlimOverflowWeb.Endpoint,
   url: [host: "localhost"],
   root: Path.expand("..", __DIR__),
   secret_key_base: "s65X9mklxd2MCk+1TB2Ajk3LhFuNYv3xyohvcSbEdc6n/W7/II1CuZ7kuiXlMSGl",
-  render_errors: [view: PlungerWeb.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: Plunger.PubSub,
+  render_errors: [view: SlimOverflowWeb.ErrorView, accepts: ~w(html json)],
+  pubsub: [name: SlimOverflow.PubSub,
            adapter: Phoenix.PubSub.PG2]
 
 # Configures Elixir's Logger
@@ -23,7 +23,7 @@ config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
-config :plunger, PlungerWeb.Mailer,
+config :slim_overflow, SlimOverflowWeb.Mailer,
   adapter: Swoosh.Adapters.Sendgrid,
   api_key: "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"
 
@@ -31,18 +31,18 @@ config :hound, browser: "chrome"
 
 # %% Coherence Configuration %%   Don't remove this line
 config :coherence,
-  user_schema: Plunger.Accounts.User,
-  repo: Plunger.Repo,
-  module: Plunger,
-  web_module: PlungerWeb,
-  router: PlungerWeb.Router,
-  messages_backend: PlungerWeb.Coherence.Messages,
+  user_schema: SlimOverflow.Accounts.User,
+  repo: SlimOverflow.Repo,
+  module: SlimOverflow,
+  web_module: SlimOverflowWeb,
+  router: SlimOverflowWeb.Router,
+  messages_backend: SlimOverflowWeb.Coherence.Messages,
   logged_out_url: "/",
-  email_from_name: "Plunger",
+  email_from_name: "SlimOverflow",
   email_from_email: "test@localhost.com",
   opts: [:authenticatable, :recoverable, :lockable, :trackable, :unlockable_with_token, :confirmable, :registerable]
 
-config :coherence, PlungerWeb.Coherence.Mailer,
+config :coherence, SlimOverflowWeb.Coherence.Mailer,
   adapter: Swoosh.Adapters.Sendgrid,
   api_key: "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"
 # %% End Coherence Configuration %%

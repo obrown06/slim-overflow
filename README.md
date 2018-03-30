@@ -1,4 +1,4 @@
-# Plunger
+# SlimOverflow
 
 To start your Phoenix server:
 

@@ -1,4 +1,4 @@
-defmodule PlungerWeb.ConnCase do
+defmodule SlimOverflowWeb.ConnCase do
   @moduledoc """
   This module defines the test case to be used by
   tests that require setting up a connection.
@@ -19,19 +19,19 @@ defmodule PlungerWeb.ConnCase do
     quote do
       # Import conveniences for testing with connections
       use Phoenix.ConnTest
-      import PlungerWeb.Router.Helpers
-      import Plunger.TestHelpers
+      import SlimOverflowWeb.Router.Helpers
+      import SlimOverflow.TestHelpers
 
       # The default endpoint for testing
-      @endpoint PlungerWeb.Endpoint
+      @endpoint SlimOverflowWeb.Endpoint
     end
   end
 
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Plunger.Repo)
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(SlimOverflow.Repo)
     unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(Plunger.Repo, {:shared, self()})
+      Ecto.Adapters.SQL.Sandbox.mode(SlimOverflow.Repo, {:shared, self()})
     end
     {:ok, conn: Phoenix.ConnTest.build_conn()}
   end

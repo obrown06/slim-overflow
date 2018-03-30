@@ -1,4 +1,4 @@
-defmodule Plunger.Repo.Migrations.CreateResponses do
+defmodule SlimOverflow.Repo.Migrations.CreateResponses do
   use Ecto.Migration
 
   def change do

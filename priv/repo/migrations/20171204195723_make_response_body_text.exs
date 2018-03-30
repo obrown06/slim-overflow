@@ -1,4 +1,4 @@
-defmodule Plunger.Repo.Migrations.MakeResponseBodyText do
+defmodule SlimOverflow.Repo.Migrations.MakeResponseBodyText do
   use Ecto.Migration
 
   def change do

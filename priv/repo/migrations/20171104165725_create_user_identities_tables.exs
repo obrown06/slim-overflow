@@ -1,4 +1,4 @@
-defmodule Plunger.Repo.Migrations.CreateUserIdentitiesTables do
+defmodule SlimOverflow.Repo.Migrations.CreateUserIdentitiesTables do
   use Ecto.Migration
 
   def change do

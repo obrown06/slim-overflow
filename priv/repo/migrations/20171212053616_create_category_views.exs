@@ -1,4 +1,4 @@
-defmodule Plunger.Repo.Migrations.CreateCategoryViews do
+defmodule SlimOverflow.Repo.Migrations.CreateCategoryViews do
   use Ecto.Migration
 
   def change do
