@@ -29,17 +29,20 @@ defmodule PlungerWeb.UserView do
     Comments.user_comments(user)
   end
 
-  def num_received_comments(%User {} = user) do
+  def received_comments(%User{} = user) do
 
     posts = [posted_questions(user), posted_responses(user), posted_comments(user)]
     Kernel.length(posts)
 
     posts
       |> List.flatten
-      |> Enum.reduce(0, fn(post, acc) ->
-                          num_posts = post |> Comments.list_comments |> length()
-                          acc + num_posts end)
+      |> Enum.reduce(0, fn(post, acc) -> acc ++ Comments.list_comments(post) end)
+  end
 
+  def num_received_comments(%User{} = user) do
+    user
+    |> received_comments()
+    |> length()
   end
 
   def name(%User{} = user) do

@@ -7,6 +7,10 @@
   background-position: 0 -25px;
 }
 
+.response-form {
+  margin-top: 40px;
+}
+
 .downvote{
   background : url('http://i.imgur.com/DdDtGWS.png');
   overflow: hidden;
@@ -40,7 +44,6 @@
   float: left;
   width: 45px;
   margin-bottom: 10px;
-  height: auto%;
 }
 
 .best-response-check {

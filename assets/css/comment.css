@@ -1,19 +1,50 @@
 .comment {
   display: inline-block;
-  margin-top: -10px;
-  margin-bottom: -10px;
+  position: relative;
 }
 
 .comment-left {
-  width: 40px;
-  height: 100px;
-  height: 100%;
+  width: 25px;
+  position: absolute;
+}
+
+.upvote-small {
+  overflow: hidden;
+  width: 20px;
+  height: 13px;
+  cursor: pointer;
+  background: url('/uploads/upvote-button-small.png');
+  background-position: 0 -11px;
+}
+
+.comment-posting-info {
   display: inline-block;
 }
 
-.comment-right {
+.comment-time-posted {
   display: inline-block;
-  vertical-align: top;
+}
+
+.vote-count-small {
+  width: 23px;
+  height: 13px;
+  text-align: center;
+  vertical-align: middle;
+  color: grey;
+  font-size: small;
+}
+
+.downvote-small {
+  background: url('/uploads/downvote-button-small.png');
+  overflow: hidden;
+  width: 20px;
+  height: 13px;
+  cursor: pointer;
+  background-position: 0 -1px;
+}
+
+.comment-right {
+  margin-left: 30px;
 }
 
 .vote-link {
@@ -68,15 +99,13 @@
 
 .comment-body {
   display: inline-block;
-  vertical-align: top;
-  width: 500px;
   overflow-wrap: break-word;
 }
 
 .comment-on-comment {
+  display: inline-block;
   background: none;
   color: #357AB8;
-  border: solid;
   cursor: pointer;
 }
 
@@ -89,6 +118,11 @@
   margin-left: 50px;
 }
 
+.comment-top-line{
+  margin-bottom: -10px;
+  padding-bottom: -10px;
+}
+
 .comment-on-comment-container {
-  display: inline-block;
+  display: block
 }

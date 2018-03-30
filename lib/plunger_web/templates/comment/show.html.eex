@@ -66,47 +66,41 @@
     });
 </script>
 
-<hr>
+<div class="comment-top-line">
+  <hr>
+</div>
 <div class="comment">
   <div class="comment-left">
-    <div class="comment-user-picture">
-      <%= if user(@comment) |> UserView.avatar() == nil do %>
-        <img src="/uploads/no_profile_image.gif" width=30 height=30/>
-      <%= else %>
-        <img src="<%= PlungerWeb.Avatar.url({user(@comment).avatar, user(@comment)}) %>" width="30" height="30"/>
-      <% end %>
-    </div>
-    <div class="comment-vote-count">
-      <%= vote_count(@comment) %>
+    <div class="voting-block">
+      <div class="upvote-small" id="upvote-comment"></div>
+      <div class="vote-count-small" id="comment-vote-count">
+          <%= vote_count(@comment) %>
+      </div>
+      <div class="downvote-small" id="downvote-comment"></div>
     </div>
   </div>
   <div class="comment-right">
-
-    <div class="comment-right-top">
-      <a href="user_path(@conn, :show, associated_user(@comment)) %>" style="margin-right: 7px;">
-        <%= associated_user_name(@comment) %>
-      </a>
-       <%= " • " %> &nbsp <%= time_posted(@comment) %>
-    </div>
-
     <div class="comment-body">
       <%= @comment.description %>
     </div>
 
-    <div class="comment-actions">
-      <div class="comment-on-comment-container">
-        <div class="comment-on-comment" id="comment-on-comment">
-          reply
-        </div>
+    <div class="comment-posting-info">
+
+      <a href="user_path(@conn, :show, associated_user(@comment)) %>">
+        -
+        <%= associated_user_name(@comment) %>
+      </a>
+
+      <div class="comment-time-posted">
+        <%= time_posted(@comment) %>
       </div>
-      &nbsp <%= " • " %> &nbsp
-      <div class="vote-link" id="upvote-comment"> upvote </div>
-      &nbsp <%= " • " %> &nbsp
-      <div class="vote-link" id="downvote-comment"> downvote</div>
+      <%= " • " %>
+      <div class="comment-on-comment" id="comment-on-comment">
+        reply
+      </div>
     </div>
 
   </div>
-
 </div>
 
 <div id="comment-on-comment-form">

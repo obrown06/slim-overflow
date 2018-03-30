@@ -119,7 +119,7 @@
 
   <div class = "comments">
     <%= for comment <- PlungerWeb.ResponseView.list_comments(@response) do %>
-      <%= render PlungerWeb.CommentView, "show.html", comment: comment, conn: @conn, question: @question, comment_changeset: @comment_changeset %>
+        <%= render PlungerWeb.CommentView, "show.html", comment: comment, conn: @conn, question: @question, comment_changeset: @comment_changeset %>
     <% end %>
   </div>
   <div id="comment-on-response-form">

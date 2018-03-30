@@ -121,9 +121,10 @@
 
     <div class="comments">
       <%= for comment <- PlungerWeb.QuestionView.list_comments(@question) do %>
-        <%= render PlungerWeb.CommentView, "show.html", comment_changeset: @comment_changeset, conn: @conn, comment: comment, question: @question %>
+          <%= render PlungerWeb.CommentView, "show.html", comment_changeset: @comment_changeset, conn: @conn, comment: comment, question: @question %>
       <% end %>
     </div>
+    <br>
     <br>
     <div class="responses">
       <%= if num_responses(@question) > 0 do %>

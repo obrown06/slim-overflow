@@ -93,6 +93,26 @@ body, form, ul, table {
     color: #3B4045;
   }
 
+  .col-sm-5 {
+    position: fixed;
+    z-index: 100;
+    right: -16px;
+    width: 27.8%;
+    top: 100px;
+    height: 640px;
+  }
+
+  .panel {
+    height: 100%;
+  }
+
+  .panel-body {
+    height: 73.8%;
+  }
+
+  .chat-window {
+    background-color: red;
+  }
   .header-account-picture {
     display: inline-block;
   }
