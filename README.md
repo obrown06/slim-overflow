@@ -5,7 +5,7 @@ functionality of [Stack Overflow](https://stackoverflow.com/). It is written in 
 
 Some of the features it supports:
 
-  * User accounts (including auth, OAuth, email verification, etc.)
+  * User and Admin accounts (including auth, OAuth, email verification, etc.)
   * CRUD operations for questions, responses, nested comments, categories
   * User reputation as determined by upvotes, downvotes, response "promotions"
   * View metrics for profiles, questions, categories

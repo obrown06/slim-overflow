@@ -130,6 +130,13 @@
           <div class="profile-stat-name" style="margin-top: 10px;">
             <%= num_profile_views(@user) %> profile <%= pluralize(num_profile_views(@user), "view") %>
           </div>
+
+          <%= if @user.id == Coherence.current_user(@conn).id do %>
+            <div style="margin-top: 10px">
+              <span><%= link "Edit", to: user_path(@conn, :edit, @user) %></span>
+            </div>
+          <% end %>
+
         </div>
       </div>
       <div class="profile-categories-container">

@@ -131,6 +131,12 @@ button#comment-on-question:hover {
   display: inline-block;
 }
 
-.chat-window {
-
+.col-sm-5 {
+  position: fixed;
+  bottom: 10px;
+  width: 25%;
+  right: 5px;
+}
+.question-chat-window {
+  border: solid;
 }

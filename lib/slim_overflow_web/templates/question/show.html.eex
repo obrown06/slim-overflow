@@ -144,8 +144,6 @@
 
   </div>
 
-  <div class="chat-window">
-    <%= render SlimOverflowWeb.ChannelView, "show.html", question: @question %>
-  </div>
+  <%= render SlimOverflowWeb.ChannelView, "show.html", question: @question %>
 
 </body>
