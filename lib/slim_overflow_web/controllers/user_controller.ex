@@ -1,6 +1,5 @@
 defmodule SlimOverflowWeb.UserController do
   use SlimOverflowWeb, :controller
-  #plug Guardian.Plug.EnsureAuthenticated when action in [:index, :show, :edit, :update, :delete, :promote]#, handler: __MODULE__
   plug :check_identity when action in [:edit, :edit_email, :edit_password, :update, :update_email, :update_password, :delete]
   plug :load_categories when action in [:show]
   plug :verify_admin when action in [:promote]
@@ -17,23 +16,6 @@ defmodule SlimOverflowWeb.UserController do
     users = Accounts.list_users()
     render(conn, "index.html", users: users, sort: sort)
   end
-
-  #def new(conn, _params) do
-  #  changeset = Accounts.change_user(%User{})
-  #  render(conn, "new.html", changeset: changeset)
-  #end
-
-  #def create(conn, %{"user" => user_params}) do
-  #  case Accounts.create_user(user_params) do
-  #    {:ok, user} ->
-  #      conn
-  #      |> SlimOverflowWeb.Auth.login(user)
-  #      |> put_flash(:info, "User created successfully.")
-  #      |> redirect(to: user_path(conn, :show, user))
-  #    {:error, %Ecto.Changeset{} = changeset} ->
-  #      render(conn, "new.html", changeset: changeset)
-  #  end
-  #end
 
   def show(conn, params) do
     id = Map.get(params, "id")
@@ -182,17 +164,5 @@ defmodule SlimOverflowWeb.UserController do
         |> halt()
     end
   end
-
-  #def delete(conn, %{"id" => id}) do
-  #  user = Accounts.get_user!(id)
-  #  case Accounts.delete_user!(user) do
-  #    {:ok, _user} ->
-  #      conn
-  #        |> put_flash(:info, "User deleted successfully.")
-  #        |> redirect(to: user_path(conn, :index))
-  #    {:error, %Ecto.Changeset{} = changeset} ->
-  #      render(conn, "index.html", user: user, changeset: changeset)
-  #  end
-  #end
 
 end

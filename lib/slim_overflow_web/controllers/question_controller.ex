@@ -1,7 +1,5 @@
 defmodule SlimOverflowWeb.QuestionController do
   use SlimOverflowWeb, :controller
-  #plug :authenticate_user when action in [:new, :create, :edit, :update, :delete, :upvote, :downvote]
-  #plug Guardian.Plug.EnsureAuthenticated, handler: __MODULE__
   plug :verify_owner when action in [:delete]
   plug :verify_owner_or_admin when action in [:edit, :update]
   plug :load_categories when action in [:new, :create, :edit, :update]
@@ -70,7 +68,7 @@ defmodule SlimOverflowWeb.QuestionController do
       Accounts.add_rep(question, posting_user, "upvote", "posting")
     end
 
-    conn |> json %{ upvote_successful: upvote_successful } #redirect(to: NavigationHistory.last_path(conn, 1)) #question_path(conn, :show, question))
+    conn |> json %{ upvote_successful: upvote_successful }
   end
 
   def downvote(conn, %{"id" => id}, user) do
@@ -82,7 +80,7 @@ defmodule SlimOverflowWeb.QuestionController do
       Accounts.subtract_rep(question, posting_user, "downvote", "posting")
     end
 
-    conn |> json %{ downvote_successful: downvote_successful }#question_path(conn, :show, question))
+    conn |> json %{ downvote_successful: downvote_successful }
   end
 
   def show(conn, %{"id" => id}, user) do
@@ -150,12 +148,5 @@ defmodule SlimOverflowWeb.QuestionController do
         |> halt()
     end
   end
-
-#  def unauthenticated(conn, _params) do
-#    conn
-#      |> put_flash(:error, "You must be logged in to access that page")
-#      |> redirect(to: "/") #NavigationHistory.last_path(conn, 1))
-#      |> halt()
-#  end
 
 end
